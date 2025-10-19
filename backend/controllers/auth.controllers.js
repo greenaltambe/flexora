@@ -18,13 +18,19 @@ const register = async (req, res) => {
 
 		// check if all fields are provided
 		if (!firstName || !lastName || !email || !password) {
-			return res.status(400).json({ message: "All fields are required" });
+			return res.status(400).json({
+				success: false,
+				message: "All fields are required",
+			});
 		}
 
 		// check if user already exists
 		const userAlreadyExists = await User.findOne({ email });
 		if (userAlreadyExists) {
-			return res.status(400).json({ message: "User already exists" });
+			return res.status(400).json({
+				success: false,
+				message: "User already exists",
+			});
 		}
 
 		// hash password for security
@@ -62,7 +68,10 @@ const register = async (req, res) => {
 			},
 		});
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(500).json({
+			success: false,
+			message: error.message,
+		});
 	}
 };
 
@@ -76,20 +85,27 @@ const verifyEmail = async (req, res) => {
 
 		// check if all fields are provided
 		if (!email || !verificationCode) {
-			return res.status(400).json({ message: "All fields are required" });
+			return res.status(400).json({
+				success: false,
+				message: "All fields are required",
+			});
 		}
 
 		// check if user exists
 		const user = await User.findOne({ email });
 		if (!user) {
-			return res.status(400).json({ message: "User not found" });
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
 		}
 
 		// check if verification code is valid
 		if (user.verificationCodeExpiry < Date.now()) {
-			return res
-				.status(400)
-				.json({ message: "Verification code expired" });
+			return res.status(400).json({
+				success: false,
+				message: "Verification code expired",
+			});
 		}
 
 		// check if verification code is valid
@@ -99,9 +115,10 @@ const verifyEmail = async (req, res) => {
 			.digest("hex");
 
 		if (hashedCode !== user.verificationCodeHash) {
-			return res
-				.status(400)
-				.json({ message: "Invalid verification code" });
+			return res.status(400).json({
+				success: false,
+				message: "Invalid verification code",
+			});
 		}
 
 		// mark user as verified
@@ -117,10 +134,88 @@ const verifyEmail = async (req, res) => {
 		sendWelcomeEmail(user.email);
 
 		// send success response
-		res.status(200).json({ message: "Email verified successfully" });
+		res.status(200).json({
+			success: true,
+			message: "Email verified successfully",
+		});
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(500).json({
+			success: false,
+			message: error.message,
+		});
 	}
 };
 
-export { register, verifyEmail };
+// Logout
+// @desc Logout user
+// @route POST /api/auth/logout
+// @access Private
+const logout = async (req, res) => {
+	try {
+		res.clearCookie("token");
+		res.status(200).json({
+			success: true,
+			message: "User logged out successfully",
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+
+// Login
+// @desc Login user
+// @route POST /api/auth/login
+// @access Public
+const login = async (req, res) => {
+	const { email, password } = req.body;
+	try {
+		// check if all fields are provided
+		if (!email || !password) {
+			return res.status(400).json({
+				success: false,
+				message: "All fields are required",
+			});
+		}
+
+		// check if user exists
+		const user = await User.findOne({ email });
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		// check if password is correct
+		const isPasswordCorrect = await bcrypt.compare(password, user.password);
+		if (!isPasswordCorrect) {
+			return res.status(400).json({
+				success: false,
+				message: "Incorrect password",
+			});
+		}
+
+		// Set JWT and cookie
+		generateJWTAndSetCookie(res, user._id);
+
+		// send success response
+		res.status(200).json({
+			success: true,
+			message: "User logged in successfully",
+			user: {
+				...user._doc,
+				password: undefined,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+
+export { register, verifyEmail, logout, login };
