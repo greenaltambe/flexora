@@ -1,8 +1,8 @@
-export const generateWelcomeEmailText = () => {
+const generateWelcomeEmailText = () => {
 	return `Thank you for registering to Flexora!`;
 };
 
-export const generateWelcomeEmailHTML = () => {
+const generateWelcomeEmailHTML = () => {
 	return `
     <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
       <h2 style="color: #4CAF50;">Flexora Welcome Email</h2>
@@ -11,3 +11,5 @@ export const generateWelcomeEmailHTML = () => {
     </div>
   `;
 };
+
+export { generateWelcomeEmailText, generateWelcomeEmailHTML };

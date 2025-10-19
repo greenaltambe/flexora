@@ -1,4 +1,4 @@
-import { createTransporter } from "../config/mail.js";
+import { createTransporter } from "../../config/mail.js";
 import {
 	generateVerificationEmailHTML,
 	generateVerificationEmailText,
@@ -22,7 +22,7 @@ const sendVerificationCode = async (email, code) => {
 		};
 
 		const info = await transporter.sendMail(mailOptions);
-		console.log(`Verification email sent: ${info.messageId}`);
+		console.log(`Verification email sent: ${info.messageId}`.blue.bold);
 	} catch (error) {
 		console.error("Error sending verification email:", error);
 		throw new Error("Could not send verification email");
@@ -43,7 +43,7 @@ const sendWelcomeEmail = async (email) => {
 		};
 
 		const info = await transporter.sendMail(mailOptions);
-		console.log(`Welcome email sent: ${info.messageId}`);
+		console.log(`Welcome email sent: ${info.messageId}`.blue.bold);
 	} catch (error) {
 		console.error("Error sending welcome email:", error);
 		throw new Error("Could not send welcome email");

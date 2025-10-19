@@ -1,8 +1,8 @@
-export const generateVerificationEmailText = (code) => {
+const generateVerificationEmailText = (code) => {
 	return `Your verification code is: ${code}`;
 };
 
-export const generateVerificationEmailHTML = (code) => {
+const generateVerificationEmailHTML = (code) => {
 	return `
     <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
       <h2 style="color: #4CAF50;">Flexora Verification Code</h2>
@@ -16,3 +16,5 @@ export const generateVerificationEmailHTML = (code) => {
     </div>
   `;
 };
+
+export { generateVerificationEmailText, generateVerificationEmailHTML };

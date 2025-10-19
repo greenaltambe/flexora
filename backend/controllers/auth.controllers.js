@@ -1,9 +1,11 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { generateVerificationCode } from "../utils/generateVerificationCode.js";
-import { generateJWTAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationCode } from "../utils/emails.js";
-import { sendWelcomeEmail } from "../utils/emails.js";
+import {
+	generateVerificationCode,
+	generateJWTAndSetCookie,
+	sendVerificationCode,
+	sendWelcomeEmail,
+} from "../utils/index.js";
 import crypto from "crypto";
 
 // Register
