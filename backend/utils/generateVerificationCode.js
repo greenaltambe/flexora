@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-export default function generateVerificationCode() {
+const generateVerificationCode = () => {
 	// 6-digit numeric code (000000 - 999999)
 	const verificationCode = Math.floor(
 		100000 + Math.random() * 900000
@@ -13,4 +13,6 @@ export default function generateVerificationCode() {
 		.digest("hex");
 
 	return { verificationCode, verificationCodeHash };
-}
+};
+
+export { generateVerificationCode };

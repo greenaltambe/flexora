@@ -1,8 +1,10 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import generateVerificationCode from "../utils/generateVerificationCode.js";
+import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateJWTAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendVerificationCode } from "../utils/emails.js";
+import { sendWelcomeEmail } from "../utils/emails.js";
+import crypto from "crypto";
 
 // Register
 // @desc Register a new user
@@ -43,8 +45,8 @@ const register = async (req, res) => {
 
 		const user = await User.create(newUser);
 
-		// Set JWT and cookie
-		generateJWTAndSetCookie(res, user._id);
+		// // Set JWT and cookie
+		// generateJWTAndSetCookie(res, user._id);
 
 		// Send verification code to user's email
 		sendVerificationCode(user.email, verificationCode);
@@ -62,4 +64,61 @@ const register = async (req, res) => {
 	}
 };
 
-export { register };
+// Verify email
+// @desc Verify user's email
+// @route POST /api/auth/verify-email
+// @access Public
+const verifyEmail = async (req, res) => {
+	try {
+		const { email, verificationCode } = req.body;
+
+		// check if all fields are provided
+		if (!email || !verificationCode) {
+			return res.status(400).json({ message: "All fields are required" });
+		}
+
+		// check if user exists
+		const user = await User.findOne({ email });
+		if (!user) {
+			return res.status(400).json({ message: "User not found" });
+		}
+
+		// check if verification code is valid
+		if (user.verificationCodeExpiry < Date.now()) {
+			return res
+				.status(400)
+				.json({ message: "Verification code expired" });
+		}
+
+		// check if verification code is valid
+		const hashedCode = crypto
+			.createHash("sha256")
+			.update(verificationCode)
+			.digest("hex");
+
+		if (hashedCode !== user.verificationCodeHash) {
+			return res
+				.status(400)
+				.json({ message: "Invalid verification code" });
+		}
+
+		// mark user as verified
+		user.isVerified = true;
+		user.verificationCodeHash = undefined;
+		user.verificationCodeExpiry = undefined;
+		await user.save();
+
+		// Set JWT and cookie
+		generateJWTAndSetCookie(res, user._id);
+
+		// send success verification email
+		sendWelcomeEmail(user.email);
+
+		// send success response
+		res.status(200).json({ message: "Email verified successfully" });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
+export { register, verifyEmail };
