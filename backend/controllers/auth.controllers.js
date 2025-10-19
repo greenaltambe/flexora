@@ -5,6 +5,9 @@ import {
 	generateJWTAndSetCookie,
 	sendVerificationCode,
 	sendWelcomeEmail,
+	generateResetPasswordCode,
+	sendResetPasswordCode,
+	sendSuccessPasswordResetEmail,
 } from "../utils/index.js";
 import crypto from "crypto";
 
@@ -57,7 +60,7 @@ const register = async (req, res) => {
 		// generateJWTAndSetCookie(res, user._id);
 
 		// Send verification code to user's email
-		sendVerificationCode(user.email, verificationCode);
+		await sendVerificationCode(user.email, verificationCode);
 
 		res.status(201).json({
 			success: true,
@@ -131,7 +134,7 @@ const verifyEmail = async (req, res) => {
 		generateJWTAndSetCookie(res, user._id);
 
 		// send success verification email
-		sendWelcomeEmail(user.email);
+		await sendWelcomeEmail(user.email);
 
 		// send success response
 		res.status(200).json({
@@ -218,4 +221,106 @@ const login = async (req, res) => {
 	}
 };
 
-export { register, verifyEmail, logout, login };
+// Forgot password
+// @desc Forgot password
+// @route POST /api/auth/forgot-password
+// @access Public
+const forgotPassword = async (req, res) => {
+	const { email } = req.body;
+	try {
+		// check if all fields are provided
+		if (!email) {
+			return res.status(400).json({
+				success: false,
+				message: "Email is required",
+			});
+		}
+
+		// check if user exists
+		const user = await User.findOne({ email });
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		// generate reset password code
+		const { resetPasswordCodeHash } = generateResetPasswordCode();
+
+		// update user with reset password code
+		user.resetPasswordCodeHash = resetPasswordCodeHash;
+		user.resetPasswordCodeExpiry = Date.now() + 24 * 60 * 60 * 1000; // valid for 24 hours
+		await user.save();
+
+		// send reset password code to user's email
+		await sendResetPasswordCode(
+			user.email,
+			`${process.env.FRONTEND_URL}/reset-password/${resetPasswordCodeHash}`
+		);
+
+		// send success response
+		res.status(200).json({
+			success: true,
+			message: "Reset password code sent successfully",
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+
+// Reset password
+// @desc Reset password
+// @route POST /api/auth/reset-password
+// @access Public
+const resetPassword = async (req, res) => {
+	const { resetPasswordCodeHash } = req.params;
+	const { password } = req.body;
+
+	const user = await User.findOne({ resetPasswordCodeHash });
+	if (!user) {
+		return res.status(400).json({
+			success: false,
+			message: "User not found",
+		});
+	}
+
+	// check if reset password code is valid
+	if (user.resetPasswordCodeExpiry < Date.now()) {
+		return res.status(400).json({
+			success: false,
+			message: "Reset password code expired",
+		});
+	}
+
+	// hash password for security
+	const salt = await bcrypt.genSalt(10);
+	const hashedPassword = await bcrypt.hash(password, salt);
+
+	// update user with new password
+	user.password = hashedPassword;
+	user.resetPasswordCodeHash = undefined;
+	user.resetPasswordCodeExpiry = undefined;
+	await user.save();
+
+	// Set JWT and cookie
+	generateJWTAndSetCookie(res, user._id);
+
+	// send success verification email
+	await sendSuccessPasswordResetEmail(user.email);
+
+	// send success response
+	res.status(200).json({
+		success: true,
+		message: "Password reset successfully",
+		user: {
+			...user._doc,
+			password: undefined,
+		},
+	});
+};
+
+export { register, verifyEmail, logout, login, forgotPassword, resetPassword };

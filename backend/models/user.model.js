@@ -36,11 +36,11 @@ const UserSchema = new mongoose.Schema(
 			type: Date,
 			default: null,
 		},
-		resetTokenHash: {
+		resetPasswordCodeHash: {
 			type: String,
 			default: null,
 		},
-		resetTokenExpiry: {
+		resetPasswordCodeExpiry: {
 			type: Date,
 			default: null,
 		},
