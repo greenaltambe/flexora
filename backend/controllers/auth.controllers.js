@@ -323,4 +323,37 @@ const resetPassword = async (req, res) => {
 	});
 };
 
-export { register, verifyEmail, logout, login, forgotPassword, resetPassword };
+const checkAuth = async (req, res) => {
+	try {
+		const user = await User.findById(req.userId);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+		res.status(200).json({
+			success: true,
+			message: "User authenticated successfully",
+			user: {
+				...user._doc,
+				password: undefined,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+
+export {
+	register,
+	verifyEmail,
+	logout,
+	login,
+	forgotPassword,
+	resetPassword,
+	checkAuth,
+};

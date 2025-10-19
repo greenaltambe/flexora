@@ -7,8 +7,13 @@ import {
 	forgotPassword,
 	resetPassword,
 } from "../controllers/auth.controllers.js";
+import { verifyToken } from "../middlewares/verifyToken.middleware.js";
+import { checkAuth } from "../controllers/auth.controllers.js";
 
 const router = express.Router();
+
+// route for check auth
+router.get("/check-auth", verifyToken, checkAuth);
 
 // route for register and verify email
 router.post("/register", register);
