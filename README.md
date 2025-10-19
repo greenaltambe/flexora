@@ -1,1 +1,1 @@
-# Flexora - A personalized fitness app
+# Flexora - A Full stack Fitness Web app
