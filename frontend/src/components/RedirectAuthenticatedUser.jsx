@@ -19,8 +19,8 @@ const RedirectAuthenticatedUser = ({ children }) => {
 	}
 
 	if (isAuthenticated && user?.isVerified) {
-		console.log("RedirectAuthenticatedUser: Redirecting to home");
-		return <Navigate to="/" replace />;
+		console.log("RedirectAuthenticatedUser: Redirecting to dashboard");
+		return <Navigate to="/dashboard" replace />;
 	}
 
 	console.log("RedirectAuthenticatedUser: Rendering children");

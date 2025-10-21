@@ -15,8 +15,8 @@ const Protect = ({ children }) => {
 	}
 
 	if (!isAuthenticated) {
-		console.log("Protect: Redirecting to login");
-		return <Navigate to="/login" replace />;
+		console.log("Protect: Redirecting to landing page");
+		return <Navigate to="/" replace />;
 	}
 
 	console.log("Protect: Rendering children");

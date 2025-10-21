@@ -25,7 +25,7 @@ const Login = () => {
 				return;
 			}
 			toast.success("Login successful!");
-			navigate("/");
+			navigate("/dashboard");
 		} catch (err) {
 			console.error(err);
 			toast.error(err || "Something went wrong. Try again!");
@@ -33,46 +33,55 @@ const Login = () => {
 	};
 
 	return (
-		<div className="card bg-base-100 w-96 shadow-sm">
-			<div className="card-body">
-				<h2 className="card-title text-center">Login</h2>
-				<form onSubmit={handleLogin} className="space-y-4">
-					<Input
-						icon={MailIcon}
-						type="email"
-						name="email"
-						placeholder="Email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-					/>
-					<Input
-						icon={LockKeyholeIcon}
-						type="password"
-						name="password"
-						placeholder="Password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-					/>
-					<button
-						className="btn btn-primary w-full mt-2"
-						type="submit"
-						disabled={isLoading}
-					>
-						{isLoading ? <Loader /> : "Login"}
-					</button>
-				</form>
-				<p className="text-center mt-2">
-					Don't have an account?{" "}
-					<Link to="/register" className="link link-primary">
-						Register
-					</Link>
-				</p>
-			</div>
-			{error && (
-				<div className="alert alert-error mt-3 justify-center">
-					<span>{error}</span>
+		<div className="min-h-screen bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 flex items-center justify-center p-4">
+			<div className="card bg-base-100 w-full max-w-md shadow-xl">
+				<div className="card-body">
+					<div className="text-center mb-6">
+						<div className="badge badge-primary badge-lg p-3 mb-4">
+							<MailIcon className="w-6 h-6" />
+						</div>
+						<h2 className="text-3xl font-bold">Welcome Back</h2>
+						<p className="text-base-content/70 mt-2">Sign in to your Flexora account</p>
+					</div>
+					<form onSubmit={handleLogin} className="space-y-4">
+						<Input
+							icon={MailIcon}
+							type="email"
+							name="email"
+							placeholder="Email"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+						/>
+						<Input
+							icon={LockKeyholeIcon}
+							type="password"
+							name="password"
+							placeholder="Password"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+						/>
+						<button
+							className="btn btn-primary w-full mt-6"
+							type="submit"
+							disabled={isLoading}
+						>
+							{isLoading ? <Loader /> : "Sign In"}
+						</button>
+					</form>
+					{error && (
+						<div className="alert alert-error mt-4">
+							<span>{error}</span>
+						</div>
+					)}
+					<div className="divider">OR</div>
+					<p className="text-center">
+						Don't have an account?{" "}
+						<Link to="/register" className="link link-primary font-medium">
+							Create one here
+						</Link>
+					</p>
 				</div>
-			)}
+			</div>
 		</div>
 	);
 };

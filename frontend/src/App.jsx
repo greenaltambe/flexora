@@ -4,6 +4,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./pages/Layout";
 import EmailVerificationPage from "./components/EmailVerificationPage";
+import LandingPage from "./pages/LandingPage";
+import Dashboard from "./pages/Dashboard";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/auth/authStore";
 import { useEffect } from "react";
@@ -23,9 +25,13 @@ const App = () => {
 			<Routes>
 				<Route
 					path="/"
+					element={<LandingPage />}
+				/>
+				<Route
+					path="/dashboard"
 					element={
 						<Protect>
-							<Home />
+							<Dashboard />
 						</Protect>
 					}
 				/>

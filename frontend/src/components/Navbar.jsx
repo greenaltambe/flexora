@@ -1,9 +1,10 @@
 import Logout from "../pages/Logout";
 import { useAuthStore } from "../store/auth/authStore";
 import { Link } from "react-router-dom";
+import { Dumbbell, Home, BarChart3 } from "lucide-react";
 
 const Navbar = () => {
-	const { isAuthenticated } = useAuthStore();
+	const { isAuthenticated, user } = useAuthStore();
 	return (
 		<div>
 			<div className="navbar bg-base-100 shadow-sm">
@@ -21,74 +22,92 @@ const Navbar = () => {
 								viewBox="0 0 24 24"
 								stroke="currentColor"
 							>
-								{" "}
 								<path
 									strokeLinecap="round"
 									strokeLinejoin="round"
 									strokeWidth="2"
 									d="M4 6h16M4 12h8m-8 6h16"
-								/>{" "}
+								/>
 							</svg>
 						</div>
 						<ul
 							tabIndex="-1"
 							className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
 						>
-							<li>
-								<a>Item 1</a>
-							</li>
-							<li>
-								<a>Parent</a>
-								<ul className="p-2">
+							{isAuthenticated ? (
+								<>
 									<li>
-										<a>Submenu 1</a>
+										<Link to="/dashboard" className="flex items-center gap-2">
+											<BarChart3 className="w-4 h-4" />
+											Dashboard
+										</Link>
 									</li>
 									<li>
-										<a>Submenu 2</a>
+										<Logout />
 									</li>
-								</ul>
-							</li>
-							<li>
-								<a>Item 3</a>
-							</li>
+								</>
+							) : (
+								<>
+									<li>
+										<Link to="/" className="flex items-center gap-2">
+											<Home className="w-4 h-4" />
+											Home
+										</Link>
+									</li>
+									<li>
+										<Link to="/login">Login</Link>
+									</li>
+									<li>
+										<Link to="/register">Register</Link>
+									</li>
+								</>
+							)}
 						</ul>
 					</div>
-					<a className="btn btn-ghost text-xl">daisyUI</a>
+					<Link to={isAuthenticated ? "/dashboard" : "/"} className="btn btn-ghost text-xl flex items-center gap-2">
+						<Dumbbell className="w-6 h-6 text-primary" />
+						Flexora
+					</Link>
 				</div>
 				<div className="navbar-center hidden lg:flex">
 					<ul className="menu menu-horizontal px-1">
-						<li>
-							<a>Item 1</a>
-						</li>
-						<li>
-							<details>
-								<summary>Parent</summary>
-								<ul className="p-2">
-									<li>
-										<a>Submenu 1</a>
-									</li>
-									<li>
-										<a>Submenu 2</a>
-									</li>
-								</ul>
-							</details>
-						</li>
-						<li>
-							<a>Item 3</a>
-						</li>
+						{isAuthenticated ? (
+							<>
+								<li>
+									<Link to="/dashboard" className="flex items-center gap-2">
+										<BarChart3 className="w-4 h-4" />
+										Dashboard
+									</Link>
+								</li>
+							</>
+						) : (
+							<>
+								<li>
+									<Link to="/" className="flex items-center gap-2">
+										<Home className="w-4 h-4" />
+										Home
+									</Link>
+								</li>
+							</>
+						)}
 					</ul>
 				</div>
 				{isAuthenticated ? (
 					<div className="navbar-end">
-						<Logout />
+						<div className="flex items-center gap-4">
+							<span className="text-sm text-base-content/70">
+								Welcome, {user?.firstName}
+							</span>
+							<Logout />
+						</div>
 					</div>
 				) : (
 					<div className="navbar-end">
-						<Link to="/register" className="btn btn-ghost">
-							Register
-						</Link>
 						<Link to="/login" className="btn btn-ghost">
 							Login
+						</Link>
+						<Link to="/register" className="btn btn-primary">
+							Get Started
 						</Link>
 					</div>
 				)}

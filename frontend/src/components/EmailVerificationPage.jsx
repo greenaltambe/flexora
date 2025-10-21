@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/auth/authStore";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
+import { MailIcon } from "lucide-react";
 
 const EmailVerificationPage = () => {
 	const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -49,7 +50,7 @@ const EmailVerificationPage = () => {
 			}
 
 			toast.success("Email verified successfully!");
-			navigate("/");
+			navigate("/dashboard");
 			return { success: true };
 		} catch (err) {
 			// defensive: in case store throws instead of returning
@@ -183,54 +184,66 @@ const EmailVerificationPage = () => {
 	}, [code]);
 
 	return (
-		<div className="card w-96 bg-base-100 shadow-xl">
-			<div className="card-body">
-				<h2 className="card-title">Verify Your Email</h2>
-				<p className="text-sm text-base-content/70">
-					Enter the 6-digit verification code sent to your email.
-				</p>
-
-				<form
-					onSubmit={handleSubmit}
-					className="mt-4"
-					autoComplete="one-time-code"
-				>
-					<div className="join w-full justify-between">
-						{code.map((val, idx) => (
-							<input
-								key={idx}
-								ref={(el) => (inputRefs.current[idx] = el)}
-								type="text"
-								inputMode="numeric"
-								maxLength={1}
-								className="input input-bordered join-item w-12 text-center text-lg p-2"
-								placeholder="0"
-								value={val}
-								onKeyDown={(e) => handleKeyDown(e, idx)}
-								onChange={(e) => handleCodeChange(e, idx)}
-								onPaste={(e) => handlePaste(e, idx)}
-								aria-label={`Verification digit ${idx + 1}`}
-								disabled={isLoading}
-								autoFocus={idx === 0}
-							/>
-						))}
+		<div className="min-h-screen bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 flex items-center justify-center p-4">
+			<div className="card w-full max-w-md bg-base-100 shadow-xl">
+				<div className="card-body">
+					<div className="text-center mb-6">
+						<div className="badge badge-accent badge-lg p-3 mb-4">
+							<MailIcon className="w-6 h-6" />
+						</div>
+						<h2 className="text-3xl font-bold">Verify Your Email</h2>
+						<p className="text-base-content/70 mt-2">
+							Enter the 6-digit verification code sent to your email.
+						</p>
 					</div>
 
-					<button
-						type="submit"
-						className="btn btn-primary mt-4"
-						style={{ width: "100%" }}
-						disabled={isLoading}
+					<form
+						onSubmit={handleSubmit}
+						className="mt-4"
+						autoComplete="one-time-code"
 					>
-						{isLoading ? <Loader /> : "Verify Email"}
-					</button>
-				</form>
+						<div className="join w-full justify-between mb-6">
+							{code.map((val, idx) => (
+								<input
+									key={idx}
+									ref={(el) => (inputRefs.current[idx] = el)}
+									type="text"
+									inputMode="numeric"
+									maxLength={1}
+									className="input input-bordered join-item w-12 text-center text-lg p-2"
+									placeholder="0"
+									value={val}
+									onKeyDown={(e) => handleKeyDown(e, idx)}
+									onChange={(e) => handleCodeChange(e, idx)}
+									onPaste={(e) => handlePaste(e, idx)}
+									aria-label={`Verification digit ${idx + 1}`}
+									disabled={isLoading}
+									autoFocus={idx === 0}
+								/>
+							))}
+						</div>
 
-				{error && (
-					<div className="alert alert-error mt-3 justify-center">
-						<span>{error}</span>
-					</div>
-				)}
+						<button
+							type="submit"
+							className="btn btn-primary w-full"
+							disabled={isLoading}
+						>
+							{isLoading ? <Loader /> : "Verify Email"}
+						</button>
+					</form>
+
+					{error && (
+						<div className="alert alert-error mt-4">
+							<span>{error}</span>
+						</div>
+					)}
+
+					<div className="divider">Need help?</div>
+					<p className="text-center text-sm text-base-content/70">
+						Didn't receive the code? Check your spam folder or{" "}
+						<button className="link link-primary">resend code</button>
+					</p>
+				</div>
 			</div>
 		</div>
 	);

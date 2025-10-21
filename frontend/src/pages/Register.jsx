@@ -38,67 +38,74 @@ const Register = () => {
 	};
 
 	return (
-		<div className="card bg-base-100 w-96 shadow-sm">
-			<div className="card-body">
-				<h2 className="card-title text-center">Register</h2>
-				<form onSubmit={handleRegister}>
-					<Input
-						icon={UserIcon}
-						type="text"
-						name="firstName"
-						placeholder="First Name"
-						value={firstName}
-						onChange={(e) => setFirstName(e.target.value)}
-					/>
-					<br />
-					<Input
-						icon={UserIcon}
-						type="text"
-						name="lastName"
-						placeholder="Last Name"
-						value={lastName}
-						onChange={(e) => setLastName(e.target.value)}
-					/>
-					<br />
-					<Input
-						icon={MailIcon}
-						type="email"
-						name="email"
-						placeholder="Email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-					/>
-					<br />
-					<Input
-						icon={LockKeyholeIcon}
-						type="password"
-						name="password"
-						placeholder="Password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-					/>
-					<PasswordStrengthMeter password={password} />
-					<br />
-					<button
-						className={`btn btn-primary w-full mt-2`}
-						disabled={isLoading}
-					>
-						{isLoading ? <Loader /> : "Register"}
-					</button>
-				</form>
-
-				{error && (
-					<div className="alert alert-error mt-3 justify-center">
-						<span>{error}</span>
+		<div className="min-h-screen bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 flex items-center justify-center p-4">
+			<div className="card bg-base-100 w-full max-w-md shadow-xl">
+				<div className="card-body">
+					<div className="text-center mb-6">
+						<div className="badge badge-secondary badge-lg p-3 mb-4">
+							<UserIcon className="w-6 h-6" />
+						</div>
+						<h2 className="text-3xl font-bold">Join Flexora</h2>
+						<p className="text-base-content/70 mt-2">Start your fitness journey today</p>
 					</div>
-				)}
+					<form onSubmit={handleRegister}>
+						<div className="space-y-4">
+							<Input
+								icon={UserIcon}
+								type="text"
+								name="firstName"
+								placeholder="First Name"
+								value={firstName}
+								onChange={(e) => setFirstName(e.target.value)}
+							/>
+							<Input
+								icon={UserIcon}
+								type="text"
+								name="lastName"
+								placeholder="Last Name"
+								value={lastName}
+								onChange={(e) => setLastName(e.target.value)}
+							/>
+							<Input
+								icon={MailIcon}
+								type="email"
+								name="email"
+								placeholder="Email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+							/>
+							<Input
+								icon={LockKeyholeIcon}
+								type="password"
+								name="password"
+								placeholder="Password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+							/>
+							<PasswordStrengthMeter password={password} />
+						</div>
+						<button
+							className={`btn btn-primary w-full mt-6`}
+							disabled={isLoading}
+						>
+							{isLoading ? <Loader /> : "Create Account"}
+						</button>
+					</form>
 
-				<p className="text-center mt-2">
-					Already have an account?{" "}
-					<Link to="/login" className="link link-primary">
-						Login
-					</Link>
-				</p>
+					{error && (
+						<div className="alert alert-error mt-4">
+							<span>{error}</span>
+						</div>
+					)}
+
+					<div className="divider">OR</div>
+					<p className="text-center">
+						Already have an account?{" "}
+						<Link to="/login" className="link link-primary font-medium">
+							Sign in here
+						</Link>
+					</p>
+				</div>
 			</div>
 		</div>
 	);
