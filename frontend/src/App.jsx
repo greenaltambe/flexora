@@ -5,8 +5,20 @@ import Register from "./pages/Register";
 import Layout from "./pages/Layout";
 import EmailVerificationPage from "./components/EmailVerificationPage";
 import { Toaster } from "react-hot-toast";
+import { useAuthStore } from "./store/auth/authStore";
+import { useEffect } from "react";
+import RedirectAuthenticatedUser from "./components/RedirectAuthenticatedUser";
+import Protect from "./components/Protect";
 
 const App = () => {
+	const { isCheckingAuth, checkAuth, isAuthenticated, user } = useAuthStore();
+
+	useEffect(() => {
+		checkAuth();
+	}, [checkAuth]);
+
+	console.log(isCheckingAuth, isAuthenticated, user);
+
 	return (
 		<Layout>
 			<div className="join join-vertical">
@@ -47,12 +59,37 @@ const App = () => {
 				/>
 			</div>
 			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/login" element={<Login />} />
-				<Route path="/register" element={<Register />} />
+				<Route
+					path="/"
+					element={
+						<Protect>
+							<Home />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/login"
+					element={
+						<RedirectAuthenticatedUser>
+							<Login />
+						</RedirectAuthenticatedUser>
+					}
+				/>
+				<Route
+					path="/register"
+					element={
+						<RedirectAuthenticatedUser>
+							<Register />
+						</RedirectAuthenticatedUser>
+					}
+				/>
 				<Route
 					path="/verify-email"
-					element={<EmailVerificationPage />}
+					element={
+						<RedirectAuthenticatedUser>
+							<EmailVerificationPage />
+						</RedirectAuthenticatedUser>
+					}
 				/>
 			</Routes>
 			<Toaster position="top-center" />

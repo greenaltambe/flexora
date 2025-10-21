@@ -24,13 +24,16 @@ const Register = () => {
 			password,
 		};
 		try {
-			console.log(formData);
-			await register(formData);
+			const { success, message } = await register(formData);
+			if (!success) {
+				toast.error(message);
+				return;
+			}
 			toast.success("Registration successful!");
-			navigate("/");
+			navigate("/verify-email");
 		} catch (err) {
 			console.error(err);
-			toast.error(error || "Something went wrong. Try again!");
+			toast.error(err || "Something went wrong. Try again!");
 		}
 	};
 

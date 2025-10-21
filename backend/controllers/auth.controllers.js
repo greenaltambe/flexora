@@ -323,6 +323,10 @@ const resetPassword = async (req, res) => {
 	});
 };
 
+// Check auth
+// @desc Check auth
+// @route GET /api/auth/check-auth
+// @access Private
 const checkAuth = async (req, res) => {
 	try {
 		const user = await User.findById(req.userId);

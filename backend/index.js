@@ -12,10 +12,12 @@ connectDB();
 
 const app = express();
 
+const frontendUrl = process.env.FRONTEND_URL;
+
 // middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({ origin: frontendUrl, credentials: true }));
 
 // routes
 app.use("/api/auth", authRoutes);
