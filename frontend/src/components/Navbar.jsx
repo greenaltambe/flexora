@@ -1,4 +1,9 @@
+import Logout from "../pages/Logout";
+import { useAuthStore } from "../store/auth/authStore";
+import { Link } from "react-router-dom";
+
 const Navbar = () => {
+	const { isAuthenticated } = useAuthStore();
 	return (
 		<div>
 			<div className="navbar bg-base-100 shadow-sm">
@@ -73,9 +78,20 @@ const Navbar = () => {
 						</li>
 					</ul>
 				</div>
-				<div className="navbar-end">
-					<a className="btn">Button</a>
-				</div>
+				{isAuthenticated ? (
+					<div className="navbar-end">
+						<Logout />
+					</div>
+				) : (
+					<div className="navbar-end">
+						<Link to="/register" className="btn btn-ghost">
+							Register
+						</Link>
+						<Link to="/login" className="btn btn-ghost">
+							Login
+						</Link>
+					</div>
+				)}
 			</div>
 		</div>
 	);

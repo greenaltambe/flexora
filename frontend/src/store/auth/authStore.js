@@ -4,12 +4,13 @@ import { devtools } from "zustand/middleware";
 const env = import.meta.env.VITE_ENV;
 const apiUrl = import.meta.env.VITE_API_URL;
 
+// Error message function
 const getErrorMessage = (error) => {
-	// Simplified error message function without axios
 	if (error && error.message) return error.message;
 	return String(error) || "Something went wrong";
 };
 
+// Create auth store
 export const useAuthStore = create(
 	devtools((set) => ({
 		user: null,
@@ -20,19 +21,19 @@ export const useAuthStore = create(
 
 		// Register user
 		register: async ({ firstName, lastName, email, password }) => {
-			// set loading state and clear error
 			set({
 				isLoading: true,
 				error: null,
 			});
 
-			// get response from backend
 			try {
+				// Register user call
 				const response = await fetch(`${apiUrl}/auth/register`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
+					credentials: "include", // Include cookies in the request
 					body: JSON.stringify({
 						firstName,
 						lastName,
@@ -41,10 +42,10 @@ export const useAuthStore = create(
 					}),
 				});
 
-				const data = await response.json();
+				const data = await response.json(); // Parse response as JSON
 
+				// Check if response is ok if not set error and return
 				if (!response.ok) {
-					// Use the error message from the backend if available
 					set({
 						isLoading: false,
 						error: data.message || "Registration failed",
@@ -55,11 +56,11 @@ export const useAuthStore = create(
 					};
 				}
 
-				// set user and authentication state
+				// Set user and authentication state
 				set({
 					isLoading: false,
-					isAuthenticated: true,
-					user: data?.user ?? data ?? null,
+					isAuthenticated: false, // User needs to verify email first before being authenticated
+					user: data?.user ?? null,
 					error: null,
 				});
 
@@ -68,7 +69,6 @@ export const useAuthStore = create(
 					message: "Verification code sent to your email",
 				};
 			} catch (error) {
-				// set error state and throw error
 				set({
 					isLoading: false,
 					error: getErrorMessage(error),
@@ -82,29 +82,29 @@ export const useAuthStore = create(
 
 		// verify email
 		verifyEmail: async ({ email, verificationCode }) => {
-			// set loading state and clear error
 			set({
 				isLoading: true,
 				error: null,
 			});
 
 			try {
+				// Verify email call
 				const response = await fetch(`${apiUrl}/auth/verify-email`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
+					credentials: "include", // Include cookies in the request
 					body: JSON.stringify({
 						email,
 						verificationCode,
 					}),
 				});
 
-				const data = await response.json();
-				console.log(data);
+				const data = await response.json(); // Parse response as JSON
 
+				// Check if response is ok if not set error and return
 				if (!response.ok) {
-					// Use the error message from the backend if available
 					set({
 						isLoading: false,
 						error: data.message || "Verification failed",
@@ -115,11 +115,11 @@ export const useAuthStore = create(
 					};
 				}
 
-				// set user and authentication state
+				// After successful verification, user is authenticated
 				set({
 					isLoading: false,
 					isAuthenticated: true,
-					user: data?.user ?? data ?? null,
+					user: data?.user ?? null,
 					error: null,
 				});
 
@@ -128,7 +128,6 @@ export const useAuthStore = create(
 					message: "Verification successful",
 				};
 			} catch (error) {
-				// set error state and throw error
 				set({
 					isLoading: false,
 					error: getErrorMessage(error),
@@ -142,28 +141,29 @@ export const useAuthStore = create(
 
 		// Login user
 		login: async ({ email, password }) => {
-			// set loading state and clear error
 			set({
 				isLoading: true,
 				error: null,
 			});
 
 			try {
+				// Login user call
 				const response = await fetch(`${apiUrl}/auth/login`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
+					credentials: "include", // Include cookies in the request
 					body: JSON.stringify({
 						email,
 						password,
 					}),
 				});
 
-				const data = await response.json();
+				const data = await response.json(); // Parse response as JSON
 
+				// Check if response is ok if not set error and return
 				if (!response.ok) {
-					// Use the error message from the backend if available
 					set({
 						isLoading: false,
 						error: data.message || "Login failed",
@@ -174,11 +174,11 @@ export const useAuthStore = create(
 					};
 				}
 
-				// set user and authentication state
+				// Set user and authentication state
 				set({
 					isLoading: false,
 					isAuthenticated: true,
-					user: data?.user ?? data ?? null,
+					user: data?.user ?? null,
 					error: null,
 				});
 
@@ -187,7 +187,6 @@ export const useAuthStore = create(
 					message: "Login successful",
 				};
 			} catch (error) {
-				// set error state and throw error
 				set({
 					isLoading: false,
 					error: getErrorMessage(error),
@@ -199,14 +198,9 @@ export const useAuthStore = create(
 			}
 		},
 
-		// check auth
+		// check if user is authenticated
 		checkAuth: async () => {
-			// set loading state and clear error
 			set({
-				isLoading: true,
-				error: null,
-				isAuthenticated: false,
-				user: null,
 				isCheckingAuth: true,
 			});
 
@@ -216,17 +210,17 @@ export const useAuthStore = create(
 					headers: {
 						"Content-Type": "application/json",
 					},
-					credentials: "include",
+					credentials: "include", // Include cookies in the request
 				});
 
-				const data = await response.json();
+				const data = await response.json(); // Parse response as JSON
 
+				// Check if response is ok if not set error and return
 				if (!response.ok) {
-					// Use the error message from the backend if available
 					set({
 						isLoading: false,
-						error: data.message || "Check auth failed",
-						isAuthenticated: false,
+						error: null,
+						isAuthenticated: false, // User is not authenticated
 						user: null,
 						isCheckingAuth: false,
 					});
@@ -236,11 +230,11 @@ export const useAuthStore = create(
 					};
 				}
 
-				// set user and authentication state
+				// If response is ok and we have a user, set authenticated to true
 				set({
 					isLoading: false,
-					isAuthenticated: data?.user?.isAuthenticated ?? false,
-					user: data?.user ?? data ?? null,
+					isAuthenticated: true,
+					user: data?.user ?? null,
 					error: null,
 					isCheckingAuth: false,
 				});
@@ -250,10 +244,10 @@ export const useAuthStore = create(
 					message: "Check auth successful",
 				};
 			} catch (error) {
-				// set error state and throw error
+				console.error("Check auth error:", error);
 				set({
 					isLoading: false,
-					error: getErrorMessage(error),
+					error: null,
 					isAuthenticated: false,
 					user: null,
 					isCheckingAuth: false,
@@ -264,9 +258,61 @@ export const useAuthStore = create(
 				};
 			}
 		},
+
+		// Logout user
+		logout: async () => {
+			set({
+				isLoading: true,
+				error: null,
+			});
+
+			try {
+				const response = await fetch(`${apiUrl}/auth/logout`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+				});
+
+				const data = await response.json();
+
+				if (!response.ok) {
+					set({
+						isLoading: false,
+						error: data.message || "Logout failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Logout failed",
+					};
+				}
+
+				set({
+					isLoading: false,
+					isAuthenticated: false,
+					user: null,
+					error: null,
+				});
+
+				return {
+					success: true,
+					message: "Logout successful",
+				};
+			} catch (error) {
+				set({
+					isLoading: false,
+					error: getErrorMessage(error),
+				});
+				return {
+					success: false,
+					message: getErrorMessage(error),
+				};
+			}
+		},
 	})),
 
 	{
-		enabled: env === "development" ? true : false, // enable devtools only in development
+		enabled: env === "development" ? true : false,
 	}
 );

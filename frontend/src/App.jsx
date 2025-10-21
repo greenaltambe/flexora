@@ -9,55 +9,17 @@ import { useAuthStore } from "./store/auth/authStore";
 import { useEffect } from "react";
 import RedirectAuthenticatedUser from "./components/RedirectAuthenticatedUser";
 import Protect from "./components/Protect";
+import Logout from "./pages/Logout";
 
 const App = () => {
-	const { isCheckingAuth, checkAuth, isAuthenticated, user } = useAuthStore();
+	const { checkAuth } = useAuthStore();
 
 	useEffect(() => {
 		checkAuth();
 	}, [checkAuth]);
 
-	console.log(isCheckingAuth, isAuthenticated, user);
-
 	return (
 		<Layout>
-			<div className="join join-vertical">
-				<input
-					type="radio"
-					name="theme-buttons"
-					className="btn theme-controller join-item"
-					aria-label="Default"
-					value="default"
-				/>
-				<input
-					type="radio"
-					name="theme-buttons"
-					className="btn theme-controller join-item"
-					aria-label="Retro"
-					value="retro"
-				/>
-				<input
-					type="radio"
-					name="theme-buttons"
-					className="btn theme-controller join-item"
-					aria-label="Cyberpunk"
-					value="cyberpunk"
-				/>
-				<input
-					type="radio"
-					name="theme-buttons"
-					className="btn theme-controller join-item"
-					aria-label="Valentine"
-					value="valentine"
-				/>
-				<input
-					type="radio"
-					name="theme-buttons"
-					className="btn theme-controller join-item"
-					aria-label="Aqua"
-					value="aqua"
-				/>
-			</div>
 			<Routes>
 				<Route
 					path="/"
@@ -89,6 +51,14 @@ const App = () => {
 						<RedirectAuthenticatedUser>
 							<EmailVerificationPage />
 						</RedirectAuthenticatedUser>
+					}
+				/>
+				<Route
+					path="/logout"
+					element={
+						<Protect>
+							<Logout />
+						</Protect>
 					}
 				/>
 			</Routes>

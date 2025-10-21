@@ -1,3 +1,4 @@
+// RedirectAuthenticatedUser.jsx
 import { useAuthStore } from "../store/auth/authStore";
 import { Navigate } from "react-router-dom";
 import Loader from "./Loader";
@@ -5,15 +6,24 @@ import Loader from "./Loader";
 const RedirectAuthenticatedUser = ({ children }) => {
 	const { isAuthenticated, user, isCheckingAuth } = useAuthStore();
 
-	if (isCheckingAuth) return <Loader />;
+	console.log("RedirectAuthenticatedUser - isCheckingAuth:", isCheckingAuth);
+	console.log(
+		"RedirectAuthenticatedUser - isAuthenticated:",
+		isAuthenticated
+	);
+	console.log("RedirectAuthenticatedUser - user:", user);
 
-	if (isAuthenticated) {
-		if (!user?.isVerified) {
-			return <Navigate to="/verify-email" replace />;
-		}
+	if (isCheckingAuth) {
+		console.log("RedirectAuthenticatedUser: Showing loader");
+		return <Loader />;
+	}
+
+	if (isAuthenticated && user?.isVerified) {
+		console.log("RedirectAuthenticatedUser: Redirecting to home");
 		return <Navigate to="/" replace />;
 	}
 
+	console.log("RedirectAuthenticatedUser: Rendering children");
 	return children;
 };
 
