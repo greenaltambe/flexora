@@ -25,7 +25,7 @@ const Login = () => {
 				return;
 			}
 			toast.success("Login successful!");
-			navigate("/dashboard");
+			navigate((useAuthStore.getState().user?.role === "admin") ? "/admin" : "/dashboard");
 		} catch (err) {
 			console.error(err);
 			toast.error(err || "Something went wrong. Try again!");
@@ -73,6 +73,11 @@ const Login = () => {
 							<span>{error}</span>
 						</div>
 					)}
+					<div className="text-center mt-4">
+						<Link to="/forgot-password" className="link link-primary text-sm">
+							Forgot your password?
+						</Link>
+					</div>
 					<div className="divider">OR</div>
 					<p className="text-center">
 						Don't have an account?{" "}

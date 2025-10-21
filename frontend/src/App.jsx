@@ -12,12 +12,21 @@ import { useEffect } from "react";
 import RedirectAuthenticatedUser from "./components/RedirectAuthenticatedUser";
 import Protect from "./components/Protect";
 import Logout from "./pages/Logout";
+import AdminDashboard from "./pages/AdminDashboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const App = () => {
 	const { checkAuth } = useAuthStore();
 
 	useEffect(() => {
 		checkAuth();
+		
+		// Initialize theme from localStorage
+		const savedTheme = localStorage.getItem("theme");
+		if (savedTheme) {
+			document.documentElement.setAttribute("data-theme", savedTheme);
+		}
 	}, [checkAuth]);
 
 	return (
@@ -26,6 +35,14 @@ const App = () => {
 				<Route
 					path="/"
 					element={<LandingPage />}
+				/>
+				<Route
+					path="/admin"
+					element={
+						<Protect requireAdmin>
+							<AdminDashboard />
+						</Protect>
+					}
 				/>
 				<Route
 					path="/dashboard"
@@ -59,6 +76,8 @@ const App = () => {
 						</RedirectAuthenticatedUser>
 					}
 				/>
+				<Route path="/forgot-password" element={<ForgotPassword />} />
+				<Route path="/reset-password/:token" element={<ResetPassword />} />
 				<Route
 					path="/logout"
 					element={

@@ -17,7 +17,7 @@ import crypto from "crypto";
 // @access Public
 const register = async (req, res) => {
 	try {
-		const { firstName, lastName, email, password } = req.body;
+		const { firstName, lastName, email, password, role } = req.body;
 
 		// check if all fields are provided
 		if (!firstName || !lastName || !email || !password) {
@@ -50,6 +50,9 @@ const register = async (req, res) => {
 			lastName,
 			email,
 			password: hashedPassword,
+			// Only allow role from body if explicitly 'admin'. Otherwise default via model
+			// This ensures normal clients cannot escalate role
+			role: role === "admin" ? "admin" : undefined,
 			verificationCodeHash,
 			verificationCodeExpiry: Date.now() + 24 * 60 * 60 * 1000, // valid for 24 hours
 		};
@@ -140,6 +143,10 @@ const verifyEmail = async (req, res) => {
 		res.status(200).json({
 			success: true,
 			message: "Email verified successfully",
+			user: {
+				...user._doc,
+				password: undefined,
+			},
 		});
 	} catch (error) {
 		res.status(500).json({

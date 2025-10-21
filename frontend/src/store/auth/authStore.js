@@ -20,7 +20,7 @@ export const useAuthStore = create(
 		isCheckingAuth: true,
 
 		// Register user
-		register: async ({ firstName, lastName, email, password }) => {
+		register: async ({ firstName, lastName, email, password, role }) => {
 			set({
 				isLoading: true,
 				error: null,
@@ -39,6 +39,8 @@ export const useAuthStore = create(
 						lastName,
 						email,
 						password,
+						// Allow role to be sent explicitly for admin via Postman; UI won't send role
+						...(role ? { role } : {}),
 					}),
 				});
 
@@ -176,7 +178,7 @@ export const useAuthStore = create(
 
 				// Set user and authentication state
 				set({
-					isLoading: false,
+					isLoading: false,					
 					isAuthenticated: true,
 					user: data?.user ?? null,
 					error: null,
@@ -195,6 +197,52 @@ export const useAuthStore = create(
 					success: false,
 					message: getErrorMessage(error),
 				};
+			}
+		},
+
+		// Forgot password
+		forgotPassword: async ({ email }) => {
+			set({ isLoading: true, error: null });
+			try {
+				const response = await fetch(`${apiUrl}/auth/forgot-password`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+					body: JSON.stringify({ email }),
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					set({ isLoading: false, error: data.message || "Request failed" });
+					return { success: false, message: data.message || "Request failed" };
+				}
+				set({ isLoading: false, error: null });
+				return { success: true, message: data.message || "Email sent" };
+			} catch (error) {
+				set({ isLoading: false, error: getErrorMessage(error) });
+				return { success: false, message: getErrorMessage(error) };
+			}
+		},
+
+		// Reset password
+		resetPassword: async ({ token, password }) => {
+			set({ isLoading: true, error: null });
+			try {
+				const response = await fetch(`${apiUrl}/auth/reset-password/${token}`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+					body: JSON.stringify({ password }),
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					set({ isLoading: false, error: data.message || "Reset failed" });
+					return { success: false, message: data.message || "Reset failed" };
+				}
+				set({ isLoading: false, error: null, isAuthenticated: true, user: data?.user ?? null });
+				return { success: true, message: data.message || "Password reset" };
+			} catch (error) {
+				set({ isLoading: false, error: getErrorMessage(error) });
+				return { success: false, message: getErrorMessage(error) };
 			}
 		},
 

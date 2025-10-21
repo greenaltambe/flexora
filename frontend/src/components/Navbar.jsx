@@ -2,6 +2,7 @@ import Logout from "../pages/Logout";
 import { useAuthStore } from "../store/auth/authStore";
 import { Link } from "react-router-dom";
 import { Dumbbell, Home, BarChart3 } from "lucide-react";
+import ThemeChanger from "./ThemeChanger";
 
 const Navbar = () => {
 	const { isAuthenticated, user } = useAuthStore();
@@ -74,9 +75,9 @@ const Navbar = () => {
 						{isAuthenticated ? (
 							<>
 								<li>
-									<Link to="/dashboard" className="flex items-center gap-2">
+									<Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="flex items-center gap-2">
 										<BarChart3 className="w-4 h-4" />
-										Dashboard
+										{user?.role === "admin" ? "Admin" : "Dashboard"}
 									</Link>
 								</li>
 							</>
@@ -95,6 +96,7 @@ const Navbar = () => {
 				{isAuthenticated ? (
 					<div className="navbar-end">
 						<div className="flex items-center gap-4">
+							<ThemeChanger />
 							<span className="text-sm text-base-content/70">
 								Welcome, {user?.firstName}
 							</span>
@@ -103,12 +105,15 @@ const Navbar = () => {
 					</div>
 				) : (
 					<div className="navbar-end">
-						<Link to="/login" className="btn btn-ghost">
-							Login
-						</Link>
-						<Link to="/register" className="btn btn-primary">
-							Get Started
-						</Link>
+						<div className="flex items-center gap-2">
+							<ThemeChanger />
+							<Link to="/login" className="btn btn-ghost">
+								Login
+							</Link>
+							<Link to="/register" className="btn btn-primary">
+								Get Started
+							</Link>
+						</div>
 					</div>
 				)}
 			</div>
