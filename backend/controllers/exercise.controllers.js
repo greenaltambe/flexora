@@ -234,4 +234,116 @@ const getExerciseById = async (req, res) => {
 	}
 };
 
-export { createExercise, getExercises, getExerciseById };
+// update exercise
+// @route PUT /api/exercises/:id
+// @desc Update exercise
+// @access Private
+const updateExercise = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		// validate id
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid exercise ID",
+			});
+		}
+
+		// find the exercise first
+		const exercise = await Exercise.findById(id);
+		if (!exercise) {
+			return res.status(404).json({
+				success: false,
+				message: "Exercise not found",
+			});
+		}
+
+		// Manually update *only* the fields that should be updatable
+		// This prevents mass assignment
+		const {
+			name,
+			description,
+			type,
+			primary_muscles,
+			secondary_muscles,
+			movement_patterns,
+			equipment,
+			tags,
+			difficulty,
+			modality,
+			default_prescription,
+			estimated_minutes,
+			progression,
+			alternatives,
+			contraindications,
+			video_url,
+			images,
+			published,
+		} = req.body;
+
+		// Update fields if they were provided in the request body
+		if (name) {
+			exercise.name = name;
+			exercise.slug = slugify(name, { lower: true, strict: true });
+		}
+
+		exercise.description = description || exercise.description;
+		exercise.type = type || exercise.type;
+		exercise.primary_muscles = primary_muscles || exercise.primary_muscles;
+		exercise.secondary_muscles =
+			secondary_muscles || exercise.secondary_muscles;
+		exercise.movement_patterns =
+			movement_patterns || exercise.movement_patterns;
+		exercise.equipment = equipment || exercise.equipment;
+		exercise.tags = tags || exercise.tags;
+		exercise.difficulty = difficulty || exercise.difficulty;
+		exercise.modality = modality || exercise.modality;
+		exercise.default_prescription =
+			default_prescription || exercise.default_prescription;
+		exercise.estimated_minutes =
+			estimated_minutes || exercise.estimated_minutes;
+		exercise.progression = progression || exercise.progression;
+		exercise.alternatives = alternatives || exercise.alternatives;
+		exercise.contraindications =
+			contraindications || exercise.contraindications;
+		exercise.video_url = video_url || exercise.video_url;
+		exercise.images = images || exercise.images;
+
+		// Explicitly handle boolean
+		if (published !== undefined) {
+			exercise.published = published;
+		}
+
+		// This will trigger your schema validations and hooks!
+		const updatedExercise = await exercise.save();
+
+		res.status(200).json({
+			success: true,
+			message: "Exercise updated successfully",
+			data: updatedExercise,
+		});
+	} catch (error) {
+		if (error.name === "ValidationError") {
+			const errors = Object.values(error.errors).map(
+				(err) => err.message
+			);
+			return res.status(400).json({
+				success: false,
+				message: "Validation failed",
+				details: errors,
+			});
+		}
+		if (error.code === 11000) {
+			return res.status(400).json({
+				success: false,
+				message: "An exercise with this slug already exists",
+			});
+		}
+		res.status(500).json({
+			success: false,
+			message: "Server error: " + error.message,
+		});
+	}
+};
+export { createExercise, getExercises, getExerciseById, updateExercise };
