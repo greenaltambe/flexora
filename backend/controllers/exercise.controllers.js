@@ -347,6 +347,10 @@ const updateExercise = async (req, res) => {
 	}
 };
 
+// delete exercise
+// @route DELETE /api/exercises/:id
+// @desc Delete exercise
+// @access Private
 const deleteExercise = async (req, res) => {
 	try {
 		const { id } = req.params;
