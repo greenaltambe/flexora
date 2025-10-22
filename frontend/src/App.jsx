@@ -15,13 +15,14 @@ import Logout from "./pages/Logout";
 import AdminDashboard from "./pages/AdminDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import ManageExercise from "./pages/ManageExercise";
 
 const App = () => {
 	const { checkAuth } = useAuthStore();
 
 	useEffect(() => {
 		checkAuth();
-		
+
 		// Initialize theme from localStorage
 		const savedTheme = localStorage.getItem("theme");
 		if (savedTheme) {
@@ -32,10 +33,7 @@ const App = () => {
 	return (
 		<Layout>
 			<Routes>
-				<Route
-					path="/"
-					element={<LandingPage />}
-				/>
+				<Route path="/" element={<LandingPage />} />
 				<Route
 					path="/admin"
 					element={
@@ -43,7 +41,12 @@ const App = () => {
 							<AdminDashboard />
 						</Protect>
 					}
-				/>
+				>
+					<Route
+						path="/admin/manage-exercise"
+						element={<ManageExercise />}
+					/>
+				</Route>
 				<Route
 					path="/dashboard"
 					element={
@@ -77,7 +80,10 @@ const App = () => {
 					}
 				/>
 				<Route path="/forgot-password" element={<ForgotPassword />} />
-				<Route path="/reset-password/:token" element={<ResetPassword />} />
+				<Route
+					path="/reset-password/:token"
+					element={<ResetPassword />}
+				/>
 				<Route
 					path="/logout"
 					element={
