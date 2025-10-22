@@ -12,23 +12,13 @@ import { checkAuth } from "../controllers/auth.controllers.js";
 
 const router = express.Router();
 
-// route for check auth
-router.get("/check-auth", verifyToken, checkAuth);
-
-// route for register and verify email
-router.post("/register", register);
-router.post("/verify-email", verifyEmail);
-
-// route for login
-router.post("/login", login);
-
-// route for logout
-router.post("/logout", logout);
-
-// route for forgot password
-router.post("/forgot-password", forgotPassword);
-
-// route for reset password
-router.post("/reset-password/:resetPasswordCodeHash", resetPassword);
+// auth routes
+router.get("/check-auth", verifyToken, checkAuth); // check auth
+router.post("/register", register); // register
+router.post("/verify-email", verifyEmail); // verify email
+router.post("/login", login); // login
+router.post("/logout", logout); // logout
+router.post("/forgot-password", forgotPassword); // forgot password
+router.post("/reset-password/:resetPasswordCodeHash", resetPassword); // reset password
 
 export default router;
