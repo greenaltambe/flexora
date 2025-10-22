@@ -1,5 +1,6 @@
 import Exercise from "../models/exercise.model.js";
 import User from "../models/user.model.js";
+import mongoose from "mongoose";
 
 // create new exercise
 // @route POST /api/exercises/create
@@ -106,7 +107,7 @@ const createExercise = async (req, res) => {
 };
 
 // get all exercises
-// @route GET /api/exercises
+// @route GET /api/exercises/getAll?query
 // @desc Get all exercises
 // @access Public
 const getExercises = async (req, res) => {
@@ -192,4 +193,45 @@ const getExercises = async (req, res) => {
 		});
 	}
 };
-export { createExercise, getExercises };
+
+// get exercise by id
+// @route GET /api/exercises/:id
+// @desc Get exercise by id
+// @access Public
+const getExerciseById = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid exercise ID",
+			});
+		}
+
+		const exercise = await Exercise.findById(id).populate(
+			"alternatives", // The field to populate
+			"name slug type difficulty"
+		);
+
+		if (!exercise) {
+			return res.status(404).json({
+				success: false,
+				message: "Exercise not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Exercise retrieved successfully",
+			data: exercise,
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Server error: " + error.message,
+		});
+	}
+};
+
+export { createExercise, getExercises, getExerciseById };
