@@ -141,6 +141,31 @@ ExerciseSchema.set("toJSON", {
 	},
 });
 
+// pre-hook for 'findOneAndDelete' (which is triggered by findByIdAndDelete)
+ExerciseSchema.pre("findOneAndDelete", async function (next) {
+	try {
+		// 'this' is the query object.
+		// getFilter() gets the query conditions, e.g., { _id: "68f8eb56a8d97aced3da858a" }
+		const docToDelete = await this.model.findOne(this.getFilter());
+
+		if (!docToDelete) {
+			return next(); // Document already deleted or not found
+		}
+
+		const docId = docToDelete._id;
+
+		// find all other exercises that reference this one and pull the ID
+		await this.model.updateMany(
+			{ alternatives: docId }, // Find all docs that contain this ID
+			{ $pull: { alternatives: docId } } // Pull this ID from their alternatives array
+		);
+
+		next();
+	} catch (error) {
+		next(error);
+	}
+});
+
 // export model (ESM)
 const Exercise =
 	mongoose.models.Exercise || mongoose.model("Exercise", ExerciseSchema);
