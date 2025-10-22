@@ -2,7 +2,7 @@ import express from "express";
 import { verifyToken } from "../middlewares/verifyToken.middleware.js";
 import { isAdmin } from "../middlewares/isAdmin.middleware.js";
 import {
-	// getExercises,
+	getExercises,
 	createExercise,
 	// getExerciseById,
 	// updateExercise,
@@ -12,7 +12,7 @@ import {
 const router = express.Router();
 
 // exercies routes
-// router.get("/", verifyToken, getExercises); // get all exercies
+router.get("/getAll", verifyToken, getExercises); // get all exercies
 router.post("/create", verifyToken, isAdmin, createExercise); // create new exercies
 // router.get("/:id", verifyToken, getExerciseById); // get exercies by id
 // router.put("/:id", verifyToken, isAdmin, updateExercise); // update exercies
