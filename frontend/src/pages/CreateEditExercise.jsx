@@ -55,7 +55,8 @@ const CreateEditExercise = () => {
 						tags: result.data.tags || [],
 						difficulty: result.data.difficulty || 3,
 						modality: result.data.modality || "reps",
-						default_prescription: result.data.default_prescription || {
+						default_prescription: result.data
+							.default_prescription || {
 							sets: 3,
 							reps: 10,
 							rest_seconds: 60,
@@ -126,108 +127,132 @@ const CreateEditExercise = () => {
 
 	if (isFetching) {
 		return (
-			<div className="flex justify-center items-center min-h-screen">
-				<span className="loading loading-spinner loading-lg"></span>
+			<div className="flex items-center justify-center min-h-screen bg-base-100">
+				<span className="loading loading-spinner loading-lg text-primary"></span>
 			</div>
 		);
 	}
 
 	return (
-		<div className="min-h-screen bg-base-200 p-4">
-			<div className="container mx-auto max-w-4xl">
-				<div className="mb-6">
+		<div className="min-h-screen bg-base-100 p-6">
+			<div className="container mx-auto max-w-3xl">
+				<div className="flex items-center justify-between mb-8">
+					<h1 className="text-3xl font-bold text-base-content">
+						{id ? "Edit Exercise" : "Create New Exercise"}
+					</h1>
 					<button
 						type="button"
 						onClick={() => navigate("/admin/manage-exercise")}
-						className="btn btn-ghost"
+						className="btn btn-ghost gap-2"
 					>
-						<ArrowLeft className="w-4 h-4 mr-2" />
+						<ArrowLeft className="w-5 h-5" />
 						Back to Exercises
 					</button>
 				</div>
 
-				<div className="card bg-base-100 shadow-xl">
-					<div className="card-body">
-						<h1 className="card-title text-3xl mb-6">
-							{id ? "Edit Exercise" : "Create New Exercise"}
-						</h1>
-
+				<div className="card bg-base-100 shadow-lg border border-base-200">
+					<div className="card-body p-8">
 						<form onSubmit={handleSubmit} className="space-y-8">
 							{/* Basic Information */}
-							<div className="divider">
-								<h2 className="text-xl font-semibold">Basic Information</h2>
-							</div>
-							<div className="space-y-4">
-								<div className="form-control">
+							<div className="space-y-6">
+								<h2 className="text-2xl font-semibold text-base-content">
+									Basic Information
+								</h2>
+								<div className="form-control space-y-2">
 									<label className="label">
-										<span className="label-text font-semibold">Name *</span>
+										<span className="label-text font-medium text-base-content">
+											Name{" "}
+											<span className="text-error">
+												*
+											</span>
+										</span>
 									</label>
 									<input
 										type="text"
 										name="name"
 										value={formData.name}
 										onChange={handleInputChange}
-										className="input input-bordered"
+										className="input input-bordered w-full focus:input-primary"
 										required
 									/>
 								</div>
 
-								<div className="form-control">
+								<div className="form-control space-y-2">
 									<label className="label">
-										<span className="label-text font-semibold">Description</span>
+										<span className="label-text font-medium text-base-content">
+											Description
+										</span>
 									</label>
 									<textarea
 										name="description"
 										value={formData.description}
 										onChange={handleInputChange}
-										className="textarea textarea-bordered"
+										className="textarea textarea-bordered w-full focus:textarea-primary"
 										rows="4"
 										placeholder="Enter exercise description..."
 									/>
 								</div>
 
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div className="form-control">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+									<div className="form-control space-y-2">
 										<label className="label">
-											<span className="label-text font-semibold">Type</span>
+											<span className="label-text font-medium text-base-content">
+												Type
+											</span>
 										</label>
 										<select
 											name="type"
 											value={formData.type}
 											onChange={handleInputChange}
-											className="select select-bordered"
+											className="select select-bordered w-full focus:select-primary"
 										>
-											<option value="strength">Strength</option>
-											<option value="cardio">Cardio</option>
-											<option value="mobility">Mobility</option>
+											<option value="strength">
+												Strength
+											</option>
+											<option value="cardio">
+												Cardio
+											</option>
+											<option value="mobility">
+												Mobility
+											</option>
 											<option value="skill">Skill</option>
-											<option value="hybrid">Hybrid</option>
+											<option value="hybrid">
+												Hybrid
+											</option>
 										</select>
 									</div>
 
-									<div className="form-control">
+									<div className="form-control space-y-2">
 										<label className="label">
-											<span className="label-text font-semibold">Modality</span>
+											<span className="label-text font-medium text-base-content">
+												Modality
+											</span>
 										</label>
 										<select
 											name="modality"
 											value={formData.modality}
 											onChange={handleInputChange}
-											className="select select-bordered"
+											className="select select-bordered w-full focus:select-primary"
 										>
 											<option value="reps">Reps</option>
 											<option value="time">Time</option>
-											<option value="distance">Distance</option>
-											<option value="interval">Interval</option>
+											<option value="distance">
+												Distance
+											</option>
+											<option value="interval">
+												Interval
+											</option>
 											<option value="rpm">RPM</option>
 										</select>
 									</div>
 								</div>
 
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div className="form-control">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+									<div className="form-control space-y-2">
 										<label className="label">
-											<span className="label-text font-semibold">Difficulty</span>
+											<span className="label-text font-medium text-base-content">
+												Difficulty
+											</span>
 										</label>
 										<input
 											type="range"
@@ -236,81 +261,93 @@ const CreateEditExercise = () => {
 											max="5"
 											value={formData.difficulty}
 											onChange={handleInputChange}
-											className="range range-primary"
+											className="range range-primary range-md"
 										/>
-										<div className="w-full flex justify-between text-xs px-2">
+										<div className="flex justify-between text-xs text-base-content mt-2">
 											<span>1</span>
 											<span>2</span>
 											<span>3</span>
 											<span>4</span>
 											<span>5</span>
 										</div>
-										<div className="text-center mt-2">
-											<span className="badge badge-primary badge-lg">
-												{formData.difficulty}
+										<div className="text-center mt-3">
+											<span className="badge badge-primary badge-md font-medium">
+												Level {formData.difficulty}
 											</span>
 										</div>
 									</div>
 
-									<div className="form-control">
+									<div className="form-control space-y-2">
 										<label className="label">
-											<span className="label-text font-semibold">Estimated Minutes</span>
+											<span className="label-text font-medium text-base-content">
+												Estimated Minutes
+											</span>
 										</label>
 										<input
 											type="number"
 											name="estimated_minutes"
 											value={formData.estimated_minutes}
 											onChange={handleInputChange}
-											className="input input-bordered"
+											className="input input-bordered w-full focus:input-primary"
 											min="1"
 										/>
 									</div>
 								</div>
 
-								<div className="form-control">
+								<div className="form-control space-y-2">
 									<label className="label">
-										<span className="label-text font-semibold">Video URL</span>
+										<span className="label-text font-medium text-base-content">
+											Video URL
+										</span>
 									</label>
 									<input
 										type="url"
 										name="video_url"
 										value={formData.video_url}
 										onChange={handleInputChange}
-										className="input input-bordered"
-										placeholder="https://..."
+										className="input input-bordered w-full focus:input-primary"
+										placeholder="https://example.com/video"
 									/>
 								</div>
 
-								<div className="form-control">
+								<div className="form-control flex-row items-center space-x-4">
 									<label className="label cursor-pointer">
-										<span className="label-text font-semibold">Published</span>
-										<input
-											type="checkbox"
-											name="published"
-											checked={formData.published}
-											onChange={handleInputChange}
-											className="toggle toggle-primary"
-										/>
+										<span className="label-text font-medium text-base-content">
+											Published
+										</span>
 									</label>
+									<input
+										type="checkbox"
+										name="published"
+										checked={formData.published}
+										onChange={handleInputChange}
+										className="toggle toggle-primary toggle-md"
+									/>
 								</div>
 							</div>
 
 							{/* Primary Muscles */}
-							<div className="divider">
-								<h2 className="text-xl font-semibold">Primary Muscles</h2>
-							</div>
-							<div className="space-y-4">
-								<div className="flex gap-2">
+							<div className="divider divider-neutral"></div>
+							<div className="space-y-6">
+								<h2 className="text-2xl font-semibold text-base-content">
+									Primary Muscles
+								</h2>
+								<div className="flex gap-3">
 									<input
 										type="text"
 										value={tempMuscle}
-										onChange={(e) => setTempMuscle(e.target.value)}
-										className="input input-bordered flex-1"
+										onChange={(e) =>
+											setTempMuscle(e.target.value)
+										}
+										className="input input-bordered w-full focus:input-primary"
 										placeholder="Add muscle (e.g., Chest, Biceps)"
 										onKeyPress={(e) => {
 											if (e.key === "Enter") {
 												e.preventDefault();
-												handleAddArrayItem("primary_muscles", tempMuscle);
+												handleAddArrayItem(
+													"primary_muscles",
+													tempMuscle
+												);
 												setTempMuscle("");
 											}
 										}}
@@ -318,46 +355,65 @@ const CreateEditExercise = () => {
 									<button
 										type="button"
 										onClick={() => {
-											handleAddArrayItem("primary_muscles", tempMuscle);
+											handleAddArrayItem(
+												"primary_muscles",
+												tempMuscle
+											);
 											setTempMuscle("");
 										}}
-										className="btn btn-primary"
+										className="btn btn-primary btn-md"
 									>
 										Add
 									</button>
 								</div>
 								<div className="flex flex-wrap gap-2">
-									{formData.primary_muscles.map((muscle, index) => (
-										<span key={index} className="badge badge-primary badge-lg p-3">
-											{muscle}
-											<button
-												type="button"
-												onClick={() => handleRemoveArrayItem("primary_muscles", index)}
-												className="ml-2 hover:text-error"
+									{formData.primary_muscles.map(
+										(muscle, index) => (
+											<span
+												key={index}
+												className="badge badge-primary badge-lg font-medium"
 											>
-												×
-											</button>
-										</span>
-									))}
+												{muscle}
+												<button
+													type="button"
+													onClick={() =>
+														handleRemoveArrayItem(
+															"primary_muscles",
+															index
+														)
+													}
+													className="ml-2 text-error hover:text-error-content"
+												>
+													×
+												</button>
+											</span>
+										)
+									)}
 								</div>
 							</div>
 
 							{/* Equipment */}
-							<div className="divider">
-								<h2 className="text-xl font-semibold">Equipment</h2>
-							</div>
-							<div className="space-y-4">
-								<div className="flex gap-2">
+							<div className="divider divider-neutral"></div>
+							<div className="space-y-6">
+								<h2 className="text-2xl font-semibold text-base-content">
+									Equipment
+								</h2>
+								<div className="flex gap-3">
 									<input
 										type="text"
 										value={tempEquipment}
-										onChange={(e) => setTempEquipment(e.target.value)}
-										className="input input-bordered flex-1"
+										onChange={(e) =>
+											setTempEquipment(e.target.value)
+										}
+										className="input input-bordered w-full focus:input-primary"
 										placeholder="Add equipment (e.g., Dumbbell, Barbell)"
 										onKeyPress={(e) => {
 											if (e.key === "Enter") {
 												e.preventDefault();
-												handleAddArrayItem("equipment", tempEquipment);
+												handleAddArrayItem(
+													"equipment",
+													tempEquipment
+												);
 												setTempEquipment("");
 											}
 										}}
@@ -365,22 +421,33 @@ const CreateEditExercise = () => {
 									<button
 										type="button"
 										onClick={() => {
-											handleAddArrayItem("equipment", tempEquipment);
+											handleAddArrayItem(
+												"equipment",
+												tempEquipment
+											);
 											setTempEquipment("");
 										}}
-										className="btn btn-secondary"
+										className="btn btn-primary btn-md"
 									>
 										Add
 									</button>
 								</div>
 								<div className="flex flex-wrap gap-2">
 									{formData.equipment.map((eq, index) => (
-										<span key={index} className="badge badge-secondary badge-lg p-3">
+										<span
+											key={index}
+											className="badge badge-primary badge-lg font-medium"
+										>
 											{eq}
 											<button
 												type="button"
-												onClick={() => handleRemoveArrayItem("equipment", index)}
-												className="ml-2 hover:text-error"
+												onClick={() =>
+													handleRemoveArrayItem(
+														"equipment",
+														index
+													)
+												}
+												className="ml-2 text-error hover:text-error-content"
 											>
 												×
 											</button>
@@ -390,21 +457,27 @@ const CreateEditExercise = () => {
 							</div>
 
 							{/* Tags */}
-							<div className="divider">
-								<h2 className="text-xl font-semibold">Tags</h2>
-							</div>
-							<div className="space-y-4">
-								<div className="flex gap-2">
+							<div className="divider divider-neutral"></div>
+							<div className="space-y-6">
+								<h2 className="text-2xl font-semibold text-base-content">
+									Tags
+								</h2>
+								<div className="flex gap-3">
 									<input
 										type="text"
 										value={tempTag}
-										onChange={(e) => setTempTag(e.target.value)}
-										className="input input-bordered flex-1"
+										onChange={(e) =>
+											setTempTag(e.target.value)
+										}
+										className="input input-bordered w-full focus:input-primary"
 										placeholder="Add tag (e.g., upper-body, beginner)"
 										onKeyPress={(e) => {
 											if (e.key === "Enter") {
 												e.preventDefault();
-												handleAddArrayItem("tags", tempTag);
+												handleAddArrayItem(
+													"tags",
+													tempTag
+												);
 												setTempTag("");
 											}
 										}}
@@ -415,19 +488,27 @@ const CreateEditExercise = () => {
 											handleAddArrayItem("tags", tempTag);
 											setTempTag("");
 										}}
-										className="btn btn-accent"
+										className="btn btn-primary btn-md"
 									>
 										Add
 									</button>
 								</div>
 								<div className="flex flex-wrap gap-2">
 									{formData.tags.map((tag, index) => (
-										<span key={index} className="badge badge-accent badge-lg p-3">
+										<span
+											key={index}
+											className="badge badge-primary badge-lg font-medium"
+										>
 											{tag}
 											<button
 												type="button"
-												onClick={() => handleRemoveArrayItem("tags", index)}
-												className="ml-2 hover:text-error"
+												onClick={() =>
+													handleRemoveArrayItem(
+														"tags",
+														index
+													)
+												}
+												className="ml-2 text-error hover:text-error-content"
 											>
 												×
 											</button>
@@ -437,74 +518,106 @@ const CreateEditExercise = () => {
 							</div>
 
 							{/* Default Prescription */}
-							<div className="divider">
-								<h2 className="text-xl font-semibold">Default Prescription</h2>
-							</div>
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-								<div className="form-control">
-									<label className="label">
-										<span className="label-text font-semibold">Sets</span>
-									</label>
-									<input
-										type="number"
-										value={formData.default_prescription.sets}
-										onChange={(e) =>
-											handlePrescriptionChange("sets", parseInt(e.target.value))
-										}
-										className="input input-bordered"
-										min="1"
-									/>
-								</div>
-								<div className="form-control">
-									<label className="label">
-										<span className="label-text font-semibold">Reps</span>
-									</label>
-									<input
-										type="number"
-										value={formData.default_prescription.reps}
-										onChange={(e) =>
-											handlePrescriptionChange("reps", parseInt(e.target.value))
-										}
-										className="input input-bordered"
-										min="1"
-									/>
-								</div>
-								<div className="form-control">
-									<label className="label">
-										<span className="label-text font-semibold">Rest (seconds)</span>
-									</label>
-									<input
-										type="number"
-										value={formData.default_prescription.rest_seconds}
-										onChange={(e) =>
-											handlePrescriptionChange(
-												"rest_seconds",
-												parseInt(e.target.value)
-											)
-										}
-										className="input input-bordered"
-										min="0"
-									/>
+							<div className="divider divider-neutral"></div>
+							<div className="space-y-6">
+								<h2 className="text-2xl font-semibold text-base-content">
+									Default Prescription
+								</h2>
+								<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+									<div className="form-control space-y-2">
+										<label className="label">
+											<span className="label-text font-medium text-base-content">
+												Sets
+											</span>
+										</label>
+										<input
+											type="number"
+											value={
+												formData.default_prescription
+													.sets
+											}
+											onChange={(e) =>
+												handlePrescriptionChange(
+													"sets",
+													parseInt(e.target.value)
+												)
+											}
+											className="input input-bordered w-full focus:input-primary"
+											min="1"
+										/>
+									</div>
+									<div className="form-control space-y-2">
+										<label className="label">
+											<span className="label-text font-medium text-base-content">
+												Reps
+											</span>
+										</label>
+										<input
+											type="number"
+											value={
+												formData.default_prescription
+													.reps
+											}
+											onChange={(e) =>
+												handlePrescriptionChange(
+													"reps",
+													parseInt(e.target.value)
+												)
+											}
+											className="input input-bordered w-full focus:input-primary"
+											min="1"
+										/>
+									</div>
+									<div className="form-control space-y-2">
+										<label className="label">
+											<span className="label-text font-medium text-base-content">
+												Rest (seconds)
+											</span>
+										</label>
+										<input
+											type="number"
+											value={
+												formData.default_prescription
+													.rest_seconds
+											}
+											onChange={(e) =>
+												handlePrescriptionChange(
+													"rest_seconds",
+													parseInt(e.target.value)
+												)
+											}
+											className="input input-bordered w-full focus:input-primary"
+											min="0"
+										/>
+									</div>
 								</div>
 							</div>
 
 							{/* Submit Button */}
-							<div className="divider"></div>
-							<div className="flex justify-end gap-4 pt-4">
+							<div className="divider divider-neutral"></div>
+							<div className="flex justify-end gap-4">
 								<button
 									type="button"
-									onClick={() => navigate("/admin/manage-exercise")}
-									className="btn btn-ghost"
+									onClick={() =>
+										navigate("/admin/manage-exercise")
+									}
+									className="btn btn-outline btn-neutral btn-md"
 								>
 									Cancel
 								</button>
-								<button type="submit" className="btn btn-primary" disabled={isLoading}>
+								<button
+									type="submit"
+									className="btn btn-primary btn-md gap-2"
+									disabled={isLoading}
+								>
 									{isLoading ? (
-										<span className="loading loading-spinner"></span>
+										<span className="loading loading-spinner text-base-content"></span>
 									) : (
 										<>
-											<Save className="w-4 h-4 mr-2" />
-											{id ? "Update Exercise" : "Create Exercise"}
+											<Save className="w-5 h-5" />
+											{id
+												? "Update Exercise"
+												: "Create Exercise"}
 										</>
 									)}
 								</button>
