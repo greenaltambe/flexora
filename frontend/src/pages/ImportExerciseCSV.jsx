@@ -15,8 +15,10 @@ const ImportExerciseCSV = () => {
 	const handleFileChange = (e) => {
 		const selectedFile = e.target.files[0];
 		if (selectedFile) {
-			if (selectedFile.type !== "text/csv") {
-				toast.error("Please select a CSV file");
+			// Check file extension instead of MIME type (more reliable across browsers)
+			const fileName = selectedFile.name.toLowerCase();
+			if (!fileName.endsWith('.csv')) {
+				toast.error("Please select a CSV file (.csv extension)");
 				return;
 			}
 			setFile(selectedFile);
@@ -84,7 +86,17 @@ const ImportExerciseCSV = () => {
 			toast.success(result.message);
 			navigate("/admin/manage-exercise");
 		} else {
-			toast.error(result.message);
+			// Show detailed error message
+			let errorMessage = result.message || "Failed to import exercises";
+			
+			// If there are error details, show them
+			const errorDetails = result.details || result.errors || [];
+			if (errorDetails.length > 0) {
+				const errorList = errorDetails.map(e => `Row ${e.row}: ${e.message}`).join(', ');
+				errorMessage += `\nErrors: ${errorList}`;
+			}
+			
+			toast.error(errorMessage);
 		}
 	};
 

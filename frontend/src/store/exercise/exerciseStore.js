@@ -287,7 +287,7 @@ const exerciseStore = create(
 					return {
 						success: false,
 						message: data.message || "Request failed",
-						details: data.details || [],
+						details: data.details || data.errors || [],
 					};
 				}
 				set({ isLoading: false, error: null });
