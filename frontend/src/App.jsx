@@ -16,6 +16,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ManageExercise from "./pages/ManageExercise";
+import CreateEditExercise from "./pages/CreateEditExercise";
 
 const App = () => {
 	const { checkAuth } = useAuthStore();
@@ -41,12 +42,31 @@ const App = () => {
 							<AdminDashboard />
 						</Protect>
 					}
-				>
-					<Route
-						path="/admin/manage-exercise"
-						element={<ManageExercise />}
-					/>
-				</Route>
+				/>
+				<Route
+					path="/admin/manage-exercise"
+					element={
+						<Protect requireAdmin>
+							<ManageExercise />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/admin/exercises/create"
+					element={
+						<Protect requireAdmin>
+							<CreateEditExercise />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/admin/exercises/edit/:id"
+					element={
+						<Protect requireAdmin>
+							<CreateEditExercise />
+						</Protect>
+					}
+				/>
 				<Route
 					path="/dashboard"
 					element={

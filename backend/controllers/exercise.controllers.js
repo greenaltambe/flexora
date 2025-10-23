@@ -1,6 +1,7 @@
 import Exercise from "../models/exercise.model.js";
 import User from "../models/user.model.js";
 import mongoose from "mongoose";
+import slugify from "slugify";
 
 // create new exercise
 // @route POST /api/exercises/create
@@ -118,6 +119,13 @@ const getExercises = async (req, res) => {
 		const excludedFields = ["page", "sort", "limit", "fields"];
 		excludedFields.forEach((field) => delete queryObj[field]);
 
+		// Handle text search for name field
+		let nameSearch = null;
+		if (queryObj.name) {
+			nameSearch = queryObj.name;
+			delete queryObj.name;
+		}
+
 		// this is to handle array fields when using query params eg tags=tag1&tags=tag2
 		// in this case we want all exercises that have tag1 and tag2
 		const arrayFields = [
@@ -142,7 +150,13 @@ const getExercises = async (req, res) => {
 		}
 
 		// build query
-		let query = Exercise.find(queryObj);
+		let query;
+		if (nameSearch) {
+			// Use text search for name field
+			query = Exercise.find({ ...queryObj, name: { $regex: nameSearch, $options: "i" } });
+		} else {
+			query = Exercise.find(queryObj);
+		}
 
 		// sort query
 		if (req.query.sort) {
@@ -170,7 +184,13 @@ const getExercises = async (req, res) => {
 		query = query.skip(skip).limit(limit);
 
 		// Get total document count for pagination metadata
-		const totalDocuments = await Exercise.countDocuments(queryObj);
+		let countQuery;
+		if (nameSearch) {
+			countQuery = { ...queryObj, name: { $regex: nameSearch, $options: "i" } };
+		} else {
+			countQuery = queryObj;
+		}
+		const totalDocuments = await Exercise.countDocuments(countQuery);
 
 		// EXECUTE QUERY
 		const exercises = await query;

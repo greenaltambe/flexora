@@ -128,6 +128,143 @@ const exerciseStore = create(
 				return { success: false, message: getErrorMessage(error) };
 			}
 		},
+
+		// Get exercise by ID
+		getExerciseById: async (id) => {
+			set({ isLoading: true, error: null });
+			try {
+				const response = await fetch(`${apiUrl}/exercises/getById/${id}`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					set({
+						isLoading: false,
+						error: data.message || "Request failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Request failed",
+					};
+				}
+				set({ isLoading: false, error: null });
+				return {
+					success: true,
+					data: data.data,
+					message: data.message || "Exercise retrieved successfully",
+				};
+			} catch (error) {
+				set({ isLoading: false, error: getErrorMessage(error) });
+				return { success: false, message: getErrorMessage(error) };
+			}
+		},
+
+		// Create exercise
+		createExercise: async (exerciseData) => {
+			set({ isLoading: true, error: null });
+			try {
+				const response = await fetch(`${apiUrl}/exercises/create`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+					body: JSON.stringify(exerciseData),
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					set({
+						isLoading: false,
+						error: data.message || "Request failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Request failed",
+					};
+				}
+				set({ isLoading: false, error: null });
+				return {
+					success: true,
+					data: data.exercise,
+					message: data.message || "Exercise created successfully",
+				};
+			} catch (error) {
+				set({ isLoading: false, error: getErrorMessage(error) });
+				return { success: false, message: getErrorMessage(error) };
+			}
+		},
+
+		// Update exercise
+		updateExercise: async (id, exerciseData) => {
+			set({ isLoading: true, error: null });
+			try {
+				const response = await fetch(`${apiUrl}/exercises/update/${id}`, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+					body: JSON.stringify(exerciseData),
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					set({
+						isLoading: false,
+						error: data.message || "Request failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Request failed",
+					};
+				}
+				set({ isLoading: false, error: null });
+				return {
+					success: true,
+					data: data.data,
+					message: data.message || "Exercise updated successfully",
+				};
+			} catch (error) {
+				set({ isLoading: false, error: getErrorMessage(error) });
+				return { success: false, message: getErrorMessage(error) };
+			}
+		},
+
+		// Delete exercise
+		deleteExercise: async (id) => {
+			set({ isLoading: true, error: null });
+			try {
+				const response = await fetch(`${apiUrl}/exercises/delete/${id}`, {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					set({
+						isLoading: false,
+						error: data.message || "Request failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Request failed",
+					};
+				}
+				set({ isLoading: false, error: null });
+				return {
+					success: true,
+					message: data.message || "Exercise deleted successfully",
+				};
+			} catch (error) {
+				set({ isLoading: false, error: getErrorMessage(error) });
+				return { success: false, message: getErrorMessage(error) };
+			}
+		},
 	})),
 	{
 		enabled: env === "development" ? true : false,

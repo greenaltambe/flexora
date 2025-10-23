@@ -18,7 +18,14 @@ const ManageExerciseMenu = () => {
 		getFilterOptions,
 	} = exerciseStore();
 
-	const [filters, setFilters] = useState({});
+	const [filters, setFilters] = useState({
+		equipment: [],
+		primary_muscles: [],
+		tags: [],
+		type: [],
+		modality: [],
+		movement_patterns: [],
+	});
 	const [search, setSearch] = useState("");
 
 	useEffect(() => {
@@ -41,8 +48,16 @@ const ManageExerciseMenu = () => {
 		getExercises({ page: newPage, limit: 10, name: search, ...filters });
 	};
 
+	const handleRefresh = () => {
+		getExercises({ page: pagination?.page || 1, limit: 10, name: search, ...filters });
+	};
+
 	if (isLoading || isFilterLoading)
-		return <div className="text-center">Loading...</div>;
+		return (
+			<div className="flex justify-center items-center min-h-[400px]">
+				<span className="loading loading-spinner loading-lg"></span>
+			</div>
+		);
 	if (error) return <div className="alert alert-error">{error}</div>;
 
 	return (
@@ -52,12 +67,15 @@ const ManageExerciseMenu = () => {
 			<SearchBarComponent onSearch={handleSearch} />
 			<FilterBarComponent
 				filterOptions={filterOptions}
+				filters={filters}
 				onFilterChange={handleFilterChange}
 			/>
 			{exercises.length === 0 ? (
-				<div className="text-center">No exercises found.</div>
+				<div className="text-center alert alert-info">
+					No exercises found.
+				</div>
 			) : (
-				<ExerciseListComponent exercises={exercises} />
+				<ExerciseListComponent exercises={exercises} onRefresh={handleRefresh} />
 			)}
 			<Pagination
 				pagination={pagination}

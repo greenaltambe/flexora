@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const SearchBarComponent = ({ onSearch }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			onSearch(searchTerm);
+		}, 500); // Debounce search by 500ms
+
+		return () => clearTimeout(timer);
+	}, [searchTerm, onSearch]);
+
 	const handleSearch = (e) => {
 		setSearchTerm(e.target.value);
-		onSearch(e.target.value);
 	};
 
 	return (
