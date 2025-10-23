@@ -17,6 +17,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ManageExercise from "./pages/ManageExercise";
 import CreateEditExercise from "./pages/CreateEditExercise";
+import ImportExerciseCSV from "./pages/ImportExerciseCSV";
 
 const App = () => {
 	const { checkAuth } = useAuthStore();
@@ -56,6 +57,14 @@ const App = () => {
 					element={
 						<Protect requireAdmin>
 							<CreateEditExercise />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/admin/exercises/import-csv"
+					element={
+						<Protect requireAdmin>
+							<ImportExerciseCSV />
 						</Protect>
 					}
 				/>

@@ -265,6 +265,42 @@ const exerciseStore = create(
 				return { success: false, message: getErrorMessage(error) };
 			}
 		},
+
+		// Bulk create exercises from CSV
+		bulkCreateExercises: async (csvContent) => {
+			set({ isLoading: true, error: null });
+			try {
+				const response = await fetch(`${apiUrl}/exercises/bulk-create`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+					body: JSON.stringify({ csvContent }),
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					set({
+						isLoading: false,
+						error: data.message || "Request failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Request failed",
+						details: data.details || [],
+					};
+				}
+				set({ isLoading: false, error: null });
+				return {
+					success: true,
+					data: data.data,
+					message: data.message || "Exercises created successfully",
+				};
+			} catch (error) {
+				set({ isLoading: false, error: getErrorMessage(error) });
+				return { success: false, message: getErrorMessage(error) };
+			}
+		},
 	})),
 	{
 		enabled: env === "development" ? true : false,

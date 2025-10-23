@@ -1,0 +1,6 @@
+name,description,type,primary_muscles,secondary_muscles,equipment,tags,difficulty,modality,sets,reps,rest_seconds,estimated_minutes,published
+Push-up,A basic bodyweight exercise targeting chest and triceps,strength,"Chest, Triceps",Shoulders,Bodyweight,"upper-body, beginner",3,reps,3,15,60,3,true
+Squat,A fundamental lower body exercise,strength,"Quadriceps, Glutes",Hamstrings,Bodyweight,"lower-body, beginner",2,reps,3,12,90,4,true
+Plank,A core strengthening exercise,strength,"Core, Abs","Shoulders, Lower Back",Bodyweight,"core, beginner",2,reps,3,60,45,3,true
+Deadlift,A compound exercise targeting the posterior chain,strength,"Hamstrings, Glutes, Lower Back",Core,Barbell,"lower-body, advanced",4,reps,3,8,120,5,false
+Bench Press,A popular upper body exercise,strength,"Chest, Triceps",Shoulders,Barbell,"upper-body, intermediate",3,reps,3,10,90,5,true
