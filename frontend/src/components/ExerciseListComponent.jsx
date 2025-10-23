@@ -56,13 +56,18 @@ const ExerciseListComponent = ({ exercises, onRefresh }) => {
 					</thead>
 					<tbody>
 						{exercises.map((exercise) => (
-							<tr key={exercise._id || exercise.id} className="hover:bg-base-200">
+							<tr
+								key={exercise._id || exercise.id}
+								className="hover:bg-base-200"
+							>
 								<td>
 									<button
 										type="button"
 										onClick={(e) => {
 											e.preventDefault();
-											handleViewDetails(exercise._id || exercise.id);
+											handleViewDetails(
+												exercise._id || exercise.id
+											);
 										}}
 										className="link link-primary hover:link-secondary font-medium"
 									>
@@ -84,26 +89,44 @@ const ExerciseListComponent = ({ exercises, onRefresh }) => {
 								<td>
 									<div className="flex gap-2">
 										<button
-											onClick={() => handleViewDetails(exercise._id || exercise.id)}
+											onClick={() =>
+												handleViewDetails(
+													exercise._id || exercise.id
+												)
+											}
 											className="btn btn-sm btn-info"
 											title="View Details"
 										>
 											<Eye className="w-4 h-4" />
 										</button>
 										<button
-											onClick={() => handleEdit(exercise._id || exercise.id)}
+											onClick={() =>
+												handleEdit(
+													exercise._id || exercise.id
+												)
+											}
 											className="btn btn-sm btn-warning"
 											title="Edit"
 										>
 											<Edit className="w-4 h-4" />
 										</button>
 										<button
-											onClick={() => handleDelete(exercise._id || exercise.id)}
+											onClick={() =>
+												handleDelete(
+													exercise._id || exercise.id
+												)
+											}
 											className="btn btn-sm btn-error"
-											disabled={isDeleting[exercise._id || exercise.id]}
+											disabled={
+												isDeleting[
+													exercise._id || exercise.id
+												]
+											}
 											title="Delete"
 										>
-											{isDeleting[exercise._id || exercise.id] ? (
+											{isDeleting[
+												exercise._id || exercise.id
+											] ? (
 												<span className="loading loading-spinner loading-xs"></span>
 											) : (
 												<Trash2 className="w-4 h-4" />
@@ -121,82 +144,131 @@ const ExerciseListComponent = ({ exercises, onRefresh }) => {
 			{showModal && selectedExercise && (
 				<div className="modal modal-open">
 					<div className="modal-box max-w-3xl">
-						<h3 className="font-bold text-lg mb-4">{selectedExercise.name}</h3>
-						
+						<h3 className="font-bold text-lg mb-4">
+							{selectedExercise.name}
+						</h3>
+
 						<div className="space-y-4">
 							<div>
 								<h4 className="font-semibold">Description</h4>
-								<p className="text-sm">{selectedExercise.description || "No description"}</p>
+								<p className="text-sm">
+									{selectedExercise.description ||
+										"No description"}
+								</p>
 							</div>
 
 							<div className="grid grid-cols-2 gap-4">
 								<div>
 									<h4 className="font-semibold">Type</h4>
-									<p className="text-sm">{selectedExercise.type}</p>
+									<p className="text-sm">
+										{selectedExercise.type}
+									</p>
 								</div>
 								<div>
-									<h4 className="font-semibold">Difficulty</h4>
-									<p className="text-sm">{selectedExercise.difficulty}</p>
+									<h4 className="font-semibold">
+										Difficulty
+									</h4>
+									<p className="text-sm">
+										{selectedExercise.difficulty}
+									</p>
 								</div>
 								<div>
 									<h4 className="font-semibold">Modality</h4>
-									<p className="text-sm">{selectedExercise.modality}</p>
+									<p className="text-sm">
+										{selectedExercise.modality}
+									</p>
 								</div>
 								<div>
-									<h4 className="font-semibold">Estimated Minutes</h4>
-									<p className="text-sm">{selectedExercise.estimated_minutes} min</p>
+									<h4 className="font-semibold">
+										Estimated Minutes
+									</h4>
+									<p className="text-sm">
+										{selectedExercise.estimated_minutes} min
+									</p>
 								</div>
 							</div>
 
 							<div>
-								<h4 className="font-semibold">Primary Muscles</h4>
+								<h4 className="font-semibold">
+									Primary Muscles
+								</h4>
 								<div className="flex flex-wrap gap-2 mt-2">
-									{Array.isArray(selectedExercise.primary_muscles) &&
-										selectedExercise.primary_muscles.map((muscle) => (
-											<span key={muscle} className="badge badge-primary">
-												{muscle}
-											</span>
-										))}
+									{Array.isArray(
+										selectedExercise.primary_muscles
+									) &&
+										selectedExercise.primary_muscles.map(
+											(muscle) => (
+												<span
+													key={muscle}
+													className="badge badge-primary"
+												>
+													{muscle}
+												</span>
+											)
+										)}
 								</div>
 							</div>
 
 							<div>
 								<h4 className="font-semibold">Equipment</h4>
 								<div className="flex flex-wrap gap-2 mt-2">
-									{Array.isArray(selectedExercise.equipment) &&
+									{Array.isArray(
+										selectedExercise.equipment
+									) &&
 										selectedExercise.equipment.map((eq) => (
-											<span key={eq} className="badge badge-secondary">
+											<span
+												key={eq}
+												className="badge badge-secondary"
+											>
 												{eq}
 											</span>
 										))}
 								</div>
 							</div>
 
-							{selectedExercise.tags && selectedExercise.tags.length > 0 && (
-								<div>
-									<h4 className="font-semibold">Tags</h4>
-									<div className="flex flex-wrap gap-2 mt-2">
-										{selectedExercise.tags.map((tag) => (
-											<span key={tag} className="badge badge-accent">
-												{tag}
-											</span>
-										))}
+							{selectedExercise.tags &&
+								selectedExercise.tags.length > 0 && (
+									<div>
+										<h4 className="font-semibold">Tags</h4>
+										<div className="flex flex-wrap gap-2 mt-2">
+											{selectedExercise.tags.map(
+												(tag) => (
+													<span
+														key={tag}
+														className="badge badge-accent"
+													>
+														{tag}
+													</span>
+												)
+											)}
+										</div>
 									</div>
-								</div>
-							)}
+								)}
 
 							{selectedExercise.default_prescription && (
 								<div>
-									<h4 className="font-semibold">Default Prescription</h4>
+									<h4 className="font-semibold">
+										Default Prescription
+									</h4>
 									<div className="mt-2">
 										<p className="text-sm">
-											Sets: {selectedExercise.default_prescription.sets || "N/A"}
+											Sets:{" "}
+											{selectedExercise
+												.default_prescription.sets ||
+												"N/A"}
 										</p>
 										<p className="text-sm">
-											Reps: {selectedExercise.default_prescription.reps || "N/A"}
+											Reps:{" "}
+											{selectedExercise
+												.default_prescription.reps ||
+												"N/A"}
 										</p>
 										<p className="text-sm">
-											Rest: {selectedExercise.default_prescription.rest_seconds || "N/A"}s
+											Rest:{" "}
+											{selectedExercise
+												.default_prescription
+												.rest_seconds || "N/A"}
+											s
 										</p>
 									</div>
 								</div>
@@ -218,21 +290,30 @@ const ExerciseListComponent = ({ exercises, onRefresh }) => {
 						</div>
 
 						<div className="modal-action">
-							<button className="btn" onClick={() => setShowModal(false)}>
+							<button
+								className="btn"
+								onClick={() => setShowModal(false)}
+							>
 								Close
 							</button>
 							<button
 								className="btn btn-primary"
 								onClick={() => {
 									setShowModal(false);
-									handleEdit(selectedExercise._id || selectedExercise.id);
+									handleEdit(
+										selectedExercise._id ||
+											selectedExercise.id
+									);
 								}}
 							>
 								Edit Exercise
 							</button>
 						</div>
 					</div>
-					<div className="modal-backdrop" onClick={() => setShowModal(false)}></div>
+					<div
+						className="modal-backdrop"
+						onClick={() => setShowModal(false)}
+					></div>
 				</div>
 			)}
 		</>

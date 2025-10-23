@@ -5,21 +5,23 @@ const Pagination = ({ pagination, onPageChange }) => {
 
 	return (
 		<div className="btn-group mt-4">
-			<button
-				className="btn btn-outline"
-				disabled={page === 1}
-				onClick={() => onPageChange(page - 1)}
-			>
-				Previous
-			</button>
-			<button className="btn btn-active">{page}</button>
-			<button
-				className="btn btn-outline"
-				disabled={page === totalPages}
-				onClick={() => onPageChange(page + 1)}
-			>
-				Next
-			</button>
+			<div class="join">
+				<button
+					class="join-item btn"
+					disabled={page === 1}
+					onClick={() => onPageChange(page - 1)}
+				>
+					«
+				</button>
+				<button class="join-item btn">{page}</button>
+				<button
+					class="join-item btn"
+					disabled={page === totalPages}
+					onClick={() => onPageChange(page + 1)}
+				>
+					»
+				</button>
+			</div>
 		</div>
 	);
 };
