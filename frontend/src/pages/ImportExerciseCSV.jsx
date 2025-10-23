@@ -83,7 +83,16 @@ const ImportExerciseCSV = () => {
 		setIsLoading(false);
 
 		if (result.success) {
-			toast.success(result.message);
+			// Show success message with details
+			let successMessage = result.message || "Exercises imported successfully";
+			
+			// Show skipped items if any
+			if (result.data?.skipped && result.data.skipped.length > 0) {
+				const skippedList = result.data.skipped.map(e => `${e.name}`).join(', ');
+				successMessage += `\nSkipped (duplicates): ${skippedList}`;
+			}
+			
+			toast.success(successMessage);
 			navigate("/admin/manage-exercise");
 		} else {
 			// Show detailed error message
