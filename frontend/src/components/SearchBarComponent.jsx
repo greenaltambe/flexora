@@ -1,29 +1,42 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Search } from "lucide-react";
 
-const SearchBarComponent = ({ onSearch }) => {
+const SearchBarComponent = ({ onSearch, onApply }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			onSearch(searchTerm);
-		}, 500); // Debounce search by 500ms
-
-		return () => clearTimeout(timer);
-	}, [searchTerm, onSearch]);
-
 	const handleSearch = (e) => {
-		setSearchTerm(e.target.value);
+		const value = e.target.value;
+		setSearchTerm(value);
+		onSearch(value);
+	};
+
+	const handleKeyPress = (e) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			onApply();
+		}
 	};
 
 	return (
-		<div className="form-control mb-4">
-			<input
-				type="text"
-				placeholder="Search exercises..."
-				className="input input-bordered w-full max-w-xs"
-				value={searchTerm}
-				onChange={handleSearch}
-			/>
+		<div className="form-control">
+			<div className="input-group">
+				<input
+					type="text"
+					placeholder="Search exercises..."
+					className="input input-bordered flex-1"
+					value={searchTerm}
+					onChange={handleSearch}
+					onKeyPress={handleKeyPress}
+				/>
+				<button
+					type="button"
+					onClick={onApply}
+					className="btn btn-primary"
+				>
+					<Search className="w-4 h-4" />
+					Search
+				</button>
+			</div>
 		</div>
 	);
 };

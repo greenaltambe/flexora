@@ -56,11 +56,15 @@ const ExerciseListComponent = ({ exercises, onRefresh }) => {
 					</thead>
 					<tbody>
 						{exercises.map((exercise) => (
-							<tr key={exercise._id || exercise.id}>
+							<tr key={exercise._id || exercise.id} className="hover:bg-base-200">
 								<td>
 									<button
-										onClick={() => handleViewDetails(exercise._id || exercise.id)}
-										className="link link-primary hover:link-secondary"
+										type="button"
+										onClick={(e) => {
+											e.preventDefault();
+											handleViewDetails(exercise._id || exercise.id);
+										}}
+										className="link link-primary hover:link-secondary font-medium"
 									>
 										{exercise.name}
 									</button>

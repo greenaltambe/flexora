@@ -30,11 +30,8 @@ const ManageExerciseMenu = () => {
 
 	useEffect(() => {
 		getFilterOptions();
-	}, [getFilterOptions]);
-
-	useEffect(() => {
-		getExercises({ page: 1, limit: 10, name: search, ...filters });
-	}, [filters, search, getExercises]);
+		getExercises({ page: 1, limit: 10 });
+	}, [getFilterOptions, getExercises]);
 
 	const handleFilterChange = (newFilters) => {
 		setFilters(newFilters);
@@ -42,6 +39,10 @@ const ManageExerciseMenu = () => {
 
 	const handleSearch = (term) => {
 		setSearch(term);
+	};
+
+	const handleApplyFilters = () => {
+		getExercises({ page: 1, limit: 10, name: search, ...filters });
 	};
 
 	const handlePageChange = (newPage) => {
@@ -64,12 +65,17 @@ const ManageExerciseMenu = () => {
 		<div className="container mx-auto p-4">
 			<h1 className="text-2xl font-bold mb-4">Manage Exercises</h1>
 			<CreateExerciseButton />
-			<SearchBarComponent onSearch={handleSearch} />
-			<FilterBarComponent
-				filterOptions={filterOptions}
-				filters={filters}
-				onFilterChange={handleFilterChange}
-			/>
+			<div className="mb-4">
+				<SearchBarComponent onSearch={handleSearch} onApply={handleApplyFilters} />
+			</div>
+			<div className="mb-4">
+				<FilterBarComponent
+					filterOptions={filterOptions}
+					filters={filters}
+					onFilterChange={handleFilterChange}
+					onApply={handleApplyFilters}
+				/>
+			</div>
 			{exercises.length === 0 ? (
 				<div className="text-center alert alert-info">
 					No exercises found.
