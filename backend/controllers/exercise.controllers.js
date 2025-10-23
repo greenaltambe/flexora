@@ -2,6 +2,14 @@ import Exercise from "../models/exercise.model.js";
 import User from "../models/user.model.js";
 import mongoose from "mongoose";
 import slugify from "slugify";
+import {
+	MAX_ROWS,
+	parseCSVLine,
+	parseArrayField,
+	parseBoolean,
+	parseInteger,
+	ensureUniqueSlug,
+} from "../utils/buldCreateUtils.js";
 
 // create new exercise
 // @route POST /api/exercises/create
@@ -153,7 +161,10 @@ const getExercises = async (req, res) => {
 		let query;
 		if (nameSearch) {
 			// Use text search for name field
-			query = Exercise.find({ ...queryObj, name: { $regex: nameSearch, $options: "i" } });
+			query = Exercise.find({
+				...queryObj,
+				name: { $regex: nameSearch, $options: "i" },
+			});
 		} else {
 			query = Exercise.find(queryObj);
 		}
@@ -186,7 +197,10 @@ const getExercises = async (req, res) => {
 		// Get total document count for pagination metadata
 		let countQuery;
 		if (nameSearch) {
-			countQuery = { ...queryObj, name: { $regex: nameSearch, $options: "i" } };
+			countQuery = {
+				...queryObj,
+				name: { $regex: nameSearch, $options: "i" },
+			};
 		} else {
 			countQuery = queryObj;
 		}
@@ -482,6 +496,234 @@ const getFilterOptions = async (req, res) => {
 	}
 };
 
+// bulk create exercises from CSV
+// @route POST /api/exercises/bulk-create
+// @desc Create multiple exercises from CSV
+// @access Private/Admin
+const bulkCreateExercises = async (req, res) => {
+	try {
+		const { csvContent } = req.body;
+		console.log("bulkCreateExercises called, csvContent length:", csvContent?.length);
+		
+		if (!csvContent) {
+			return res
+				.status(400)
+				.json({ success: false, message: "CSV content is required" });
+		}
+
+		// Normalize line endings & split into lines; allow CRLF or LF
+		const rawLines = csvContent
+			.split(/\r?\n/)
+			.filter((l) => l.trim().length > 0);
+		console.log("Parsed lines count:", rawLines.length);
+		
+		if (rawLines.length < 2) {
+			return res.status(400).json({
+				success: false,
+				message: "CSV must have header + at least one data row",
+			});
+		}
+		if (rawLines.length - 1 > MAX_ROWS) {
+			return res.status(413).json({
+				success: false,
+				message: `Too many rows. Limit is ${MAX_ROWS}`,
+			});
+		}
+
+		// Parse header
+		const headers = parseCSVLine(rawLines[0]).map((h) =>
+			String(h || "").trim()
+		);
+		console.log("Headers:", headers);
+
+		// Get author (assumes req.userId set)
+		const author = await User.findById(req.userId).select("name");
+		if (!author) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Author not found" });
+		}
+
+		const created = [];
+		const errors = [];
+		const skipped = []; // Track skipped duplicates
+
+		// Process rows sequentially so we can run mongoose hooks/validators and ensure unique slug by checking DB
+		for (let idx = 1; idx < rawLines.length; idx++) {
+			const rowNum = idx + 1; // human-friendly row number
+			const line = rawLines[idx];
+			const values = parseCSVLine(line);
+
+			// Map columns
+			const row = {};
+			headers.forEach((h, i) => {
+				const key = (h || "").trim();
+				row[key] = values[i] !== undefined ? values[i] : "";
+			});
+
+			// Required: name
+			const name = (row.name || "").trim();
+			if (!name) {
+				errors.push({ row: rowNum, message: "Missing 'name' field" });
+				continue;
+			}
+
+			// Check if exercise with this name already exists
+			const existingExercise = await Exercise.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
+			if (existingExercise) {
+				skipped.push({
+					row: rowNum,
+					name,
+					message: "Exercise with this name already exists"
+				});
+				continue;
+			}
+
+			// Build exercise object using defensive parsing
+			const primary_muscles = parseArrayField(
+				row.primary_muscles || row.primaryMuscles || ""
+			);
+			const secondary_muscles = parseArrayField(
+				row.secondary_muscles || row.secondaryMuscles || ""
+			);
+			const movement_patterns = parseArrayField(
+				row.movement_patterns || row.movementPatterns || ""
+			);
+			const equipment = parseArrayField(row.equipment || "");
+			const tags = parseArrayField(row.tags || "").map((t) =>
+				t.toLowerCase()
+			);
+			const contraindications = parseArrayField(
+				row.contraindications || ""
+			);
+			const images = parseArrayField(row.images || ""); // if you want CSV to include image URLs
+			const video_url =
+				(row.video_url || row.videoUrl || "").trim() || null;
+
+			const difficulty = parseInteger(row.difficulty, 3);
+			const modality = (row.modality || "reps").trim().toLowerCase();
+
+			// default_prescription: support either separate sets/reps/rest or a nested JSON-like string
+			const sets = parseInteger(row.sets, undefined);
+			const reps = parseInteger(row.reps, undefined);
+			const rest_seconds = parseInteger(row.rest_seconds, undefined);
+			const time_minutes = parseInteger(row.time_minutes, undefined);
+			const distance_meters = parseInteger(
+				row.distance_meters,
+				undefined
+			);
+
+			const default_prescription = {};
+			if (sets !== undefined) default_prescription.sets = sets;
+			if (reps !== undefined) default_prescription.reps = reps;
+			if (rest_seconds !== undefined)
+				default_prescription.rest_seconds = rest_seconds;
+			if (time_minutes !== undefined)
+				default_prescription.time_minutes = time_minutes;
+			if (distance_meters !== undefined)
+				default_prescription.distance_meters = distance_meters;
+
+			const estimated_minutes = parseInteger(row.estimated_minutes, 5);
+			const published =
+				row.published !== undefined
+					? parseBoolean(row.published)
+					: false;
+			const type = (row.type || "strength").trim().toLowerCase();
+
+			// Slug: either provided or generated from name (basic slugify)
+			let baseSlug = (row.slug || "").trim();
+			if (!baseSlug) {
+				baseSlug = name
+					.toLowerCase()
+					.replace(/[^a-z0-9]+/g, "-")
+					.replace(/(^-|-$)/g, "");
+			}
+
+			// ensure unique slug
+			let slug;
+			try {
+				slug = await ensureUniqueSlug(baseSlug);
+			} catch (err) {
+				errors.push({
+					row: rowNum,
+					name,
+					message: "Failed to ensure slug uniqueness: " + err.message,
+				});
+				continue;
+			}
+
+			const doc = {
+				slug,
+				name,
+				description: row.description || "",
+				type,
+				primary_muscles,
+				secondary_muscles,
+				movement_patterns,
+				equipment,
+				tags,
+				difficulty,
+				modality,
+				default_prescription,
+				estimated_minutes,
+				contraindications,
+				video_url,
+				images,
+				published,
+				author: { id: author._id, name: author.name },
+			};
+
+			// Save via Mongoose model to trigger validators/hooks
+			try {
+				const newExercise = new Exercise(doc);
+				await newExercise.validate(); // optional: pre-validate to catch errors early
+				await newExercise.save();
+				created.push({
+					id: newExercise._id,
+					name: newExercise.name,
+					row: rowNum,
+				});
+			} catch (err) {
+				// handle validation / unique index errors gracefully
+				const errMsg = err && err.message ? err.message : String(err);
+				errors.push({ row: rowNum, name, message: errMsg });
+				// If duplicate key occurs on slug, continue — we already attempted to make slug unique but race conditions may happen
+			}
+		}
+
+		// Build response message
+		let message = `Created ${created.length} exercise(s)`;
+		if (skipped.length > 0) {
+			message += `. ${skipped.length} skipped (duplicates)`;
+		}
+		if (errors.length > 0) {
+			message += `. ${errors.length} failed.`;
+		}
+
+		if (created.length === 0 && skipped.length === 0 && errors.length > 0) {
+			return res.status(400).json({
+				success: false,
+				message: "No exercises created",
+				created: 0,
+				skipped: skipped.length,
+				errors,
+			});
+		}
+
+		return res.status(201).json({
+			success: true,
+			message,
+			data: { created, skipped, errors },
+		});
+	} catch (error) {
+		console.error("bulkCreateExercises error:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Server error: " + error.message,
+		});
+	}
+};
+
 export {
 	createExercise,
 	getExercises,
@@ -489,4 +731,5 @@ export {
 	updateExercise,
 	deleteExercise,
 	getFilterOptions,
+	bulkCreateExercises,
 };

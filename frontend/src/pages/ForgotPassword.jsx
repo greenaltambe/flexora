@@ -23,7 +23,9 @@ const ForgotPassword = () => {
 							<MailIcon className="w-6 h-6" />
 						</div>
 						<h2 className="text-3xl font-bold">Forgot Password</h2>
-						<p className="text-base-content/70 mt-2">Enter your email to receive a reset link</p>
+						<p className="text-base-content/70 mt-2">
+							Enter your email to receive a reset link
+						</p>
 					</div>
 					<form onSubmit={handleSubmit} className="space-y-4">
 						<input
@@ -34,7 +36,10 @@ const ForgotPassword = () => {
 							onChange={(e) => setEmail(e.target.value)}
 							required
 						/>
-						<button className="btn btn-primary w-full" disabled={isLoading}>
+						<button
+							className="btn btn-primary w-full"
+							disabled={isLoading}
+						>
 							{isLoading ? "Sending..." : "Send Reset Link"}
 						</button>
 					</form>
@@ -45,5 +50,3 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
-
-
