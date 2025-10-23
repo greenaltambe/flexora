@@ -19,11 +19,11 @@ const SearchBarComponent = ({ onSearch, onApply }) => {
 
 	return (
 		<div className="form-control">
-			<div className="input-group">
+			<div className="input-group join">
 				<input
 					type="text"
 					placeholder="Search exercises..."
-					className="input input-bordered flex-1"
+					className="input input-bordered join-item"
 					value={searchTerm}
 					onChange={handleSearch}
 					onKeyPress={handleKeyPress}
@@ -31,7 +31,7 @@ const SearchBarComponent = ({ onSearch, onApply }) => {
 				<button
 					type="button"
 					onClick={onApply}
-					className="btn btn-primary"
+					className="btn btn-primary join-item"
 				>
 					<Search className="w-4 h-4" />
 					Search

@@ -138,25 +138,6 @@ const ManageExerciseMenu = () => {
 				<div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 					<div className="md:col-span-3">
 						<div className="card bg-base-200 p-3 sticky top-4">
-							<div className="flex items-center justify-between mb-2">
-								{/* <h3 className="font-medium">Filters</h3> */}
-								{/* <button
-									className="btn btn-xs btn-ghost"
-									onClick={() =>
-										setFilters({
-											equipment: [],
-											primary_muscles: [],
-											tags: [],
-											type: [],
-											modality: [],
-											movement_patterns: [],
-										})
-									}
-								>
-									Reset
-								</button> */}
-							</div>
-
 							<FilterBarComponent
 								filterOptions={filterOptions}
 								filters={filters}
