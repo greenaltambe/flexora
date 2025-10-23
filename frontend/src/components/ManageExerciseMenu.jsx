@@ -100,14 +100,15 @@ const ManageExerciseMenu = () => {
 		<div className="card bg-base-100 shadow-lg">
 			<div className="card-body p-4 md:p-6">
 				{/* Header */}
-				<div className="flex items-start justify-between gap-4 mb-4">
+				<div className="flex justify-between gap-4 mb-4">
 					<div className="flex items-center gap-2">
-						<div className="flex-1">
-							<SearchBarComponent
-								onSearch={handleSearch}
-								onApply={handleApplyFilters}
-							/>
-						</div>
+						<SearchBarComponent
+							onSearch={handleSearch}
+							onApply={handleApplyFilters}
+						/>
+					</div>
+
+					<div className="flex items-center gap-2">
 						<button
 							className="btn btn-ghost btn-sm"
 							onClick={handleRefresh}

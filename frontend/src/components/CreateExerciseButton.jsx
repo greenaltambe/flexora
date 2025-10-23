@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 
 const CreateExerciseButton = () => {
 	return (
-		<Link to="/admin/exercises/create" className="btn btn-primary mb-4">
+		<Link to="/admin/exercises/create" className="btn btn-primary">
 			<Plus className="w-4 h-4 mr-2" />
 			Create New Exercise
 		</Link>
