@@ -13,6 +13,16 @@ const getErrorMessage = (error) => {
 const exerciseStore = create(
 	devtools((set) => ({
 		exercises: [],
+		filterOptions: {
+			equipment: [],
+			primary_muscles: [],
+			tags: [],
+			type: [],
+			modality: [],
+			movement_patterns: [],
+		},
+		pagination: null,
+		isFilterLoading: false,
 		isLoading: false,
 		error: null,
 
@@ -20,11 +30,24 @@ const exerciseStore = create(
 		getExercises: async ({ page = 1, limit = 10, ...params }) => {
 			set({ isLoading: true, error: null });
 
-			const queryParams = new URLSearchParams(params).toString();
+			const queryParams = new URLSearchParams();
+			queryParams.append("page", String(page));
+			queryParams.append("limit", String(limit));
+			Object.keys(params).forEach((key) => {
+				const value = params[key];
+
+				if (Array.isArray(value)) {
+					value.forEach((item) => queryParams.append(key, item));
+				} else if (value) {
+					queryParams.append(key, value);
+				}
+			});
+
+			const queryString = queryParams.toString();
 
 			try {
 				const response = await fetch(
-					`${apiUrl}/exercises?page=${page}&limit=${limit}&${queryParams}`,
+					`${apiUrl}/exercises/getAll?${queryString}`,
 					{
 						method: "GET",
 						headers: {
@@ -34,6 +57,7 @@ const exerciseStore = create(
 					}
 				);
 				const data = await response.json();
+
 				if (!response.ok) {
 					set({
 						isLoading: false,
@@ -44,13 +68,63 @@ const exerciseStore = create(
 						message: data.message || "Request failed",
 					};
 				}
-				set({ isLoading: false, error: null });
+
+				set({
+					isLoading: false,
+					error: null,
+					exercises: data.data,
+					pagination: {
+						total: data.total,
+						page: data.page,
+						limit: data.limit,
+						totalPages: data.totalPages,
+						results: data.results,
+					},
+				});
 				return {
 					success: true,
 					message: data.message || "Request successful",
 				};
 			} catch (error) {
 				set({ isLoading: false, error: getErrorMessage(error) });
+				return { success: false, message: getErrorMessage(error) };
+			}
+		},
+
+		// Get filter options
+		getFilterOptions: async () => {
+			set({ isFilterLoading: true, error: null });
+			try {
+				const response = await fetch(`${apiUrl}/exercises/getFilters`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					set({
+						isFilterLoading: false,
+						error: data.message || "Request failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Request failed",
+					};
+				}
+				set({
+					isFilterLoading: false,
+					error: null,
+					filterOptions: data.data, // Assuming response contains filter options
+				});
+				return {
+					success: true,
+					message:
+						data.message || "Filter options retrieved successfully",
+				};
+			} catch (error) {
+				set({ isFilterLoading: false, error: getErrorMessage(error) });
 				return { success: false, message: getErrorMessage(error) };
 			}
 		},

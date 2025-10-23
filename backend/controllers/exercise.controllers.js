@@ -383,10 +383,90 @@ const deleteExercise = async (req, res) => {
 	}
 };
 
+// get filter options
+// @route GET /api/exercises/getFilters
+// @desc Get filter options
+// @access Public
+const getFilterOptions = async (req, res) => {
+	try {
+		const aggregationResult = await Exercise.aggregate([
+			{
+				$facet: {
+					equipment: [
+						{ $unwind: "$equipment" },
+						{ $group: { _id: "$equipment" } },
+						{ $sort: { _id: 1 } },
+						{ $project: { _id: 0, value: "$_id" } },
+					],
+					primary_muscles: [
+						{ $unwind: "$primary_muscles" },
+						{ $group: { _id: "$primary_muscles" } },
+						{ $sort: { _id: 1 } },
+						{ $project: { _id: 0, value: "$_id" } },
+					],
+					tags: [
+						{ $unwind: "$tags" },
+						{ $group: { _id: "$tags" } },
+						{ $sort: { _id: 1 } },
+						{ $project: { _id: 0, value: "$_id" } },
+					],
+					movement_patterns: [
+						{ $unwind: "$movement_patterns" },
+						{ $group: { _id: "$movement_patterns" } },
+						{ $sort: { _id: 1 } },
+						{ $project: { _id: 0, value: "$_id" } },
+					],
+					type: [
+						{ $group: { _id: "$type" } },
+						{ $sort: { _id: 1 } },
+						{ $project: { _id: 0, value: "$_id" } },
+					],
+					modality: [
+						{ $group: { _id: "$modality" } },
+						{ $sort: { _id: 1 } },
+						{ $project: { _id: 0, value: "$_id" } },
+					],
+				},
+			},
+			{
+				$project: {
+					equipment: "$equipment.value",
+					primary_muscles: "$primary_muscles.value",
+					tags: "$tags.value",
+					movement_patterns: "$movement_patterns.value",
+					type: "$type.value",
+					modality: "$modality.value",
+				},
+			},
+		]);
+
+		const filterOptions = aggregationResult[0] || {
+			equipment: [],
+			primary_muscles: [],
+			tags: [],
+			type: [],
+			modality: [],
+			movement_patterns: [],
+		};
+
+		res.status(200).json({
+			success: true,
+			message: "Filter options retrieved successfully",
+			data: filterOptions,
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Server error: " + error.message,
+		});
+	}
+};
+
 export {
 	createExercise,
 	getExercises,
 	getExerciseById,
 	updateExercise,
 	deleteExercise,
+	getFilterOptions,
 };
