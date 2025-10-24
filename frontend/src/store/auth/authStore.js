@@ -178,7 +178,7 @@ export const useAuthStore = create(
 
 				// Set user and authentication state
 				set({
-					isLoading: false,					
+					isLoading: false,
 					isAuthenticated: true,
 					user: data?.user ?? null,
 					error: null,
@@ -212,8 +212,14 @@ export const useAuthStore = create(
 				});
 				const data = await response.json();
 				if (!response.ok) {
-					set({ isLoading: false, error: data.message || "Request failed" });
-					return { success: false, message: data.message || "Request failed" };
+					set({
+						isLoading: false,
+						error: data.message || "Request failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Request failed",
+					};
 				}
 				set({ isLoading: false, error: null });
 				return { success: true, message: data.message || "Email sent" };
@@ -227,19 +233,36 @@ export const useAuthStore = create(
 		resetPassword: async ({ token, password }) => {
 			set({ isLoading: true, error: null });
 			try {
-				const response = await fetch(`${apiUrl}/auth/reset-password/${token}`, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-					body: JSON.stringify({ password }),
-				});
+				const response = await fetch(
+					`${apiUrl}/auth/reset-password/${token}`,
+					{
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						credentials: "include",
+						body: JSON.stringify({ password }),
+					}
+				);
 				const data = await response.json();
 				if (!response.ok) {
-					set({ isLoading: false, error: data.message || "Reset failed" });
-					return { success: false, message: data.message || "Reset failed" };
+					set({
+						isLoading: false,
+						error: data.message || "Reset failed",
+					});
+					return {
+						success: false,
+						message: data.message || "Reset failed",
+					};
 				}
-				set({ isLoading: false, error: null, isAuthenticated: true, user: data?.user ?? null });
-				return { success: true, message: data.message || "Password reset" };
+				set({
+					isLoading: false,
+					error: null,
+					isAuthenticated: true,
+					user: data?.user ?? null,
+				});
+				return {
+					success: true,
+					message: data.message || "Password reset",
+				};
 			} catch (error) {
 				set({ isLoading: false, error: getErrorMessage(error) });
 				return { success: false, message: getErrorMessage(error) };

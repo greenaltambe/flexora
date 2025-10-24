@@ -18,6 +18,7 @@ import ResetPassword from "./pages/ResetPassword";
 import ManageExercise from "./pages/ManageExercise";
 import CreateEditExercise from "./pages/CreateEditExercise";
 import ImportExerciseCSV from "./pages/ImportExerciseCSV";
+import Onboarding from "./pages/Onboarding";
 
 const App = () => {
 	const { checkAuth } = useAuthStore();
@@ -81,6 +82,14 @@ const App = () => {
 					element={
 						<Protect>
 							<Dashboard />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/onboarding"
+					element={
+						<Protect>
+							<Onboarding />
 						</Protect>
 					}
 				/>

@@ -2,14 +2,14 @@ import User from "../models/user.model.js";
 
 const isAdmin = async (req, res, next) => {
 	try {
-		if (!req.userId) {
+		if (!req.user?.id) {
 			return res.status(401).json({
 				success: false,
 				message: "Unauthorized - Missing user context",
 			});
 		}
 
-		const user = await User.findById(req.userId);
+		const user = await User.findById(req.user.id);
 		if (!user) {
 			return res.status(404).json({
 				success: false,

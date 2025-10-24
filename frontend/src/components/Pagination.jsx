@@ -5,17 +5,17 @@ const Pagination = ({ pagination, onPageChange }) => {
 
 	return (
 		<div className="btn-group mt-4">
-			<div class="join">
+			<div className="join">
 				<button
-					class="join-item btn"
+					className="join-item btn"
 					disabled={page === 1}
 					onClick={() => onPageChange(page - 1)}
 				>
 					«
 				</button>
-				<button class="join-item btn">{page}</button>
+				<button className="join-item btn">{page}</button>
 				<button
-					class="join-item btn"
+					className="join-item btn"
 					disabled={page === totalPages}
 					onClick={() => onPageChange(page + 1)}
 				>

@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import exerciseRoutes from "./routes/exercise.routes.js";
+import profileRoutes from "./routes/profile.routes.js";
 
 // config
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(cors({ origin: frontendUrl, credentials: true }));
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/exercises", exerciseRoutes);
+app.use("/api/profile", profileRoutes);
 
 const PORT = process.env.PORT || 5017;
 

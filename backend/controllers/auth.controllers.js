@@ -336,7 +336,7 @@ const resetPassword = async (req, res) => {
 // @access Private
 const checkAuth = async (req, res) => {
 	try {
-		const user = await User.findById(req.userId);
+		const user = await User.findById(req.user.id);
 		if (!user) {
 			return res.status(400).json({
 				success: false,

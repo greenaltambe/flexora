@@ -1,8 +1,17 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dumbbell, Calendar, TrendingUp, Target, Clock, Award } from "lucide-react";
 import { useAuthStore } from "../store/auth/authStore";
 
 const Dashboard = () => {
-	const { user } = useAuthStore();
+	const { user, isCheckingAuth } = useAuthStore();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (!isCheckingAuth && user && !user.onboardingCompleted) {
+			navigate("/onboarding");
+		}
+	}, [user, isCheckingAuth, navigate]);
 
 	return (
 		<div className="min-h-screen bg-base-200 p-4">
