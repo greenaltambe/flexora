@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "../store/auth/authStore";
 import { Outlet, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../config/axios";
 import Loader from "../components/Loader";
 
 const AdminDashboard = () => {
@@ -27,9 +27,7 @@ const AdminDashboard = () => {
 
 	const fetchUsers = async () => {
 		try {
-			const response = await axios.get("/api/profile/users", {
-				withCredentials: true,
-			});
+		const response = await api.get("/profile/users");
 			setUsers(response.data.users);
 		} catch (error) {
 			console.error("Failed to fetch users:", error);
@@ -40,13 +38,7 @@ const AdminDashboard = () => {
 
 	const handleForceCompleteOnboarding = async (userId) => {
 		try {
-			await axios.patch(
-				`/api/profile/users/${userId}/force-onboarding`,
-				null,
-				{
-					withCredentials: true,
-				}
-			);
+			await api.patch(`/profile/users/${userId}/force-onboarding`);
 			fetchUsers(); // Refresh list
 		} catch (error) {
 			console.error("Failed to force complete onboarding:", error);

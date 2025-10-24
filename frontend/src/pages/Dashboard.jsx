@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Dumbbell, Calendar, TrendingUp, Target, Clock, Award } from "lucide-react";
+import { Dumbbell, Calendar, TrendingUp, Target, Clock, Award, Settings } from "lucide-react";
 import { useAuthStore } from "../store/auth/authStore";
 
 const Dashboard = () => {
@@ -131,6 +131,13 @@ const Dashboard = () => {
 									<button className="btn btn-outline w-full justify-start">
 										<TrendingUp className="w-4 h-4" />
 										View Progress
+									</button>
+									<button 
+										className="btn btn-outline w-full justify-start"
+										onClick={() => navigate("/onboarding")}
+									>
+										<Settings className="w-4 h-4" />
+										Update Profile
 									</button>
 								</div>
 							</div>

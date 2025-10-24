@@ -28,16 +28,16 @@ const equipmentOptions = [
   { key: "kettlebell", label: "Kettlebell", icon: Weight },
 ];
 
-export default function OnboardingForm({ onComplete }) {
+export default function OnboardingForm({ onComplete, user }) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    goals: [],
-    experience_level: "beginner",
-    equipment: ["bodyweight"],
-    days_per_week: 3,
-    session_length_minutes: 45,
-    injuries: [],
-    baseline_metrics: {},
+    goals: user?.profile?.goals || [],
+    experience_level: user?.profile?.experience_level || "beginner",
+    equipment: user?.profile?.equipment || ["bodyweight"],
+    days_per_week: user?.profile?.days_per_week || 3,
+    session_length_minutes: user?.profile?.session_length_minutes || 45,
+    injuries: user?.profile?.injuries || [],
+    baseline_metrics: user?.profile?.baseline_metrics || {},
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
