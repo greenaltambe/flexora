@@ -11,6 +11,7 @@ import planTemplateRoutes from "./routes/planTemplate.routes.js";
 import userPlanRoutes from "./routes/userPlan.routes.js";
 import dailySessionRoutes from "./routes/dailySession.routes.js";
 import sessionLogRoutes from "./routes/sessionLog.routes.js";
+import dietRoutes from "./routes/diet.routes.js";
 
 // config
 dotenv.config();
@@ -33,6 +34,7 @@ app.use("/api/plan-templates", planTemplateRoutes);
 app.use("/api/user-plan", userPlanRoutes);
 app.use("/api/daily-session", dailySessionRoutes);
 app.use("/api/session", sessionLogRoutes);
+app.use("/api/diet", dietRoutes);
 
 const PORT = process.env.PORT || 5017;
 

@@ -28,6 +28,14 @@ const ProfileSchema = new Schema(
 		session_length_minutes: { type: Number, default: 45 },
 		injuries: { type: [String], default: [] },
 		timezone: { type: String, default: "Asia/Kolkata" },
+		preferences: { type: [String], default: [] },
+		allergies: { type: [String], default: [] },
+		activityLevel: {
+			type: String,
+			enum: ["sedentary", "light", "moderate", "active", "very_active"],
+			default: "light",
+		},
+		meals_per_day: { type: Number, min: 2, max: 6, default: 3 },
 		baseline_metrics: { type: BaselineMetricsSchema, default: () => ({}) },
 	},
 	{ _id: false }
@@ -47,7 +55,7 @@ const UserSchema = new Schema(
 		resetPasswordCodeExpiry: { type: Date, default: null },
 		profile: { type: ProfileSchema, default: () => ({}) },
 		onboardingCompleted: { type: Boolean, default: false },
-		},
+	},
 	{ timestamps: true }
 );
 
