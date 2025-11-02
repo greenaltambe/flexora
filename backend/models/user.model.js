@@ -1,7 +1,7 @@
-// models/User.js
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
+// user profile sub-schemas
 const BaselineMetricsSchema = new Schema(
 	{
 		age: { type: Number },
@@ -9,7 +9,6 @@ const BaselineMetricsSchema = new Schema(
 		height_cm: { type: Number, default: null },
 		weight_kg: { type: Number, default: null },
 		// optional athletic baselines
-		run_5k_seconds: { type: Number, default: null }, // store seconds for ease
 		one_rm_bench_kg: { type: Number, default: null },
 		one_rm_squat_kg: { type: Number, default: null },
 	},
@@ -24,24 +23,12 @@ const ProfileSchema = new Schema(
 			enum: ["beginner", "intermediate", "advanced"],
 			default: "beginner",
 		},
-		equipment: {
-			type: [String],
-			default: [],
-			set: (arr) =>
-				Array.isArray(arr)
-					? arr.map((s) => String(s).toLowerCase().trim())
-					: arr,
-		},
-		days_per_week: { type: Number, min: 1, max: 7, default: 3 },
-		session_length_minutes: {
-			type: Number,
-			min: 10,
-			max: 300,
-			default: 45,
-		},
+		equipment: { type: [String], default: [] },
+		days_per_week: { type: Number, default: 3 },
+		session_length_minutes: { type: Number, default: 45 },
 		injuries: { type: [String], default: [] },
-		baseline_metrics: { type: BaselineMetricsSchema, default: () => ({}) },
 		timezone: { type: String, default: "Asia/Kolkata" },
+		baseline_metrics: { type: BaselineMetricsSchema, default: () => ({}) },
 	},
 	{ _id: false }
 );
@@ -58,10 +45,9 @@ const UserSchema = new Schema(
 		verificationCodeExpiry: { type: Date, default: null },
 		resetPasswordCodeHash: { type: String, default: null },
 		resetPasswordCodeExpiry: { type: Date, default: null },
-
 		profile: { type: ProfileSchema, default: () => ({}) },
 		onboardingCompleted: { type: Boolean, default: false },
-	},
+		},
 	{ timestamps: true }
 );
 

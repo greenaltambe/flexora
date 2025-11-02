@@ -12,3 +12,4 @@
 export * from "./generateTokenAndSetCookie.js";
 export * from "./email/emails.js";
 export * from "./generateVerificationCode.js";
+export * from "./bulkCreateUtils.js";

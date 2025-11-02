@@ -20,7 +20,12 @@ router.post("/onboard", verifyToken, completeOnboarding);
 // Admin routes
 router.get("/users", verifyToken, isAdmin, getAllUsers);
 router.get("/users/:id", verifyToken, isAdmin, getUserById);
-router.patch("/users/:id/force-onboarding", verifyToken, isAdmin, forceCompleteOnboarding);
-
+// Admin: force a user's onboarding to completed
+router.post(
+	"/users/:id/force-complete",
+	verifyToken,
+	isAdmin,
+	forceCompleteOnboarding
+);
 
 export default router;

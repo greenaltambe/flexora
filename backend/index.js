@@ -7,6 +7,10 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import exerciseRoutes from "./routes/exercise.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
+import planTemplateRoutes from "./routes/planTemplate.routes.js";
+import userPlanRoutes from "./routes/userPlan.routes.js";
+import dailySessionRoutes from "./routes/dailySession.routes.js";
+import sessionLogRoutes from "./routes/sessionLog.routes.js";
 
 // config
 dotenv.config();
@@ -25,6 +29,10 @@ app.use(cors({ origin: frontendUrl, credentials: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/exercises", exerciseRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/plan-templates", planTemplateRoutes);
+app.use("/api/user-plan", userPlanRoutes);
+app.use("/api/daily-session", dailySessionRoutes);
+app.use("/api/session", sessionLogRoutes);
 
 const PORT = process.env.PORT || 5017;
 

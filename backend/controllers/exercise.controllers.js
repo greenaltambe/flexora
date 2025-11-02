@@ -9,7 +9,18 @@ import {
 	parseBoolean,
 	parseInteger,
 	ensureUniqueSlug,
-} from "../utils/buldCreateUtils.js";
+} from "../utils/index.js";
+
+function normalizePrescription(p) {
+	if (!p) return {};
+	const out = { ...p };
+	// support clients that still send time_minutes — convert to seconds
+	if (p.time_minutes !== undefined && p.time_seconds === undefined) {
+		out.time_seconds = Number(p.time_minutes) * 60;
+		delete out.time_minutes;
+	}
+	return out;
+}
 
 // create new exercise
 // @route POST /api/exercises/create
@@ -17,101 +28,66 @@ import {
 // @access Private
 const createExercise = async (req, res) => {
 	try {
-		// Destructure relevant fields from req.body
 		const {
 			name,
 			description,
 			type,
 			primary_muscles,
-			secondary_muscles,
-			movement_patterns,
 			equipment,
-			tags,
-			difficulty,
-			modality,
 			default_prescription,
-			estimated_minutes,
 			progression,
 			alternatives,
 			contraindications,
 			video_url,
-			images,
 			published,
 		} = req.body;
 
-		// Validate required fields
-		if (!name) {
-			return res
-				.status(400)
-				.json({ success: false, message: "Name is required" });
-		}
+		if (!name) return res.status(400).json({ message: "Name required" });
 
-		// get the author from the auth middleware
-		const author = await User.findById(req.userId).select("name");
-		if (!author) {
-			return res
-				.status(404)
-				.json({ success: false, message: "Author not found" });
-		}
+		const author = await User.findById(req.user.id).select(
+			"firstName lastName"
+		);
+		if (!author)
+			return res.status(404).json({ message: "Author not found" });
 
-		// Create exercise object
-		const exerciseData = {
-			name,
+		const doc = {
+			slug:
+				(req.body.slug && String(req.body.slug).trim()) ||
+				slugify(name, { lower: true, strict: true }),
+			name: name.trim(),
 			description: description || "",
 			type: type || "strength",
 			primary_muscles: primary_muscles || [],
-			secondary_muscles: secondary_muscles || [],
-			movement_patterns: movement_patterns || [],
 			equipment: equipment || [],
-			tags: tags || [],
-			difficulty: difficulty || 3,
-			modality: modality || "reps",
-			default_prescription: default_prescription || {},
-			estimated_minutes: estimated_minutes || 5,
+			default_prescription:
+				normalizePrescription(default_prescription) || {},
 			progression: progression || {},
 			alternatives: alternatives || [],
 			contraindications: contraindications || [],
 			video_url: video_url || null,
-			images: images || [],
-			published: published !== undefined ? published : false,
+			published: published !== undefined ? Boolean(published) : false,
+			// keep author minimal
 			author: {
 				id: author._id,
-				name: author.name,
+				name: `${author.firstName} ${author.lastName}`,
 			},
 		};
 
-		// Create and save the exercise
-		const exercise = new Exercise(exerciseData);
+		const exercise = new Exercise(doc);
 		await exercise.save();
 
-		// Return the created exercise
-		res.status(201).json({
-			message: "Exercise created successfully",
-			exercise,
-		});
-	} catch (error) {
-		// Handle specific Mongoose validation errors
-		if (error.name === "ValidationError") {
-			const errors = Object.values(error.errors).map(
-				(err) => err.message
-			);
-			return res.status(400).json({
-				success: false,
-				message: "Validation failed",
-				details: errors,
-			});
+		return res.status(201).json({ exercise });
+	} catch (err) {
+		console.error(err);
+		if (err.name === "ValidationError") {
+			const errors = Object.values(err.errors).map((e) => e.message);
+			return res
+				.status(400)
+				.json({ message: "Validation failed", errors });
 		}
-		// Handle duplicate slug error
-		if (error.code === 11000) {
-			return res.status(400).json({
-				success: false,
-				message: "An exercise with this slug already exists",
-			});
-		}
-		res.status(500).json({
-			success: false,
-			message: "Server error: " + error.message,
-		});
+		if (err.code === 11000)
+			return res.status(400).json({ message: "Duplicate slug" });
+		return res.status(500).json({ message: err.message });
 	}
 };
 
@@ -121,110 +97,55 @@ const createExercise = async (req, res) => {
 // @access Public
 const getExercises = async (req, res) => {
 	try {
-		const queryObj = { ...req.query }; // eg: api/exercises?type=strength&equipment=dumbbell
+		const q = { ...req.query };
+		const excluded = ["page", "sort", "limit", "fields", "name"];
+		excluded.forEach((k) => delete q[k]);
 
-		// exclude pagination and sorting fields
-		const excludedFields = ["page", "sort", "limit", "fields"];
-		excludedFields.forEach((field) => delete queryObj[field]);
-
-		// Handle text search for name field
-		let nameSearch = null;
-		if (queryObj.name) {
-			nameSearch = queryObj.name;
-			delete queryObj.name;
-		}
-
-		// this is to handle array fields when using query params eg tags=tag1&tags=tag2
-		// in this case we want all exercises that have tag1 and tag2
-		const arrayFields = [
-			"equipment",
-			"primary_muscles",
-			"secondary_muscles",
-			"movement_patterns",
-			"tags",
-		];
-
-		for (const key in queryObj) {
-			if (arrayFields.includes(key)) {
-				// If Express parsed multiple query params into an array (e.g., ?tags=a&tags=b)
-				if (Array.isArray(queryObj[key])) {
-					// Use $all to find documents that contain ALL values
-					queryObj[key] = { $all: queryObj[key] };
-				}
-				// If it's just a single string (e.g., ?tags=upper-body),
-				// Mongoose automatically knows to find it in the array,
-				// so no 'else' is needed.
+		// handle simple array queries (equipment=... or equipment=a&equipment=b)
+		const arrayFields = ["equipment", "primary_muscles", "tags"];
+		for (const k of arrayFields) {
+			if (req.query[k]) {
+				if (Array.isArray(req.query[k])) q[k] = { $all: req.query[k] };
+				else q[k] = req.query[k];
 			}
 		}
 
-		// build query
 		let query;
-		if (nameSearch) {
-			// Use text search for name field
+		if (req.query.name) {
 			query = Exercise.find({
-				...queryObj,
-				name: { $regex: nameSearch, $options: "i" },
+				...q,
+				name: { $regex: req.query.name, $options: "i" },
 			});
 		} else {
-			query = Exercise.find(queryObj);
+			query = Exercise.find(q);
 		}
 
-		// sort query
-		if (req.query.sort) {
-			const sortBy = req.query.sort.split(",").join(" "); // e.g., /api/exercises?sort=name or ?sort=-difficulty,name
-			query = query.sort(sortBy);
-		} else {
-			query = query.sort("name"); // Default sort by name
-		}
+		// sort
+		if (req.query.sort)
+			query = query.sort(req.query.sort.split(",").join(" "));
+		else query = query.sort("name");
 
-		// field limiting
-		let fields;
-		if (req.query.fields) {
-			fields = req.query.fields.split(",").join(" ");
-		} else {
-			// Default fields: send a smaller payload for list view
-			fields = "name slug type primary_muscles equipment difficulty tags";
-		}
-		query = query.select(fields);
+		// fields
+		if (req.query.fields)
+			query = query.select(req.query.fields.split(",").join(" "));
+		else
+			query = query.select(
+				"name slug type primary_muscles equipment default_prescription.published"
+			);
 
 		// pagination
 		const page = parseInt(req.query.page, 10) || 1;
-		const limit = parseInt(req.query.limit, 10) || 20; // Default limit of 20
+		const limit = parseInt(req.query.limit, 10) || 20;
 		const skip = (page - 1) * limit;
-
 		query = query.skip(skip).limit(limit);
 
-		// Get total document count for pagination metadata
-		let countQuery;
-		if (nameSearch) {
-			countQuery = {
-				...queryObj,
-				name: { $regex: nameSearch, $options: "i" },
-			};
-		} else {
-			countQuery = queryObj;
-		}
-		const totalDocuments = await Exercise.countDocuments(countQuery);
+		const total = await Exercise.countDocuments({ ...q });
+		const results = await query.lean();
 
-		// EXECUTE QUERY
-		const exercises = await query;
-
-		// Send response with pagination metadata
-		res.status(200).json({
-			success: true,
-			message: "Exercises retrieved successfully",
-			total: totalDocuments,
-			page,
-			limit,
-			totalPages: Math.ceil(totalDocuments / limit),
-			results: exercises.length,
-			data: exercises,
-		});
-	} catch (error) {
-		res.status(500).json({
-			success: false,
-			message: "Server error: " + error.message,
-		});
+		return res.json({ total, page, limit, results });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: err.message });
 	}
 };
 
@@ -235,36 +156,18 @@ const getExercises = async (req, res) => {
 const getExerciseById = async (req, res) => {
 	try {
 		const { id } = req.params;
+		if (!mongoose.Types.ObjectId.isValid(id))
+			return res.status(400).json({ message: "Invalid id" });
 
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).json({
-				success: false,
-				message: "Invalid exercise ID",
-			});
-		}
-
-		const exercise = await Exercise.findById(id).populate(
-			"alternatives", // The field to populate
-			"name slug type difficulty"
+		const ex = await Exercise.findById(id).populate(
+			"alternatives",
+			"name slug type"
 		);
-
-		if (!exercise) {
-			return res.status(404).json({
-				success: false,
-				message: "Exercise not found",
-			});
-		}
-
-		res.status(200).json({
-			success: true,
-			message: "Exercise retrieved successfully",
-			data: exercise,
-		});
-	} catch (error) {
-		res.status(500).json({
-			success: false,
-			message: "Server error: " + error.message,
-		});
+		if (!ex) return res.status(404).json({ message: "Exercise not found" });
+		return res.json({ exercise: ex });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: err.message });
 	}
 };
 
@@ -275,109 +178,49 @@ const getExerciseById = async (req, res) => {
 const updateExercise = async (req, res) => {
 	try {
 		const { id } = req.params;
+		if (!mongoose.Types.ObjectId.isValid(id))
+			return res.status(400).json({ message: "Invalid id" });
 
-		// validate id
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).json({
-				success: false,
-				message: "Invalid exercise ID",
-			});
+		const ex = await Exercise.findById(id);
+		if (!ex) return res.status(404).json({ message: "Not found" });
+
+		const body = req.body;
+
+		if (body.name) {
+			ex.name = body.name;
+			ex.slug = slugify(body.name, { lower: true, strict: true });
 		}
-
-		// find the exercise first
-		const exercise = await Exercise.findById(id);
-		if (!exercise) {
-			return res.status(404).json({
-				success: false,
-				message: "Exercise not found",
-			});
-		}
-
-		// Manually update *only* the fields that should be updatable
-		// This prevents mass assignment
-		const {
-			name,
-			description,
-			type,
-			primary_muscles,
-			secondary_muscles,
-			movement_patterns,
-			equipment,
-			tags,
-			difficulty,
-			modality,
-			default_prescription,
-			estimated_minutes,
-			progression,
-			alternatives,
-			contraindications,
-			video_url,
-			images,
-			published,
-		} = req.body;
-
-		// Update fields if they were provided in the request body
-		if (name) {
-			exercise.name = name;
-			exercise.slug = slugify(name, { lower: true, strict: true });
-		}
-
-		exercise.description = description || exercise.description;
-		exercise.type = type || exercise.type;
-		exercise.primary_muscles = primary_muscles || exercise.primary_muscles;
-		exercise.secondary_muscles =
-			secondary_muscles || exercise.secondary_muscles;
-		exercise.movement_patterns =
-			movement_patterns || exercise.movement_patterns;
-		exercise.equipment = equipment || exercise.equipment;
-		exercise.tags = tags || exercise.tags;
-		exercise.difficulty = difficulty || exercise.difficulty;
-		exercise.modality = modality || exercise.modality;
-		exercise.default_prescription =
-			default_prescription || exercise.default_prescription;
-		exercise.estimated_minutes =
-			estimated_minutes || exercise.estimated_minutes;
-		exercise.progression = progression || exercise.progression;
-		exercise.alternatives = alternatives || exercise.alternatives;
-		exercise.contraindications =
-			contraindications || exercise.contraindications;
-		exercise.video_url = video_url || exercise.video_url;
-		exercise.images = images || exercise.images;
-
-		// Explicitly handle boolean
-		if (published !== undefined) {
-			exercise.published = published;
-		}
-
-		// This will trigger your schema validations and hooks!
-		const updatedExercise = await exercise.save();
-
-		res.status(200).json({
-			success: true,
-			message: "Exercise updated successfully",
-			data: updatedExercise,
-		});
-	} catch (error) {
-		if (error.name === "ValidationError") {
-			const errors = Object.values(error.errors).map(
-				(err) => err.message
+		if (body.description !== undefined) ex.description = body.description;
+		if (body.type !== undefined) ex.type = body.type;
+		if (body.primary_muscles !== undefined)
+			ex.primary_muscles = body.primary_muscles;
+		if (body.equipment !== undefined) ex.equipment = body.equipment;
+		if (body.default_prescription !== undefined)
+			ex.default_prescription = normalizePrescription(
+				body.default_prescription
 			);
-			return res.status(400).json({
-				success: false,
-				message: "Validation failed",
-				details: errors,
-			});
+		if (body.progression !== undefined) ex.progression = body.progression;
+		if (body.alternatives !== undefined)
+			ex.alternatives = body.alternatives;
+		if (body.contraindications !== undefined)
+			ex.contraindications = body.contraindications;
+		if (body.video_url !== undefined) ex.video_url = body.video_url;
+		if (body.published !== undefined)
+			ex.published = Boolean(body.published);
+
+		const saved = await ex.save();
+		return res.json({ exercise: saved });
+	} catch (err) {
+		console.error(err);
+		if (err.name === "ValidationError") {
+			const errors = Object.values(err.errors).map((e) => e.message);
+			return res
+				.status(400)
+				.json({ message: "Validation failed", errors });
 		}
-		if (error.code === 11000) {
-			return res.status(400).json({
-				success: false,
-				message: "An exercise with this slug already exists",
-			});
-		}
-		res.status(500).json({
-			success: false,
-			message: "Server error: " + error.message,
-		});
+		if (err.code === 11000)
+			return res.status(400).json({ message: "Duplicate slug" });
+		return res.status(500).json({ message: err.message });
 	}
 };
 
@@ -388,32 +231,14 @@ const updateExercise = async (req, res) => {
 const deleteExercise = async (req, res) => {
 	try {
 		const { id } = req.params;
-
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).json({
-				success: false,
-				message: "Invalid exercise ID",
-			});
-		}
-
-		const exercise = await Exercise.findByIdAndDelete(id);
-		if (!exercise) {
-			return res.status(404).json({
-				success: false,
-				message: "Exercise not found",
-			});
-		}
-
-		res.status(200).json({
-			success: true,
-			message: "Exercise deleted successfully",
-			data: exercise,
-		});
-	} catch (error) {
-		res.status(500).json({
-			success: false,
-			message: "Server error: " + error.message,
-		});
+		if (!mongoose.Types.ObjectId.isValid(id))
+			return res.status(400).json({ message: "Invalid id" });
+		const ex = await Exercise.findByIdAndDelete(id);
+		if (!ex) return res.status(404).json({ message: "Not found" });
+		return res.json({ message: "Deleted", exercise: ex });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: err.message });
 	}
 };
 
@@ -423,40 +248,36 @@ const deleteExercise = async (req, res) => {
 // @access Public
 const getFilterOptions = async (req, res) => {
 	try {
-		const aggregationResult = await Exercise.aggregate([
+		const agg = await Exercise.aggregate([
 			{
 				$facet: {
 					equipment: [
-						{ $unwind: "$equipment" },
+						{
+							$unwind: {
+								path: "$equipment",
+								preserveNullAndEmptyArrays: true,
+							},
+						},
+						{ $match: { equipment: { $ne: null } } },
 						{ $group: { _id: "$equipment" } },
 						{ $sort: { _id: 1 } },
 						{ $project: { _id: 0, value: "$_id" } },
 					],
 					primary_muscles: [
-						{ $unwind: "$primary_muscles" },
+						{
+							$unwind: {
+								path: "$primary_muscles",
+								preserveNullAndEmptyArrays: true,
+							},
+						},
+						{ $match: { primary_muscles: { $ne: null } } },
 						{ $group: { _id: "$primary_muscles" } },
 						{ $sort: { _id: 1 } },
 						{ $project: { _id: 0, value: "$_id" } },
 					],
-					tags: [
-						{ $unwind: "$tags" },
-						{ $group: { _id: "$tags" } },
-						{ $sort: { _id: 1 } },
-						{ $project: { _id: 0, value: "$_id" } },
-					],
-					movement_patterns: [
-						{ $unwind: "$movement_patterns" },
-						{ $group: { _id: "$movement_patterns" } },
-						{ $sort: { _id: 1 } },
-						{ $project: { _id: 0, value: "$_id" } },
-					],
+					// add tags/movement_patterns if you later add them to schema
 					type: [
 						{ $group: { _id: "$type" } },
-						{ $sort: { _id: 1 } },
-						{ $project: { _id: 0, value: "$_id" } },
-					],
-					modality: [
-						{ $group: { _id: "$modality" } },
 						{ $sort: { _id: 1 } },
 						{ $project: { _id: 0, value: "$_id" } },
 					],
@@ -466,33 +287,20 @@ const getFilterOptions = async (req, res) => {
 				$project: {
 					equipment: "$equipment.value",
 					primary_muscles: "$primary_muscles.value",
-					tags: "$tags.value",
-					movement_patterns: "$movement_patterns.value",
 					type: "$type.value",
-					modality: "$modality.value",
 				},
 			},
 		]);
 
-		const filterOptions = aggregationResult[0] || {
+		const result = (agg && agg[0]) || {
 			equipment: [],
 			primary_muscles: [],
-			tags: [],
 			type: [],
-			modality: [],
-			movement_patterns: [],
 		};
-
-		res.status(200).json({
-			success: true,
-			message: "Filter options retrieved successfully",
-			data: filterOptions,
-		});
-	} catch (error) {
-		res.status(500).json({
-			success: false,
-			message: "Server error: " + error.message,
-		});
+		return res.json({ success: true, data: result });
+	} catch (err) {
+		console.error("getFilterOptions error:", err);
+		return res.status(500).json({ success: false, message: err.message });
 	}
 };
 
@@ -502,27 +310,26 @@ const getFilterOptions = async (req, res) => {
 // @access Private/Admin
 const bulkCreateExercises = async (req, res) => {
 	try {
-		const { csvContent } = req.body;
-		console.log("bulkCreateExercises called, csvContent length:", csvContent?.length);
-		
-		if (!csvContent) {
+		// Admin-only route: ensure calling code has already checked req.user.role === 'admin'
+		const csvContent = req.body.csvContent;
+		if (!csvContent)
 			return res
 				.status(400)
-				.json({ success: false, message: "CSV content is required" });
-		}
+				.json({ success: false, message: "csvContent is required" });
 
-		// Normalize line endings & split into lines; allow CRLF or LF
+		// split lines and remove empty lines
 		const rawLines = csvContent
 			.split(/\r?\n/)
-			.filter((l) => l.trim().length > 0);
-		console.log("Parsed lines count:", rawLines.length);
-		
+			.map((l) => l.replace(/\u00A0/g, " ").trim())
+			.filter((l) => l.length > 0);
 		if (rawLines.length < 2) {
 			return res.status(400).json({
 				success: false,
-				message: "CSV must have header + at least one data row",
+				message:
+					"CSV must contain a header row and at least one data row",
 			});
 		}
+
 		if (rawLines.length - 1 > MAX_ROWS) {
 			return res.status(413).json({
 				success: false,
@@ -531,55 +338,63 @@ const bulkCreateExercises = async (req, res) => {
 		}
 
 		// Parse header
-		const headers = parseCSVLine(rawLines[0]).map((h) =>
-			String(h || "").trim()
+		const headers = parseCSVLine(rawLines[0]).map((h) => (h || "").trim());
+
+		// get author info for audit fields
+		const author = await User.findById(req.user.id).select(
+			"firstName lastName"
 		);
-		console.log("Headers:", headers);
-
-		// Get author (assumes req.userId set)
-		const author = await User.findById(req.userId).select("name");
-		if (!author) {
-			return res
-				.status(404)
-				.json({ success: false, message: "Author not found" });
-		}
-
-		const created = [];
-		const errors = [];
-		const skipped = []; // Track skipped duplicates
-
-		// Process rows sequentially so we can run mongoose hooks/validators and ensure unique slug by checking DB
-		for (let idx = 1; idx < rawLines.length; idx++) {
-			const rowNum = idx + 1; // human-friendly row number
-			const line = rawLines[idx];
-			const values = parseCSVLine(line);
-
-			// Map columns
-			const row = {};
-			headers.forEach((h, i) => {
-				const key = (h || "").trim();
-				row[key] = values[i] !== undefined ? values[i] : "";
+		if (!author)
+			return res.status(404).json({
+				success: false,
+				message: "Author (admin user) not found",
 			});
 
-			// Required: name
-			const name = (row.name || "").trim();
-			if (!name) {
-				errors.push({ row: rowNum, message: "Missing 'name' field" });
-				continue;
-			}
+		const created = [];
+		const skipped = [];
+		const errors = [];
 
-			// Check if exercise with this name already exists
-			const existingExercise = await Exercise.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
-			if (existingExercise) {
-				skipped.push({
+		// process rows sequentially (keeps memory predictable and triggers mongoose hooks)
+		for (let i = 1; i < rawLines.length; i++) {
+			const rowNum = i + 1; // human-friendly
+			const line = rawLines[i];
+			let values;
+			try {
+				values = parseCSVLine(line);
+			} catch (parseErr) {
+				errors.push({
 					row: rowNum,
-					name,
-					message: "Exercise with this name already exists"
+					message:
+						"CSV parse error: " + (parseErr.message || parseErr),
 				});
 				continue;
 			}
 
-			// Build exercise object using defensive parsing
+			// map header -> value
+			const row = {};
+			headers.forEach((h, idx) => {
+				row[h] = values[idx] !== undefined ? values[idx] : "";
+			});
+
+			const name = (row.name || "").trim();
+			if (!name) {
+				errors.push({
+					row: rowNum,
+					message: "Missing required 'name' field",
+				});
+				continue;
+			}
+
+			// avoid duplicate by name (case-insensitive)
+			const exists = await Exercise.findOne({
+				name: { $regex: new RegExp(`^${name}$`, "i") },
+			}).lean();
+			if (exists) {
+				skipped.push({ row: rowNum, name, reason: "duplicate name" });
+				continue;
+			}
+
+			// parse common fields defensively
 			const primary_muscles = parseArrayField(
 				row.primary_muscles || row.primaryMuscles || ""
 			);
@@ -590,64 +405,61 @@ const bulkCreateExercises = async (req, res) => {
 				row.movement_patterns || row.movementPatterns || ""
 			);
 			const equipment = parseArrayField(row.equipment || "");
-			const tags = parseArrayField(row.tags || "").map((t) =>
-				t.toLowerCase()
-			);
+			const tags = parseArrayField(row.tags || "");
 			const contraindications = parseArrayField(
 				row.contraindications || ""
 			);
-			const images = parseArrayField(row.images || ""); // if you want CSV to include image URLs
+			const images = parseArrayField(row.images || "");
 			const video_url =
 				(row.video_url || row.videoUrl || "").trim() || null;
 
 			const difficulty = parseInteger(row.difficulty, 3);
-			const modality = (row.modality || "reps").trim().toLowerCase();
+			const modality = (row.modality || "reps").trim();
 
-			// default_prescription: support either separate sets/reps/rest or a nested JSON-like string
+			// prescription parsing: prefer explicit numeric fields. Accept either time_minutes or time_seconds.
 			const sets = parseInteger(row.sets, undefined);
 			const reps = parseInteger(row.reps, undefined);
 			const rest_seconds = parseInteger(row.rest_seconds, undefined);
+			// support old CSVs that used time_minutes
 			const time_minutes = parseInteger(row.time_minutes, undefined);
+			const time_seconds = parseInteger(row.time_seconds, undefined);
 			const distance_meters = parseInteger(
 				row.distance_meters,
 				undefined
 			);
+			const load_kg = parseInteger(row.load_kg, undefined);
 
 			const default_prescription = {};
 			if (sets !== undefined) default_prescription.sets = sets;
 			if (reps !== undefined) default_prescription.reps = reps;
 			if (rest_seconds !== undefined)
 				default_prescription.rest_seconds = rest_seconds;
-			if (time_minutes !== undefined)
-				default_prescription.time_minutes = time_minutes;
+			if (time_seconds !== undefined)
+				default_prescription.time_seconds = time_seconds;
+			else if (time_minutes !== undefined)
+				default_prescription.time_seconds = time_minutes * 60;
 			if (distance_meters !== undefined)
 				default_prescription.distance_meters = distance_meters;
+			if (load_kg !== undefined) default_prescription.load_kg = load_kg;
 
 			const estimated_minutes = parseInteger(row.estimated_minutes, 5);
-			const published =
-				row.published !== undefined
-					? parseBoolean(row.published)
-					: false;
-			const type = (row.type || "strength").trim().toLowerCase();
+			const published = parseBoolean(row.published || "false");
+			const type = (row.type || "strength").trim();
 
-			// Slug: either provided or generated from name (basic slugify)
+			// slug: use provided slug or generate and ensure unique using utils
 			let baseSlug = (row.slug || "").trim();
-			if (!baseSlug) {
-				baseSlug = name
-					.toLowerCase()
-					.replace(/[^a-z0-9]+/g, "-")
-					.replace(/(^-|-$)/g, "");
-			}
-
-			// ensure unique slug
+			if (!baseSlug)
+				baseSlug = slugify(name, { lower: true, strict: true });
 			let slug;
 			try {
 				slug = await ensureUniqueSlug(baseSlug);
-			} catch (err) {
+			} catch (slugErr) {
 				errors.push({
 					row: rowNum,
 					name,
-					message: "Failed to ensure slug uniqueness: " + err.message,
+					message:
+						"Failed to generate unique slug: " +
+						(slugErr.message || slugErr),
 				});
 				continue;
 			}
@@ -670,57 +482,43 @@ const bulkCreateExercises = async (req, res) => {
 				video_url,
 				images,
 				published,
-				author: { id: author._id, name: author.name },
+				author: {
+					id: author._id,
+					name: `${author.firstName} ${author.lastName}`,
+				},
 			};
 
-			// Save via Mongoose model to trigger validators/hooks
 			try {
-				const newExercise = new Exercise(doc);
-				await newExercise.validate(); // optional: pre-validate to catch errors early
-				await newExercise.save();
-				created.push({
-					id: newExercise._id,
-					name: newExercise.name,
-					row: rowNum,
-				});
-			} catch (err) {
-				// handle validation / unique index errors gracefully
-				const errMsg = err && err.message ? err.message : String(err);
-				errors.push({ row: rowNum, name, message: errMsg });
-				// If duplicate key occurs on slug, continue — we already attempted to make slug unique but race conditions may happen
+				const ex = new Exercise(doc);
+				await ex.save();
+				created.push({ row: rowNum, id: ex._id, name: ex.name });
+			} catch (saveErr) {
+				// validation or unique-key failure
+				const msg =
+					saveErr && saveErr.message
+						? saveErr.message
+						: String(saveErr);
+				errors.push({ row: rowNum, name, message: msg });
 			}
-		}
+		} // end for
 
-		// Build response message
-		let message = `Created ${created.length} exercise(s)`;
-		if (skipped.length > 0) {
-			message += `. ${skipped.length} skipped (duplicates)`;
-		}
-		if (errors.length > 0) {
-			message += `. ${errors.length} failed.`;
-		}
-
-		if (created.length === 0 && skipped.length === 0 && errors.length > 0) {
-			return res.status(400).json({
-				success: false,
-				message: "No exercises created",
-				created: 0,
-				skipped: skipped.length,
-				errors,
-			});
-		}
+		const summary = {
+			created: created.length,
+			skipped: skipped.length,
+			errors: errors.length,
+		};
 
 		return res.status(201).json({
 			success: true,
-			message,
-			data: { created, skipped, errors },
+			message: "Bulk import finished",
+			summary,
+			created,
+			skipped,
+			errors,
 		});
-	} catch (error) {
-		console.error("bulkCreateExercises error:", error);
-		return res.status(500).json({
-			success: false,
-			message: "Server error: " + error.message,
-		});
+	} catch (err) {
+		console.error("bulkCreateExercises error:", err);
+		return res.status(500).json({ success: false, message: err.message });
 	}
 };
 

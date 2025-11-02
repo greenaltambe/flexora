@@ -1,0 +1,50 @@
+import UserPlan from "../models/userPlan.model.js";
+import PlanTemplate from "../models/planTemplate.model.js";
+import mongoose from "mongoose";
+
+const assignPlanToUser = async (req, res) => {
+	try {
+		const userId = req.user.id;
+		const { templateId } = req.params;
+		if (!mongoose.Types.ObjectId.isValid(templateId))
+			return res.status(400).json({ message: "invalid templateId" });
+
+		const tpl = await PlanTemplate.findById(templateId);
+		if (!tpl)
+			return res.status(404).json({ message: "template not found" });
+
+		// create or replace existing userPlan
+		let up = await UserPlan.findOne({ userId });
+		if (up) {
+			up.templateId = tpl._id;
+			up.startedAt = new Date();
+			up.currentWeek = 1;
+			up.currentDayIndex = 0;
+			up.overrides = [];
+			await up.save();
+		} else {
+			up = await UserPlan.create({ userId, templateId: tpl._id });
+		}
+		return res.status(201).json({ userPlan: up });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: err.message });
+	}
+};
+
+const getUserPlan = async (req, res) => {
+	try {
+		const userId = req.user.id;
+		const up = await UserPlan.findOne({ userId }).populate(
+			"templateId",
+			"title goal level weeks daysPerWeek"
+		);
+		if (!up) return res.status(404).json({ message: "UserPlan not found" });
+		return res.json({ userPlan: up });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: err.message });
+	}
+};
+
+export { assignPlanToUser, getUserPlan };
