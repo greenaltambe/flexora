@@ -27,7 +27,7 @@ const exerciseStore = create(
 		error: null,
 
 		// Get exercises
-		getExercises: async ({ page = 1, limit = 10, ...params }) => {
+		getExercises: async ({ page = 1, limit = 20, ...params }) => {
 			set({ isLoading: true, error: null });
 
 			const queryParams = new URLSearchParams();
@@ -72,18 +72,16 @@ const exerciseStore = create(
 				set({
 					isLoading: false,
 					error: null,
-					exercises: data.data,
+					exercises: data.results || [],
 					pagination: {
 						total: data.total,
 						page: data.page,
 						limit: data.limit,
-						totalPages: data.totalPages,
-						results: data.results,
 					},
 				});
 				return {
 					success: true,
-					message: data.message || "Request successful",
+					message: "Exercises retrieved successfully",
 				};
 			} catch (error) {
 				set({ isLoading: false, error: getErrorMessage(error) });
@@ -116,12 +114,11 @@ const exerciseStore = create(
 				set({
 					isFilterLoading: false,
 					error: null,
-					filterOptions: data.data, // Assuming response contains filter options
+					filterOptions: data.data,
 				});
 				return {
 					success: true,
-					message:
-						data.message || "Filter options retrieved successfully",
+					message: "Filter options retrieved successfully",
 				};
 			} catch (error) {
 				set({ isFilterLoading: false, error: getErrorMessage(error) });
@@ -154,8 +151,8 @@ const exerciseStore = create(
 				set({ isLoading: false, error: null });
 				return {
 					success: true,
-					data: data.data,
-					message: data.message || "Exercise retrieved successfully",
+					data: data.exercise,
+					message: "Exercise retrieved successfully",
 				};
 			} catch (error) {
 				set({ isLoading: false, error: getErrorMessage(error) });
@@ -190,7 +187,7 @@ const exerciseStore = create(
 				return {
 					success: true,
 					data: data.exercise,
-					message: data.message || "Exercise created successfully",
+					message: "Exercise created successfully",
 				};
 			} catch (error) {
 				set({ isLoading: false, error: getErrorMessage(error) });
@@ -224,8 +221,8 @@ const exerciseStore = create(
 				set({ isLoading: false, error: null });
 				return {
 					success: true,
-					data: data.data,
-					message: data.message || "Exercise updated successfully",
+					data: data.exercise,
+					message: "Exercise updated successfully",
 				};
 			} catch (error) {
 				set({ isLoading: false, error: getErrorMessage(error) });
@@ -258,7 +255,7 @@ const exerciseStore = create(
 				set({ isLoading: false, error: null });
 				return {
 					success: true,
-					message: data.message || "Exercise deleted successfully",
+					message: "Exercise deleted successfully",
 				};
 			} catch (error) {
 				set({ isLoading: false, error: getErrorMessage(error) });
@@ -287,14 +284,20 @@ const exerciseStore = create(
 					return {
 						success: false,
 						message: data.message || "Request failed",
-						details: data.details || data.errors || [],
+						summary: data.summary || {},
+						created: data.created || [],
+						skipped: data.skipped || [],
+						errors: data.errors || [],
 					};
 				}
 				set({ isLoading: false, error: null });
 				return {
 					success: true,
-					data: data.data,
-					message: data.message || "Exercises created successfully",
+					message: data.message || "Exercises imported successfully",
+					summary: data.summary || {},
+					created: data.created || [],
+					skipped: data.skipped || [],
+					errors: data.errors || [],
 				};
 			} catch (error) {
 				set({ isLoading: false, error: getErrorMessage(error) });
@@ -307,4 +310,5 @@ const exerciseStore = create(
 	}
 );
 
+export const useExerciseStore = exerciseStore;
 export default exerciseStore;

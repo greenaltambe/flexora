@@ -19,6 +19,14 @@ import ManageExercise from "./pages/ManageExercise";
 import CreateEditExercise from "./pages/CreateEditExercise";
 import ImportExerciseCSV from "./pages/ImportExerciseCSV";
 import Onboarding from "./pages/Onboarding";
+import ExerciseList from "./pages/ExerciseList";
+import ExerciseDetail from "./pages/ExerciseDetail";
+import PlanTemplateList from "./pages/PlanTemplateList";
+import PlanTemplateDetail from "./pages/PlanTemplateDetail";
+import ManagePlanTemplates from "./pages/ManagePlanTemplates";
+import CreateEditPlanTemplate from "./pages/CreateEditPlanTemplate";
+import ProfileSettings from "./pages/ProfileSettings";
+import MyPlans from "./pages/MyPlans";
 
 const App = () => {
 	const { checkAuth } = useAuthStore();
@@ -127,6 +135,82 @@ const App = () => {
 					element={
 						<Protect>
 							<Logout />
+						</Protect>
+					}
+				/>
+				{/* Exercise Routes */}
+				<Route
+					path="/exercises"
+					element={
+						<Protect>
+							<ExerciseList />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/exercises/:id"
+					element={
+						<Protect>
+							<ExerciseDetail />
+						</Protect>
+					}
+				/>
+				{/* Plan Routes */}
+				<Route
+					path="/plans"
+					element={
+						<Protect>
+							<PlanTemplateList />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/plans/:id"
+					element={
+						<Protect>
+							<PlanTemplateDetail />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/my-plans"
+					element={
+						<Protect>
+							<MyPlans />
+						</Protect>
+					}
+				/>
+				{/* Admin Plan Template Routes */}
+				<Route
+					path="/admin/plan-templates"
+					element={
+						<Protect requireAdmin>
+							<ManagePlanTemplates />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/admin/plan-templates/create"
+					element={
+						<Protect requireAdmin>
+							<CreateEditPlanTemplate />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/admin/plan-templates/edit/:id"
+					element={
+						<Protect requireAdmin>
+							<CreateEditPlanTemplate />
+						</Protect>
+					}
+				/>
+				{/* Profile Routes */}
+				<Route
+					path="/profile/settings"
+					element={
+						<Protect>
+							<ProfileSettings />
 						</Protect>
 					}
 				/>
