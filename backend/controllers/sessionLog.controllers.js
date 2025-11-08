@@ -7,6 +7,7 @@ import {
 	evaluateProgression,
 	applyDecisionToUserPlan,
 } from "../services/progression.service.js";
+import { updateStreak } from "../services/streak.service.js";
 
 /**
  * Accepts: POST /api/session/:date/log
@@ -85,7 +86,29 @@ const submitSessionLog = async (req, res) => {
 			}
 		}
 
-		return res.json({ message: "Logged", savedLog });
+		// Update streak if any exercise was marked as "done"
+		const hasCompletedExercise = entries.some((e) => e.status === "done");
+		let streakUpdate = null;
+		if (hasCompletedExercise) {
+			try {
+				streakUpdate = await updateStreak(userId, date);
+			} catch (streakErr) {
+				console.error("Streak update error:", streakErr);
+			}
+		}
+
+		return res.json({
+			message: "Logged",
+			savedLog,
+			streakUpdate: streakUpdate
+				? {
+						currentStreak: streakUpdate.currentStreak,
+						newMilestones: streakUpdate.milestones.filter(
+							(m) => !m.acknowledged
+						),
+				  }
+				: null,
+		});
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ message: err.message });
