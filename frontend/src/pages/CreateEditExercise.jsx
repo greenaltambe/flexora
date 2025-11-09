@@ -33,9 +33,11 @@ const CreateEditExercise = () => {
 		published: false,
 	});
 
-	const [tempMuscle, setTempMuscle] = useState("");
+	const [tempPrimaryMuscle, setTempPrimaryMuscle] = useState("");
 	const [tempEquipment, setTempEquipment] = useState("");
 	const [tempTag, setTempTag] = useState("");
+	const [tempSecondaryMuscle, setTempSecondaryMuscle] = useState("");
+	const [tempMovementPattern, setTempMovementPattern] = useState("");
 	const [tempContraindication, setTempContraindication] = useState("");
 
 	useEffect(() => {
@@ -328,27 +330,30 @@ const CreateEditExercise = () => {
 
 							{/* Primary Muscles */}
 							<div className="divider divider-neutral"></div>
-							<div className="space-y-6">
-								<h2 className="text-2xl font-semibold text-base-content">
-									Primary Muscles
+							<div className="space-y-4">
+								<h2 className="text-2xl font-semibold text-base-content flex items-center gap-2">
+									<span>💪</span> Primary Muscles
 								</h2>
+								<p className="text-sm text-base-content/70">
+									Main muscles targeted by this exercise
+								</p>
 								<div className="flex gap-3">
 									<input
 										type="text"
-										value={tempMuscle}
+										value={tempPrimaryMuscle}
 										onChange={(e) =>
-											setTempMuscle(e.target.value)
+											setTempPrimaryMuscle(e.target.value)
 										}
 										className="input input-bordered w-full focus:input-primary"
-										placeholder="Add muscle (e.g., Chest, Biceps)"
+										placeholder="e.g., Chest, Quadriceps, Biceps"
 										onKeyPress={(e) => {
 											if (e.key === "Enter") {
 												e.preventDefault();
 												handleAddArrayItem(
 													"primary_muscles",
-													tempMuscle
+													tempPrimaryMuscle
 												);
-												setTempMuscle("");
+												setTempPrimaryMuscle("");
 											}
 										}}
 									/>
@@ -357,36 +362,198 @@ const CreateEditExercise = () => {
 										onClick={() => {
 											handleAddArrayItem(
 												"primary_muscles",
-												tempMuscle
+												tempPrimaryMuscle
 											);
-											setTempMuscle("");
+											setTempPrimaryMuscle("");
 										}}
-										className="btn btn-primary btn-md"
+										className="btn btn-primary btn-md px-6"
 									>
 										Add
 									</button>
 								</div>
-								<div className="flex flex-wrap gap-2">
-									{formData.primary_muscles.map(
-										(muscle, index) => (
-											<span
-												key={index}
-												className="badge badge-primary badge-lg font-medium"
-											>
-												{muscle}
-												<button
-													type="button"
-													onClick={() =>
-														handleRemoveArrayItem(
-															"primary_muscles",
-															index
-														)
-													}
-													className="ml-2 text-error hover:text-error-content"
+								<div className="flex flex-wrap gap-2 min-h-12 p-3 bg-base-200 rounded-lg">
+									{formData.primary_muscles.length === 0 ? (
+										<span className="text-base-content/50 text-sm">
+											No primary muscles added yet
+										</span>
+									) : (
+										formData.primary_muscles.map(
+											(muscle, index) => (
+												<span
+													key={index}
+													className="badge badge-primary badge-lg font-medium gap-2"
 												>
-													×
-												</button>
-											</span>
+													{muscle}
+													<button
+														type="button"
+														onClick={() =>
+															handleRemoveArrayItem(
+																"primary_muscles",
+																index
+															)
+														}
+														className="hover:text-error"
+													>
+														×
+													</button>
+												</span>
+											)
+										)
+									)}
+								</div>
+							</div>
+
+							{/* Secondary Muscles */}
+							<div className="divider divider-neutral"></div>
+							<div className="space-y-4">
+								<h2 className="text-2xl font-semibold text-base-content flex items-center gap-2">
+									<span>🎯</span> Secondary Muscles
+								</h2>
+								<p className="text-sm text-base-content/70">
+									Supporting muscles engaged during this
+									exercise
+								</p>
+								<div className="flex gap-3">
+									<input
+										type="text"
+										value={tempSecondaryMuscle}
+										onChange={(e) =>
+											setTempSecondaryMuscle(
+												e.target.value
+											)
+										}
+										className="input input-bordered w-full focus:input-primary"
+										placeholder="e.g., Triceps, Core, Shoulders"
+										onKeyPress={(e) => {
+											if (e.key === "Enter") {
+												e.preventDefault();
+												handleAddArrayItem(
+													"secondary_muscles",
+													tempSecondaryMuscle
+												);
+												setTempSecondaryMuscle("");
+											}
+										}}
+									/>
+									<button
+										type="button"
+										onClick={() => {
+											handleAddArrayItem(
+												"secondary_muscles",
+												tempSecondaryMuscle
+											);
+											setTempSecondaryMuscle("");
+										}}
+										className="btn btn-secondary btn-md px-6"
+									>
+										Add
+									</button>
+								</div>
+								<div className="flex flex-wrap gap-2 min-h-12 p-3 bg-base-200 rounded-lg">
+									{formData.secondary_muscles.length === 0 ? (
+										<span className="text-base-content/50 text-sm">
+											No secondary muscles added yet
+										</span>
+									) : (
+										formData.secondary_muscles.map(
+											(muscle, index) => (
+												<span
+													key={index}
+													className="badge badge-secondary badge-lg font-medium gap-2"
+												>
+													{muscle}
+													<button
+														type="button"
+														onClick={() =>
+															handleRemoveArrayItem(
+																"secondary_muscles",
+																index
+															)
+														}
+														className="hover:text-error"
+													>
+														×
+													</button>
+												</span>
+											)
+										)
+									)}
+								</div>
+							</div>
+
+							{/* Movement Patterns */}
+							<div className="divider divider-neutral"></div>
+							<div className="space-y-4">
+								<h2 className="text-2xl font-semibold text-base-content flex items-center gap-2">
+									<span>🔄</span> Movement Patterns
+								</h2>
+								<p className="text-sm text-base-content/70">
+									Type of movement (e.g., Push, Pull, Hinge,
+									Squat)
+								</p>
+								<div className="flex gap-3">
+									<input
+										type="text"
+										value={tempMovementPattern}
+										onChange={(e) =>
+											setTempMovementPattern(
+												e.target.value
+											)
+										}
+										className="input input-bordered w-full focus:input-primary"
+										placeholder="e.g., Push, Pull, Hinge, Squat"
+										onKeyPress={(e) => {
+											if (e.key === "Enter") {
+												e.preventDefault();
+												handleAddArrayItem(
+													"movement_patterns",
+													tempMovementPattern
+												);
+												setTempMovementPattern("");
+											}
+										}}
+									/>
+									<button
+										type="button"
+										onClick={() => {
+											handleAddArrayItem(
+												"movement_patterns",
+												tempMovementPattern
+											);
+											setTempMovementPattern("");
+										}}
+										className="btn btn-accent btn-md px-6"
+									>
+										Add
+									</button>
+								</div>
+								<div className="flex flex-wrap gap-2 min-h-12 p-3 bg-base-200 rounded-lg">
+									{formData.movement_patterns.length === 0 ? (
+										<span className="text-base-content/50 text-sm">
+											No movement patterns added yet
+										</span>
+									) : (
+										formData.movement_patterns.map(
+											(pattern, index) => (
+												<span
+													key={index}
+													className="badge badge-accent badge-lg font-medium gap-2"
+												>
+													{pattern}
+													<button
+														type="button"
+														onClick={() =>
+															handleRemoveArrayItem(
+																"movement_patterns",
+																index
+															)
+														}
+														className="hover:text-error"
+													>
+														×
+													</button>
+												</span>
+											)
 										)
 									)}
 								</div>
@@ -394,10 +561,13 @@ const CreateEditExercise = () => {
 
 							{/* Equipment */}
 							<div className="divider divider-neutral"></div>
-							<div className="space-y-6">
-								<h2 className="text-2xl font-semibold text-base-content">
-									Equipment
+							<div className="space-y-4">
+								<h2 className="text-2xl font-semibold text-base-content flex items-center gap-2">
+									<span>🏋️</span> Equipment
 								</h2>
+								<p className="text-sm text-base-content/70">
+									Equipment required for this exercise
+								</p>
 								<div className="flex gap-3">
 									<input
 										type="text"
@@ -406,7 +576,7 @@ const CreateEditExercise = () => {
 											setTempEquipment(e.target.value)
 										}
 										className="input input-bordered w-full focus:input-primary"
-										placeholder="Add equipment (e.g., Dumbbell, Barbell)"
+										placeholder="e.g., Dumbbell, Barbell, Bodyweight, Kettlebell"
 										onKeyPress={(e) => {
 											if (e.key === "Enter") {
 												e.preventDefault();
@@ -427,41 +597,51 @@ const CreateEditExercise = () => {
 											);
 											setTempEquipment("");
 										}}
-										className="btn btn-primary btn-md"
+										className="btn btn-info btn-md px-6"
 									>
 										Add
 									</button>
 								</div>
-								<div className="flex flex-wrap gap-2">
-									{formData.equipment.map((eq, index) => (
-										<span
-											key={index}
-											className="badge badge-primary badge-lg font-medium"
-										>
-											{eq}
-											<button
-												type="button"
-												onClick={() =>
-													handleRemoveArrayItem(
-														"equipment",
-														index
-													)
-												}
-												className="ml-2 text-error hover:text-error-content"
-											>
-												×
-											</button>
+								<div className="flex flex-wrap gap-2 min-h-12 p-3 bg-base-200 rounded-lg">
+									{formData.equipment.length === 0 ? (
+										<span className="text-base-content/50 text-sm">
+											No equipment added yet
 										</span>
-									))}
+									) : (
+										formData.equipment.map((eq, index) => (
+											<span
+												key={index}
+												className="badge badge-info badge-lg font-medium gap-2"
+											>
+												{eq}
+												<button
+													type="button"
+													onClick={() =>
+														handleRemoveArrayItem(
+															"equipment",
+															index
+														)
+													}
+													className="hover:text-error"
+												>
+													×
+												</button>
+											</span>
+										))
+									)}
 								</div>
 							</div>
 
 							{/* Tags */}
 							<div className="divider divider-neutral"></div>
-							<div className="space-y-6">
-								<h2 className="text-2xl font-semibold text-base-content">
-									Tags
+							<div className="space-y-4">
+								<h2 className="text-2xl font-semibold text-base-content flex items-center gap-2">
+									<span>🏷️</span> Tags
 								</h2>
+								<p className="text-sm text-base-content/70">
+									Keywords to help categorize and search for
+									this exercise
+								</p>
 								<div className="flex gap-3">
 									<input
 										type="text"
@@ -470,7 +650,7 @@ const CreateEditExercise = () => {
 											setTempTag(e.target.value)
 										}
 										className="input input-bordered w-full focus:input-primary"
-										placeholder="Add tag (e.g., upper-body, beginner)"
+										placeholder="e.g., upper-body, beginner, compound"
 										onKeyPress={(e) => {
 											if (e.key === "Enter") {
 												e.preventDefault();
@@ -488,41 +668,129 @@ const CreateEditExercise = () => {
 											handleAddArrayItem("tags", tempTag);
 											setTempTag("");
 										}}
-										className="btn btn-primary btn-md"
+										className="btn btn-success btn-md px-6"
 									>
 										Add
 									</button>
 								</div>
-								<div className="flex flex-wrap gap-2">
-									{formData.tags.map((tag, index) => (
-										<span
-											key={index}
-											className="badge badge-primary badge-lg font-medium"
-										>
-											{tag}
-											<button
-												type="button"
-												onClick={() =>
-													handleRemoveArrayItem(
-														"tags",
-														index
-													)
-												}
-												className="ml-2 text-error hover:text-error-content"
-											>
-												×
-											</button>
+								<div className="flex flex-wrap gap-2 min-h-12 p-3 bg-base-200 rounded-lg">
+									{formData.tags.length === 0 ? (
+										<span className="text-base-content/50 text-sm">
+											No tags added yet
 										</span>
-									))}
+									) : (
+										formData.tags.map((tag, index) => (
+											<span
+												key={index}
+												className="badge badge-success badge-lg font-medium gap-2"
+											>
+												{tag}
+												<button
+													type="button"
+													onClick={() =>
+														handleRemoveArrayItem(
+															"tags",
+															index
+														)
+													}
+													className="hover:text-error"
+												>
+													×
+												</button>
+											</span>
+										))
+									)}
+								</div>
+							</div>
+
+							{/* Contraindications */}
+							<div className="divider divider-neutral"></div>
+							<div className="space-y-4">
+								<h2 className="text-2xl font-semibold text-base-content flex items-center gap-2">
+									<span>⚠️</span> Contraindications
+								</h2>
+								<p className="text-sm text-base-content/70">
+									Conditions or situations where this exercise
+									should be avoided
+								</p>
+								<div className="flex gap-3">
+									<input
+										type="text"
+										value={tempContraindication}
+										onChange={(e) =>
+											setTempContraindication(
+												e.target.value
+											)
+										}
+										className="input input-bordered w-full focus:input-primary"
+										placeholder="e.g., Lower back injury, Shoulder pain"
+										onKeyPress={(e) => {
+											if (e.key === "Enter") {
+												e.preventDefault();
+												handleAddArrayItem(
+													"contraindications",
+													tempContraindication
+												);
+												setTempContraindication("");
+											}
+										}}
+									/>
+									<button
+										type="button"
+										onClick={() => {
+											handleAddArrayItem(
+												"contraindications",
+												tempContraindication
+											);
+											setTempContraindication("");
+										}}
+										className="btn btn-warning btn-md px-6"
+									>
+										Add
+									</button>
+								</div>
+								<div className="flex flex-wrap gap-2 min-h-12 p-3 bg-base-200 rounded-lg">
+									{formData.contraindications.length === 0 ? (
+										<span className="text-base-content/50 text-sm">
+											No contraindications added yet
+										</span>
+									) : (
+										formData.contraindications.map(
+											(item, index) => (
+												<span
+													key={index}
+													className="badge badge-warning badge-lg font-medium gap-2"
+												>
+													{item}
+													<button
+														type="button"
+														onClick={() =>
+															handleRemoveArrayItem(
+																"contraindications",
+																index
+															)
+														}
+														className="hover:text-error"
+													>
+														×
+													</button>
+												</span>
+											)
+										)
+									)}
 								</div>
 							</div>
 
 							{/* Default Prescription */}
 							<div className="divider divider-neutral"></div>
-							<div className="space-y-6">
-								<h2 className="text-2xl font-semibold text-base-content">
-									Default Prescription
+							<div className="space-y-4">
+								<h2 className="text-2xl font-semibold text-base-content flex items-center gap-2">
+									<span>💊</span> Default Prescription
 								</h2>
+								<p className="text-sm text-base-content/70">
+									Recommended sets, reps, and rest time for
+									this exercise
+								</p>
 								<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 									<div className="form-control space-y-2">
 										<label className="label">

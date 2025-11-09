@@ -40,7 +40,7 @@ const PlanTemplateList = () => {
 
 	if (isLoading && templates.length === 0) {
 		return (
-			<div className="max-w-7xl mx-auto">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 				<div className="flex justify-center items-center min-h-[400px]">
 					<span className="loading loading-spinner loading-lg"></span>
 				</div>
@@ -49,7 +49,7 @@ const PlanTemplateList = () => {
 	}
 
 	return (
-		<div className="max-w-7xl mx-auto">
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 			<div className="flex items-center justify-between mb-6">
 				<div>
 					<h1 className="text-3xl font-bold mb-2">Plan Templates</h1>
@@ -95,7 +95,9 @@ const PlanTemplateList = () => {
 							>
 								<option value="">All Levels</option>
 								<option value="beginner">Beginner</option>
-								<option value="intermediate">Intermediate</option>
+								<option value="intermediate">
+									Intermediate
+								</option>
 								<option value="advanced">Advanced</option>
 							</select>
 						</div>
@@ -125,10 +127,16 @@ const PlanTemplateList = () => {
 							className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow"
 						>
 							<div className="card-body">
-								<h2 className="card-title text-lg">{template.title}</h2>
-								
+								<h2 className="card-title text-lg">
+									{template.title}
+								</h2>
+
 								<div className="flex flex-wrap gap-2 my-3">
-									<div className={`badge ${getLevelColor(template.level)} badge-sm capitalize`}>
+									<div
+										className={`badge ${getLevelColor(
+											template.level
+										)} badge-sm capitalize`}
+									>
 										{template.level}
 									</div>
 									{template.goal && (
@@ -146,7 +154,9 @@ const PlanTemplateList = () => {
 									</div>
 									<div className="flex items-center gap-1">
 										<Dumbbell className="w-4 h-4" />
-										<span>{template.daysPerWeek} days/week</span>
+										<span>
+											{template.daysPerWeek} days/week
+										</span>
 									</div>
 								</div>
 

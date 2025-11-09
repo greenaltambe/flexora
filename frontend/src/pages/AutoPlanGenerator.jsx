@@ -35,7 +35,9 @@ const AutoPlanGenerator = () => {
 	const checkExistingPlan = async () => {
 		const result = await getCurrentAutoPlan();
 		if (result.success && result.data) {
-			toast.info("You already have an active plan");
+			toast("You already have an active plan", {
+				icon: "ℹ️",
+			});
 			navigate("/auto-plan/dashboard");
 		}
 	};

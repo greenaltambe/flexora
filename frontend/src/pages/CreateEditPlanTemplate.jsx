@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { 
-	ArrowLeft, 
-	Plus, 
-	Trash, 
+import {
+	ArrowLeft,
+	Plus,
+	Trash,
 	Save,
 	ChevronDown,
 	ChevronUp,
-	Search
+	Search,
 } from "lucide-react";
 import { usePlanTemplateStore } from "../store/planTemplate/planTemplateStore";
 import { useExerciseStore } from "../store/exercise/exerciseStore";
@@ -18,7 +18,14 @@ const CreateEditPlanTemplate = () => {
 	const navigate = useNavigate();
 	const isEdit = !!id;
 
-	const { currentTemplate, isLoading, getPlanTemplateById, createPlanTemplate, updatePlanTemplate, clearCurrentTemplate } = usePlanTemplateStore();
+	const {
+		currentTemplate,
+		isLoading,
+		getPlanTemplateById,
+		createPlanTemplate,
+		updatePlanTemplate,
+		clearCurrentTemplate,
+	} = usePlanTemplateStore();
 	const { exercises, getExercises } = useExerciseStore();
 
 	const [formData, setFormData] = useState({
@@ -71,31 +78,33 @@ const CreateEditPlanTemplate = () => {
 
 	const handleInputChange = (e) => {
 		const { name, value, type, checked } = e.target;
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
-			[name]: type === "checkbox" ? checked : value
+			[name]: type === "checkbox" ? checked : value,
 		}));
 	};
 
 	const addDay = () => {
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
 			dayTemplates: [
 				...prev.dayTemplates,
 				{
 					name: `Day ${prev.dayTemplates.length + 1}`,
-					exercises: []
-				}
-			]
+					exercises: [],
+				},
+			],
 		}));
 	};
 
 	const removeDay = (dayIndex) => {
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
-			dayTemplates: prev.dayTemplates.filter((_, idx) => idx !== dayIndex)
+			dayTemplates: prev.dayTemplates.filter(
+				(_, idx) => idx !== dayIndex
+			),
 		}));
-		setExpandedDays(prev => {
+		setExpandedDays((prev) => {
 			const newExpanded = { ...prev };
 			delete newExpanded[dayIndex];
 			return newExpanded;
@@ -103,18 +112,18 @@ const CreateEditPlanTemplate = () => {
 	};
 
 	const updateDayName = (dayIndex, name) => {
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
-			dayTemplates: prev.dayTemplates.map((day, idx) => 
+			dayTemplates: prev.dayTemplates.map((day, idx) =>
 				idx === dayIndex ? { ...day, name } : day
-			)
+			),
 		}));
 	};
 
 	const toggleDay = (index) => {
-		setExpandedDays(prev => ({
+		setExpandedDays((prev) => ({
 			...prev,
-			[index]: !prev[index]
+			[index]: !prev[index],
 		}));
 	};
 
@@ -126,7 +135,7 @@ const CreateEditPlanTemplate = () => {
 	const addExerciseToDay = (exercise) => {
 		if (currentDayIndex === null) return;
 
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
 			dayTemplates: prev.dayTemplates.map((day, idx) => {
 				if (idx === currentDayIndex) {
@@ -145,12 +154,12 @@ const CreateEditPlanTemplate = () => {
 								},
 								variant: "base",
 								cue: "",
-							}
-						]
+							},
+						],
 					};
 				}
 				return day;
-			})
+			}),
 		}));
 
 		setShowExerciseModal(false);
@@ -159,22 +168,29 @@ const CreateEditPlanTemplate = () => {
 	};
 
 	const removeExercise = (dayIndex, exerciseIndex) => {
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
 			dayTemplates: prev.dayTemplates.map((day, idx) => {
 				if (idx === dayIndex) {
 					return {
 						...day,
-						exercises: day.exercises.filter((_, exIdx) => exIdx !== exerciseIndex)
+						exercises: day.exercises.filter(
+							(_, exIdx) => exIdx !== exerciseIndex
+						),
 					};
 				}
 				return day;
-			})
+			}),
 		}));
 	};
 
-	const updateExercisePrescription = (dayIndex, exerciseIndex, field, value) => {
-		setFormData(prev => ({
+	const updateExercisePrescription = (
+		dayIndex,
+		exerciseIndex,
+		field,
+		value
+	) => {
+		setFormData((prev) => ({
 			...prev,
 			dayTemplates: prev.dayTemplates.map((day, idx) => {
 				if (idx === dayIndex) {
@@ -186,21 +202,22 @@ const CreateEditPlanTemplate = () => {
 									...ex,
 									planned: {
 										...ex.planned,
-										[field]: value === "" ? null : Number(value)
-									}
+										[field]:
+											value === "" ? null : Number(value),
+									},
 								};
 							}
 							return ex;
-						})
+						}),
 					};
 				}
 				return day;
-			})
+			}),
 		}));
 	};
 
 	const updateExerciseField = (dayIndex, exerciseIndex, field, value) => {
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
 			dayTemplates: prev.dayTemplates.map((day, idx) => {
 				if (idx === dayIndex) {
@@ -211,25 +228,25 @@ const CreateEditPlanTemplate = () => {
 								return { ...ex, [field]: value };
 							}
 							return ex;
-						})
+						}),
 					};
 				}
 				return day;
-			})
+			}),
 		}));
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		
+
 		if (!formData.title.trim()) {
 			toast.error("Title is required");
 			return;
 		}
 
 		setIsSaving(true);
-		
-		const result = isEdit 
+
+		const result = isEdit
 			? await updatePlanTemplate(id, formData)
 			: await createPlanTemplate(formData);
 
@@ -243,18 +260,18 @@ const CreateEditPlanTemplate = () => {
 		}
 	};
 
-	const filteredExercises = exercises.filter(ex => 
+	const filteredExercises = exercises.filter((ex) =>
 		ex.name?.toLowerCase().includes(exerciseSearch.toLowerCase())
 	);
 
 	const getExerciseName = (exerciseId) => {
-		const exercise = exercises.find(ex => ex._id === exerciseId);
+		const exercise = exercises.find((ex) => ex._id === exerciseId);
 		return exercise?.name || "Unknown Exercise";
 	};
 
 	if (isLoading && isEdit) {
 		return (
-			<div className="max-w-6xl mx-auto">
+			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 				<div className="flex justify-center items-center min-h-[400px]">
 					<span className="loading loading-spinner loading-lg"></span>
 				</div>
@@ -263,106 +280,145 @@ const CreateEditPlanTemplate = () => {
 	}
 
 	return (
-		<div className="max-w-6xl mx-auto">
+		<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 			<Link
 				to="/admin/plan-templates"
-				className="btn btn-ghost btn-sm mb-4 gap-2"
+				className="btn btn-ghost btn-sm mb-6 gap-2"
 			>
 				<ArrowLeft className="w-4 h-4" />
 				Back to Manage Templates
 			</Link>
 
-			<form onSubmit={handleSubmit}>
+			<form onSubmit={handleSubmit} className="space-y-6">
 				{/* Header */}
-				<div className="card bg-base-100 shadow-lg mb-6">
+				<div className="card bg-base-100 shadow-lg">
 					<div className="card-body">
-						<h1 className="text-3xl font-bold mb-4">
-							{isEdit ? "Edit Plan Template" : "Create Plan Template"}
+						<h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+							<span>📋</span>
+							{isEdit
+								? "Edit Plan Template"
+								: "Create Plan Template"}
 						</h1>
+						<p className="text-base-content/70 mb-6">
+							{isEdit
+								? "Update the details of your workout plan template"
+								: "Design a new workout plan template with exercises and progressions"}
+						</p>
 
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div className="space-y-4">
+							{/* Title */}
 							<div className="form-control">
 								<label className="label">
-									<span className="label-text">Title *</span>
+									<span className="label-text font-semibold">
+										Title *
+									</span>
 								</label>
 								<input
 									type="text"
 									name="title"
 									value={formData.title}
 									onChange={handleInputChange}
-									className="input input-bordered"
+									className="input input-bordered w-full"
 									placeholder="e.g., Beginner Strength Program"
 									required
 								/>
 							</div>
 
-							<div className="form-control">
-								<label className="label">
-									<span className="label-text">Goal</span>
-								</label>
-								<select
-									name="goal"
-									value={formData.goal}
-									onChange={handleInputChange}
-									className="select select-bordered"
-								>
-									<option value="">Select Goal</option>
-									<option value="strength">Strength</option>
-									<option value="hypertrophy">Hypertrophy</option>
-									<option value="fat_loss">Fat Loss</option>
-									<option value="endurance">Endurance</option>
-								</select>
+							{/* Grid for Goal and Level */}
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div className="form-control">
+									<label className="label">
+										<span className="label-text font-semibold">
+											Goal
+										</span>
+									</label>
+									<select
+										name="goal"
+										value={formData.goal}
+										onChange={handleInputChange}
+										className="select select-bordered w-full"
+									>
+										<option value="">Select Goal</option>
+										<option value="strength">
+											Strength
+										</option>
+										<option value="hypertrophy">
+											Hypertrophy
+										</option>
+										<option value="fat_loss">
+											Fat Loss
+										</option>
+										<option value="endurance">
+											Endurance
+										</option>
+									</select>
+								</div>
+
+								<div className="form-control">
+									<label className="label">
+										<span className="label-text font-semibold">
+											Level
+										</span>
+									</label>
+									<select
+										name="level"
+										value={formData.level}
+										onChange={handleInputChange}
+										className="select select-bordered w-full"
+									>
+										<option value="beginner">
+											Beginner
+										</option>
+										<option value="intermediate">
+											Intermediate
+										</option>
+										<option value="advanced">
+											Advanced
+										</option>
+									</select>
+								</div>
 							</div>
 
-							<div className="form-control">
-								<label className="label">
-									<span className="label-text">Level</span>
-								</label>
-								<select
-									name="level"
-									value={formData.level}
-									onChange={handleInputChange}
-									className="select select-bordered"
-								>
-									<option value="beginner">Beginner</option>
-									<option value="intermediate">Intermediate</option>
-									<option value="advanced">Advanced</option>
-								</select>
+							{/* Grid for Weeks and Days */}
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div className="form-control">
+									<label className="label">
+										<span className="label-text font-semibold">
+											Program Duration (Weeks)
+										</span>
+									</label>
+									<input
+										type="number"
+										name="weeks"
+										value={formData.weeks}
+										onChange={handleInputChange}
+										className="input input-bordered w-full"
+										min="1"
+										max="52"
+									/>
+								</div>
+
+								<div className="form-control">
+									<label className="label">
+										<span className="label-text font-semibold">
+											Days Per Week
+										</span>
+									</label>
+									<input
+										type="number"
+										name="daysPerWeek"
+										value={formData.daysPerWeek}
+										onChange={handleInputChange}
+										className="input input-bordered w-full"
+										min="1"
+										max="7"
+									/>
+								</div>
 							</div>
 
+							{/* Published Toggle */}
 							<div className="form-control">
-								<label className="label">
-									<span className="label-text">Weeks</span>
-								</label>
-								<input
-									type="number"
-									name="weeks"
-									value={formData.weeks}
-									onChange={handleInputChange}
-									className="input input-bordered"
-									min="1"
-									max="52"
-								/>
-							</div>
-
-							<div className="form-control">
-								<label className="label">
-									<span className="label-text">Days Per Week</span>
-								</label>
-								<input
-									type="number"
-									name="daysPerWeek"
-									value={formData.daysPerWeek}
-									onChange={handleInputChange}
-									className="input input-bordered"
-									min="1"
-									max="7"
-								/>
-							</div>
-
-							<div className="form-control">
-								<label className="label cursor-pointer">
-									<span className="label-text">Published</span>
+								<label className="label cursor-pointer justify-start gap-4">
 									<input
 										type="checkbox"
 										name="published"
@@ -370,6 +426,14 @@ const CreateEditPlanTemplate = () => {
 										onChange={handleInputChange}
 										className="checkbox checkbox-primary"
 									/>
+									<div>
+										<span className="label-text font-semibold">
+											Publish Template
+										</span>
+										<p className="text-sm text-base-content/60">
+											Make this template visible to users
+										</p>
+									</div>
 								</label>
 							</div>
 						</div>
@@ -377,10 +441,18 @@ const CreateEditPlanTemplate = () => {
 				</div>
 
 				{/* Day Templates */}
-				<div className="card bg-base-100 shadow-lg mb-6">
+				<div className="card bg-base-100 shadow-lg">
 					<div className="card-body">
 						<div className="flex items-center justify-between mb-4">
-							<h2 className="text-2xl font-bold">Workout Days</h2>
+							<div>
+								<h2 className="text-2xl font-bold flex items-center gap-2">
+									<span>🏋️</span> Workout Days
+								</h2>
+								<p className="text-sm text-base-content/70 mt-1">
+									Define the workout days and exercises for
+									this plan
+								</p>
+							</div>
 							<button
 								type="button"
 								onClick={addDay}
@@ -393,24 +465,37 @@ const CreateEditPlanTemplate = () => {
 
 						{formData.dayTemplates.length === 0 ? (
 							<div className="text-center py-8 text-base-content/70">
-								<p>No workout days yet. Click "Add Day" to create one.</p>
+								<p>
+									No workout days yet. Click "Add Day" to
+									create one.
+								</p>
 							</div>
 						) : (
 							<div className="space-y-4">
 								{formData.dayTemplates.map((day, dayIndex) => (
-									<div key={dayIndex} className="border border-base-300 rounded-lg p-4">
+									<div
+										key={dayIndex}
+										className="border border-base-300 rounded-lg p-4"
+									>
 										<div className="flex items-center justify-between mb-3">
 											<input
 												type="text"
 												value={day.name}
-												onChange={(e) => updateDayName(dayIndex, e.target.value)}
+												onChange={(e) =>
+													updateDayName(
+														dayIndex,
+														e.target.value
+													)
+												}
 												className="input input-bordered input-sm flex-1 max-w-xs"
 												placeholder="Day name"
 											/>
 											<div className="flex items-center gap-2">
 												<button
 													type="button"
-													onClick={() => toggleDay(dayIndex)}
+													onClick={() =>
+														toggleDay(dayIndex)
+													}
 													className="btn btn-ghost btn-sm"
 												>
 													{expandedDays[dayIndex] ? (
@@ -421,7 +506,9 @@ const CreateEditPlanTemplate = () => {
 												</button>
 												<button
 													type="button"
-													onClick={() => removeDay(dayIndex)}
+													onClick={() =>
+														removeDay(dayIndex)
+													}
 													className="btn btn-ghost btn-sm text-error"
 												>
 													<Trash className="w-4 h-4" />
@@ -432,10 +519,17 @@ const CreateEditPlanTemplate = () => {
 										{expandedDays[dayIndex] && (
 											<div className="mt-4">
 												<div className="flex items-center justify-between mb-3">
-													<h4 className="font-semibold">Exercises ({day.exercises.length})</h4>
+													<h4 className="font-semibold">
+														Exercises (
+														{day.exercises.length})
+													</h4>
 													<button
 														type="button"
-														onClick={() => openExerciseModal(dayIndex)}
+														onClick={() =>
+															openExerciseModal(
+																dayIndex
+															)
+														}
 														className="btn btn-sm btn-outline gap-2"
 													>
 														<Plus className="w-4 h-4" />
@@ -449,97 +543,254 @@ const CreateEditPlanTemplate = () => {
 													</p>
 												) : (
 													<div className="space-y-3">
-														{day.exercises.map((exercise, exIndex) => (
-															<div key={exIndex} className="bg-base-200 rounded-lg p-4">
-																<div className="flex items-start justify-between mb-3">
-																	<div className="flex-1">
-																		<h5 className="font-semibold">
-																			{getExerciseName(exercise.exerciseId)}
-																		</h5>
-																		<select
-																			value={exercise.variant}
-																			onChange={(e) => updateExerciseField(dayIndex, exIndex, "variant", e.target.value)}
-																			className="select select-bordered select-xs mt-2"
+														{day.exercises.map(
+															(
+																exercise,
+																exIndex
+															) => (
+																<div
+																	key={
+																		exIndex
+																	}
+																	className="bg-base-200 rounded-lg p-4"
+																>
+																	<div className="flex items-start justify-between mb-3">
+																		<div className="flex-1">
+																			<h5 className="font-semibold">
+																				{getExerciseName(
+																					exercise.exerciseId
+																				)}
+																			</h5>
+																			<select
+																				value={
+																					exercise.variant
+																				}
+																				onChange={(
+																					e
+																				) =>
+																					updateExerciseField(
+																						dayIndex,
+																						exIndex,
+																						"variant",
+																						e
+																							.target
+																							.value
+																					)
+																				}
+																				className="select select-bordered select-xs mt-2"
+																			>
+																				<option value="base">
+																					Base
+																				</option>
+																				<option value="advanced">
+																					Advanced
+																				</option>
+																				<option value="easier">
+																					Easier
+																				</option>
+																			</select>
+																		</div>
+																		<button
+																			type="button"
+																			onClick={() =>
+																				removeExercise(
+																					dayIndex,
+																					exIndex
+																				)
+																			}
+																			className="btn btn-ghost btn-sm text-error"
 																		>
-																			<option value="base">Base</option>
-																			<option value="advanced">Advanced</option>
-																			<option value="easier">Easier</option>
-																		</select>
+																			<Trash className="w-4 h-4" />
+																		</button>
 																	</div>
-																	<button
-																		type="button"
-																		onClick={() => removeExercise(dayIndex, exIndex)}
-																		className="btn btn-ghost btn-sm text-error"
-																	>
-																		<Trash className="w-4 h-4" />
-																	</button>
-																</div>
 
-																<div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
-																	<div className="form-control">
-																		<label className="label label-text-alt">Sets</label>
-																		<input
-																			type="number"
-																			value={exercise.planned.sets || ""}
-																			onChange={(e) => updateExercisePrescription(dayIndex, exIndex, "sets", e.target.value)}
-																			className="input input-bordered input-sm"
-																			placeholder="0"
-																		/>
+																	<div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
+																		<div className="form-control">
+																			<label className="label py-1">
+																				<span className="label-text-alt font-semibold">
+																					Sets
+																				</span>
+																			</label>
+																			<input
+																				type="number"
+																				value={
+																					exercise
+																						.planned
+																						.sets ||
+																					""
+																				}
+																				onChange={(
+																					e
+																				) =>
+																					updateExercisePrescription(
+																						dayIndex,
+																						exIndex,
+																						"sets",
+																						e
+																							.target
+																							.value
+																					)
+																				}
+																				className="input input-bordered input-sm"
+																				placeholder="0"
+																			/>
+																		</div>
+																		<div className="form-control">
+																			<label className="label py-1">
+																				<span className="label-text-alt font-semibold">
+																					Reps
+																				</span>
+																			</label>
+																			<input
+																				type="number"
+																				value={
+																					exercise
+																						.planned
+																						.reps ||
+																					""
+																				}
+																				onChange={(
+																					e
+																				) =>
+																					updateExercisePrescription(
+																						dayIndex,
+																						exIndex,
+																						"reps",
+																						e
+																							.target
+																							.value
+																					)
+																				}
+																				className="input input-bordered input-sm"
+																				placeholder="0"
+																			/>
+																		</div>
+																		<div className="form-control">
+																			<label className="label py-1">
+																				<span className="label-text-alt font-semibold">
+																					Load
+																					(kg)
+																				</span>
+																			</label>
+																			<input
+																				type="number"
+																				value={
+																					exercise
+																						.planned
+																						.load_kg ||
+																					""
+																				}
+																				onChange={(
+																					e
+																				) =>
+																					updateExercisePrescription(
+																						dayIndex,
+																						exIndex,
+																						"load_kg",
+																						e
+																							.target
+																							.value
+																					)
+																				}
+																				className="input input-bordered input-sm"
+																				placeholder="0"
+																			/>
+																		</div>
+																		<div className="form-control">
+																			<label className="label py-1">
+																				<span className="label-text-alt font-semibold">
+																					Time
+																					(s)
+																				</span>
+																			</label>
+																			<input
+																				type="number"
+																				value={
+																					exercise
+																						.planned
+																						.time_seconds ||
+																					""
+																				}
+																				onChange={(
+																					e
+																				) =>
+																					updateExercisePrescription(
+																						dayIndex,
+																						exIndex,
+																						"time_seconds",
+																						e
+																							.target
+																							.value
+																					)
+																				}
+																				className="input input-bordered input-sm"
+																				placeholder="0"
+																			/>
+																		</div>
+																		<div className="form-control">
+																			<label className="label py-1">
+																				<span className="label-text-alt font-semibold">
+																					Rest
+																					(s)
+																				</span>
+																			</label>
+																			<input
+																				type="number"
+																				value={
+																					exercise
+																						.planned
+																						.rest_seconds ||
+																					""
+																				}
+																				onChange={(
+																					e
+																				) =>
+																					updateExercisePrescription(
+																						dayIndex,
+																						exIndex,
+																						"rest_seconds",
+																						e
+																							.target
+																							.value
+																					)
+																				}
+																				className="input input-bordered input-sm"
+																				placeholder="0"
+																			/>
+																		</div>
 																	</div>
-																	<div className="form-control">
-																		<label className="label label-text-alt">Reps</label>
-																		<input
-																			type="number"
-																			value={exercise.planned.reps || ""}
-																			onChange={(e) => updateExercisePrescription(dayIndex, exIndex, "reps", e.target.value)}
-																			className="input input-bordered input-sm"
-																			placeholder="0"
-																		/>
-																	</div>
-																	<div className="form-control">
-																		<label className="label label-text-alt">Load (kg)</label>
-																		<input
-																			type="number"
-																			value={exercise.planned.load_kg || ""}
-																			onChange={(e) => updateExercisePrescription(dayIndex, exIndex, "load_kg", e.target.value)}
-																			className="input input-bordered input-sm"
-																			placeholder="0"
-																		/>
-																	</div>
-																	<div className="form-control">
-																		<label className="label label-text-alt">Time (s)</label>
-																		<input
-																			type="number"
-																			value={exercise.planned.time_seconds || ""}
-																			onChange={(e) => updateExercisePrescription(dayIndex, exIndex, "time_seconds", e.target.value)}
-																			className="input input-bordered input-sm"
-																			placeholder="0"
-																		/>
-																	</div>
-																	<div className="form-control">
-																		<label className="label label-text-alt">Rest (s)</label>
-																		<input
-																			type="number"
-																			value={exercise.planned.rest_seconds || ""}
-																			onChange={(e) => updateExercisePrescription(dayIndex, exIndex, "rest_seconds", e.target.value)}
-																			className="input input-bordered input-sm"
-																			placeholder="0"
-																		/>
-																	</div>
-																</div>
 
-																<div className="form-control">
-																	<label className="label label-text-alt">Coaching Cue</label>
-																	<textarea
-																		value={exercise.cue}
-																		onChange={(e) => updateExerciseField(dayIndex, exIndex, "cue", e.target.value)}
-																		className="textarea textarea-bordered textarea-sm"
-																		placeholder="Optional coaching cue..."
-																		rows="2"
-																	/>
+																	<div className="form-control">
+																		<label className="label py-1">
+																			<span className="label-text-alt font-semibold">
+																				Coaching
+																				Cue
+																			</span>
+																		</label>
+																		<textarea
+																			value={
+																				exercise.cue
+																			}
+																			onChange={(
+																				e
+																			) =>
+																				updateExerciseField(
+																					dayIndex,
+																					exIndex,
+																					"cue",
+																					e
+																						.target
+																						.value
+																				)
+																			}
+																			className="textarea textarea-bordered textarea-sm"
+																			placeholder="Optional coaching cue or modification note..."
+																			rows="2"
+																		/>
+																	</div>
 																</div>
-															</div>
-														))}
+															)
+														)}
 													</div>
 												)}
 											</div>
@@ -553,10 +804,7 @@ const CreateEditPlanTemplate = () => {
 
 				{/* Submit Button */}
 				<div className="flex justify-end gap-3">
-					<Link
-						to="/admin/plan-templates"
-						className="btn btn-ghost"
-					>
+					<Link to="/admin/plan-templates" className="btn btn-ghost">
 						Cancel
 					</Link>
 					<button
@@ -584,7 +832,7 @@ const CreateEditPlanTemplate = () => {
 				<div className="modal modal-open">
 					<div className="modal-box max-w-2xl">
 						<h3 className="font-bold text-lg mb-4">Add Exercise</h3>
-						
+
 						<div className="form-control mb-4">
 							<div className="relative">
 								<Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" />
@@ -593,7 +841,9 @@ const CreateEditPlanTemplate = () => {
 									placeholder="Search exercises..."
 									className="input input-bordered w-full pl-10"
 									value={exerciseSearch}
-									onChange={(e) => setExerciseSearch(e.target.value)}
+									onChange={(e) =>
+										setExerciseSearch(e.target.value)
+									}
 									autoFocus
 								/>
 							</div>
@@ -608,15 +858,23 @@ const CreateEditPlanTemplate = () => {
 								filteredExercises.map((exercise) => (
 									<div
 										key={exercise._id}
-										onClick={() => addExerciseToDay(exercise)}
+										onClick={() =>
+											addExerciseToDay(exercise)
+										}
 										className="p-3 bg-base-200 hover:bg-base-300 rounded-lg cursor-pointer transition-colors"
 									>
-										<h4 className="font-semibold">{exercise.name}</h4>
-										{exercise.primary_muscles && exercise.primary_muscles.length > 0 && (
-											<p className="text-sm text-base-content/70">
-												{exercise.primary_muscles.join(", ")}
-											</p>
-										)}
+										<h4 className="font-semibold">
+											{exercise.name}
+										</h4>
+										{exercise.primary_muscles &&
+											exercise.primary_muscles.length >
+												0 && (
+												<p className="text-sm text-base-content/70">
+													{exercise.primary_muscles.join(
+														", "
+													)}
+												</p>
+											)}
 									</div>
 								))
 							)}

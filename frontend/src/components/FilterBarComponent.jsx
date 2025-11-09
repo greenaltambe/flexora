@@ -22,35 +22,38 @@ const FilterBarComponent = ({
 	return (
 		<div className="card">
 			<div className="card-body p-4">
-				<div className="card-title">Filters</div>
-				<div className="flex flex-wrap gap-4 items-center">
+				<div className="flex items-center gap-2 mb-4">
+					<Filter className="w-5 h-5" />
+					<h3 className="font-semibold">Filters</h3>
+				</div>
+
+				<div className="space-y-2">
 					{Object.keys(filterOptions).map((category) => (
 						<div
 							key={category}
-							className="dropdown dropdown-bottom"
+							className="dropdown dropdown-end w-full"
 						>
 							<label
 								tabIndex={0}
-								className="btn btn-outline btn-sm capitalize"
+								className="btn btn-outline btn-sm capitalize w-full justify-between"
 							>
-								{category.replace("_", " ")}
+								<span className="truncate">
+									{category.replace(/_/g, " ")}
+								</span>
 								{filters[category] &&
 									filters[category].length > 0 && (
-										<span className="badge badge-primary badge-sm ml-2">
+										<span className="badge badge-primary badge-xs">
 											{filters[category].length}
 										</span>
 									)}
 							</label>
 							<ul
 								tabIndex={0}
-								className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 max-h-60 overflow-y-auto z-50"
+								className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full max-h-60 overflow-y-auto z-50 mt-1"
 							>
 								{filterOptions[category].map((option) => (
 									<li key={option}>
-										<label className="label cursor-pointer">
-											<span className="label-text">
-												{option}
-											</span>
+										<label className="label cursor-pointer justify-start gap-2 py-2">
 											<input
 												type="checkbox"
 												checked={
@@ -64,20 +67,26 @@ const FilterBarComponent = ({
 														option
 													)
 												}
-												className="checkbox checkbox-primary"
+												className="checkbox checkbox-primary checkbox-sm"
 											/>
+											<span className="label-text text-sm flex-1">
+												{option}
+											</span>
 										</label>
 									</li>
 								))}
 							</ul>
 						</div>
 					))}
+				</div>
+
+				<div className="flex flex-col gap-2 mt-4">
 					<button
 						type="button"
 						onClick={onApply}
-						className="btn btn-primary btn-sm"
+						className="btn btn-primary btn-sm w-full gap-2"
 					>
-						<Filter className="w-4 h-4 mr-2" />
+						<Filter className="w-4 h-4" />
 						Apply Filters
 					</button>
 					{hasActiveFilters && (
@@ -93,7 +102,7 @@ const FilterBarComponent = ({
 									movement_patterns: [],
 								});
 							}}
-							className="btn btn-ghost btn-sm"
+							className="btn btn-ghost btn-sm w-full"
 						>
 							Clear All
 						</button>

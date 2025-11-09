@@ -20,6 +20,11 @@ const getPlanTemplates = async (req, res) => {
 		const q = {};
 		if (req.query.goal) q.goal = req.query.goal;
 		if (req.query.level) q.level = req.query.level;
+		if (req.query.published !== undefined)
+			q.published = req.query.published === "true";
+		if (req.query.title) {
+			q.title = { $regex: req.query.title, $options: "i" }; // Case-insensitive search
+		}
 		const templates = await PlanTemplate.find(q).select(
 			"title goal level weeks daysPerWeek published"
 		);

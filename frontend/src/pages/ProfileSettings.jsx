@@ -153,9 +153,13 @@ const ProfileSettings = () => {
 					{activeTab === "personal" && (
 						<div className="card bg-base-100 shadow-lg">
 							<div className="card-body">
-								<h2 className="card-title mb-4">
-									Personal Information
+								<h2 className="card-title mb-2 flex items-center gap-2">
+									<span>👤</span> Personal Information
 								</h2>
+								<p className="text-sm text-base-content/70 mb-6">
+									Your basic personal details and physical
+									measurements
+								</p>
 
 								{isLoading ? (
 									<div className="space-y-4">
@@ -297,9 +301,13 @@ const ProfileSettings = () => {
 					{activeTab === "fitness" && (
 						<div className="card bg-base-100 shadow-lg">
 							<div className="card-body">
-								<h2 className="card-title mb-4">
-									Fitness Goals & Experience
+								<h2 className="card-title mb-2 flex items-center gap-2">
+									<span>🎯</span> Fitness Goals & Experience
 								</h2>
+								<p className="text-sm text-base-content/70 mb-6">
+									Tell us about your fitness journey and what
+									you want to achieve
+								</p>
 
 								{isLoading ? (
 									<div className="space-y-4">
@@ -307,7 +315,7 @@ const ProfileSettings = () => {
 										<div className="skeleton h-32 w-full"></div>
 									</div>
 								) : (
-									<div className="space-y-4">
+									<div className="space-y-6">
 										{/* Experience Level */}
 										<div className="form-control">
 											<label className="label">
@@ -319,19 +327,21 @@ const ProfileSettings = () => {
 												name="experienceLevel"
 												value={formData.experienceLevel}
 												onChange={handleInputChange}
-												className="select select-bordered"
+												className="select select-bordered w-full"
 											>
 												<option value="">
 													Select experience level
 												</option>
 												<option value="beginner">
-													Beginner
+													Beginner - New to fitness
 												</option>
 												<option value="intermediate">
-													Intermediate
+													Intermediate - 1-3 years
+													experience
 												</option>
 												<option value="advanced">
-													Advanced
+													Advanced - 3+ years
+													experience
 												</option>
 											</select>
 											<label className="label">
@@ -342,33 +352,144 @@ const ProfileSettings = () => {
 											</label>
 										</div>
 
-										{/* Fitness Goals */}
+										{/* Fitness Goals - Checkboxes */}
 										<div className="form-control">
 											<label className="label">
 												<span className="label-text font-semibold">
 													Fitness Goals
 												</span>
 											</label>
-											<textarea
-												name="fitnessGoals"
-												value={formData.fitnessGoals}
-												onChange={handleInputChange}
-												className="textarea textarea-bordered h-24"
-												placeholder="E.g., Lose 10kg, build muscle, improve endurance, increase strength..."
-											/>
-											<label className="label">
-												<span className="label-text-alt text-base-content/70">
-													Describe what you want to
-													achieve
-												</span>
-											</label>
+											<p className="text-sm text-base-content/70 mb-3">
+												Select all that apply
+											</p>
+											<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+												{[
+													{
+														value: "hypertrophy",
+														label: "Muscle Gain",
+														icon: "💪",
+													},
+													{
+														value: "fat_loss",
+														label: "Weight Loss",
+														icon: "🔥",
+													},
+													{
+														value: "endurance",
+														label: "Improve Endurance",
+														icon: "🏃",
+													},
+													{
+														value: "strength",
+														label: "Build Strength",
+														icon: "🏋️",
+													},
+													{
+														value: "flexibility",
+														label: "Increase Flexibility",
+														icon: "🧘",
+													},
+													{
+														value: "general_fitness",
+														label: "General Fitness",
+														icon: "✨",
+													},
+												].map((goal) => {
+													const goalsArray =
+														formData.fitnessGoals
+															? formData.fitnessGoals
+																	.split(",")
+																	.map((g) =>
+																		g.trim()
+																	)
+																	.filter(
+																		Boolean
+																	)
+															: [];
+													const isChecked =
+														goalsArray.includes(
+															goal.value
+														);
+
+													return (
+														<label
+															key={goal.value}
+															className="label cursor-pointer justify-start gap-3 bg-base-200 rounded-lg p-4 hover:bg-base-300 transition-colors"
+														>
+															<input
+																type="checkbox"
+																className="checkbox checkbox-primary"
+																checked={
+																	isChecked
+																}
+																onChange={(
+																	e
+																) => {
+																	const currentGoals =
+																		formData.fitnessGoals
+																			? formData.fitnessGoals
+																					.split(
+																						","
+																					)
+																					.map(
+																						(
+																							g
+																						) =>
+																							g.trim()
+																					)
+																					.filter(
+																						Boolean
+																					)
+																			: [];
+
+																	const newGoals =
+																		e.target
+																			.checked
+																			? [
+																					...currentGoals,
+																					goal.value,
+																			  ]
+																			: currentGoals.filter(
+																					(
+																						g
+																					) =>
+																						g !==
+																						goal.value
+																			  );
+
+																	setFormData(
+																		(
+																			prev
+																		) => ({
+																			...prev,
+																			fitnessGoals:
+																				newGoals.join(
+																					", "
+																				),
+																		})
+																	);
+																}}
+															/>
+															<span className="flex items-center gap-2">
+																<span className="text-2xl">
+																	{goal.icon}
+																</span>
+																<span className="label-text font-medium">
+																	{goal.label}
+																</span>
+															</span>
+														</label>
+													);
+												})}
+											</div>
 										</div>
 
 										{/* Health Conditions */}
 										<div className="form-control">
 											<label className="label">
 												<span className="label-text font-semibold">
-													Health Conditions (Optional)
+													Health Conditions or
+													Injuries (Optional)
 												</span>
 											</label>
 											<textarea
@@ -397,9 +518,12 @@ const ProfileSettings = () => {
 					{activeTab === "account" && (
 						<div className="card bg-base-100 shadow-lg">
 							<div className="card-body">
-								<h2 className="card-title mb-4">
-									Account Settings
+								<h2 className="card-title mb-2 flex items-center gap-2">
+									<span>🔒</span> Account Settings
 								</h2>
+								<p className="text-sm text-base-content/70 mb-6">
+									Manage your email and password settings
+								</p>
 
 								<div className="space-y-4">
 									{/* Email (Read-only) */}

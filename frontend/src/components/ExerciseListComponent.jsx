@@ -1,22 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import exerciseStore from "../store/exercise/exerciseStore";
 import toast from "react-hot-toast";
 import { Eye, Edit, Trash2 } from "lucide-react";
 
 const ExerciseListComponent = ({ exercises, onRefresh }) => {
-	const { deleteExercise, getExerciseById } = exerciseStore();
-	const [selectedExercise, setSelectedExercise] = useState(null);
-	const [showModal, setShowModal] = useState(false);
+	const { deleteExercise } = exerciseStore();
+	const navigate = useNavigate();
 	const [isDeleting, setIsDeleting] = useState({});
 
-	const handleViewDetails = async (id) => {
-		const result = await getExerciseById(id);
-		if (result.success) {
-			setSelectedExercise(result.data);
-			setShowModal(true);
-		} else {
-			toast.error(result.message);
-		}
+	const handleViewDetails = (id) => {
+		navigate(`/exercises/${id}`);
 	};
 
 	const handleDelete = async (id) => {
@@ -58,36 +52,79 @@ const ExerciseListComponent = ({ exercises, onRefresh }) => {
 						{exercises.map((exercise) => (
 							<tr
 								key={exercise._id || exercise.id}
-								className="hover:bg-base-200"
+								className="hover:bg-base-200 cursor-pointer"
+								onClick={() =>
+									handleViewDetails(
+										exercise._id || exercise.id
+									)
+								}
 							>
-								<td>
-									<button
-										type="button"
-										onClick={(e) => {
-											e.preventDefault();
-											handleViewDetails(
-												exercise._id || exercise.id
-											);
-										}}
-										className="link link-primary hover:link-secondary font-medium"
+								<td className="max-w-xs">
+									<div
+										className="font-medium text-primary hover:text-secondary truncate"
+										title={exercise.name}
 									>
 										{exercise.name}
-									</button>
-								</td>
-								<td>{exercise.type}</td>
-								<td>
-									{Array.isArray(exercise.primary_muscles)
-										? exercise.primary_muscles.join(", ")
-										: exercise.primary_muscles}
+									</div>
 								</td>
 								<td>
-									{Array.isArray(exercise.equipment)
-										? exercise.equipment.join(", ")
-										: exercise.equipment}
+									<span className="badge badge-ghost badge-sm">
+										{exercise.type}
+									</span>
 								</td>
-								<td>{exercise.difficulty}</td>
+								<td className="max-w-xs">
+									<div
+										className="truncate text-sm"
+										title={
+											Array.isArray(
+												exercise.primary_muscles
+											)
+												? exercise.primary_muscles.join(
+														", "
+												  )
+												: exercise.primary_muscles
+										}
+									>
+										{Array.isArray(exercise.primary_muscles)
+											? exercise.primary_muscles.join(
+													", "
+											  )
+											: exercise.primary_muscles}
+									</div>
+								</td>
+								<td className="max-w-xs">
+									<div
+										className="truncate text-sm"
+										title={
+											Array.isArray(exercise.equipment)
+												? exercise.equipment.join(", ")
+												: exercise.equipment
+										}
+									>
+										{Array.isArray(exercise.equipment)
+											? exercise.equipment.join(", ")
+											: exercise.equipment}
+									</div>
+								</td>
 								<td>
-									<div className="flex gap-2">
+									<span
+										className={`badge badge-sm ${
+											exercise.difficulty === "beginner"
+												? "badge-success"
+												: exercise.difficulty ===
+												  "intermediate"
+												? "badge-warning"
+												: "badge-error"
+										}`}
+									>
+										{exercise.difficulty}
+									</span>
+								</td>
+								<td>
+									<div
+										className="flex gap-2"
+										onClick={(e) => e.stopPropagation()}
+									>
 										<button
 											onClick={() =>
 												handleViewDetails(
@@ -139,183 +176,6 @@ const ExerciseListComponent = ({ exercises, onRefresh }) => {
 					</tbody>
 				</table>
 			</div>
-
-			{/* Exercise Details Modal */}
-			{showModal && selectedExercise && (
-				<div className="modal modal-open">
-					<div className="modal-box max-w-3xl">
-						<h3 className="font-bold text-lg mb-4">
-							{selectedExercise.name}
-						</h3>
-
-						<div className="space-y-4">
-							<div>
-								<h4 className="font-semibold">Description</h4>
-								<p className="text-sm">
-									{selectedExercise.description ||
-										"No description"}
-								</p>
-							</div>
-
-							<div className="grid grid-cols-2 gap-4">
-								<div>
-									<h4 className="font-semibold">Type</h4>
-									<p className="text-sm">
-										{selectedExercise.type}
-									</p>
-								</div>
-								<div>
-									<h4 className="font-semibold">
-										Difficulty
-									</h4>
-									<p className="text-sm">
-										{selectedExercise.difficulty}
-									</p>
-								</div>
-								<div>
-									<h4 className="font-semibold">Modality</h4>
-									<p className="text-sm">
-										{selectedExercise.modality}
-									</p>
-								</div>
-								<div>
-									<h4 className="font-semibold">
-										Estimated Minutes
-									</h4>
-									<p className="text-sm">
-										{selectedExercise.estimated_minutes} min
-									</p>
-								</div>
-							</div>
-
-							<div>
-								<h4 className="font-semibold">
-									Primary Muscles
-								</h4>
-								<div className="flex flex-wrap gap-2 mt-2">
-									{Array.isArray(
-										selectedExercise.primary_muscles
-									) &&
-										selectedExercise.primary_muscles.map(
-											(muscle) => (
-												<span
-													key={muscle}
-													className="badge badge-primary"
-												>
-													{muscle}
-												</span>
-											)
-										)}
-								</div>
-							</div>
-
-							<div>
-								<h4 className="font-semibold">Equipment</h4>
-								<div className="flex flex-wrap gap-2 mt-2">
-									{Array.isArray(
-										selectedExercise.equipment
-									) &&
-										selectedExercise.equipment.map((eq) => (
-											<span
-												key={eq}
-												className="badge badge-secondary"
-											>
-												{eq}
-											</span>
-										))}
-								</div>
-							</div>
-
-							{selectedExercise.tags &&
-								selectedExercise.tags.length > 0 && (
-									<div>
-										<h4 className="font-semibold">Tags</h4>
-										<div className="flex flex-wrap gap-2 mt-2">
-											{selectedExercise.tags.map(
-												(tag) => (
-													<span
-														key={tag}
-														className="badge badge-accent"
-													>
-														{tag}
-													</span>
-												)
-											)}
-										</div>
-									</div>
-								)}
-
-							{selectedExercise.default_prescription && (
-								<div>
-									<h4 className="font-semibold">
-										Default Prescription
-									</h4>
-									<div className="mt-2">
-										<p className="text-sm">
-											Sets:{" "}
-											{selectedExercise
-												.default_prescription.sets ||
-												"N/A"}
-										</p>
-										<p className="text-sm">
-											Reps:{" "}
-											{selectedExercise
-												.default_prescription.reps ||
-												"N/A"}
-										</p>
-										<p className="text-sm">
-											Rest:{" "}
-											{selectedExercise
-												.default_prescription
-												.rest_seconds || "N/A"}
-											s
-										</p>
-									</div>
-								</div>
-							)}
-
-							{selectedExercise.video_url && (
-								<div>
-									<h4 className="font-semibold">Video</h4>
-									<a
-										href={selectedExercise.video_url}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="link link-primary"
-									>
-										Watch Video
-									</a>
-								</div>
-							)}
-						</div>
-
-						<div className="modal-action">
-							<button
-								className="btn"
-								onClick={() => setShowModal(false)}
-							>
-								Close
-							</button>
-							<button
-								className="btn btn-primary"
-								onClick={() => {
-									setShowModal(false);
-									handleEdit(
-										selectedExercise._id ||
-											selectedExercise.id
-									);
-								}}
-							>
-								Edit Exercise
-							</button>
-						</div>
-					</div>
-					<div
-						className="modal-backdrop"
-						onClick={() => setShowModal(false)}
-					></div>
-				</div>
-			)}
 		</>
 	);
 };

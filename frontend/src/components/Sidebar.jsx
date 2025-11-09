@@ -36,11 +36,6 @@ const Sidebar = ({ isOpen, onClose }) => {
 				},
 				{ divider: true, label: "Exercises" },
 				{
-					title: "Browse Exercises",
-					icon: <ListChecks className="w-5 h-5" />,
-					path: "/exercises",
-				},
-				{
 					title: "Manage Exercises",
 					icon: <Settings className="w-5 h-5" />,
 					path: "/admin/manage-exercise",
@@ -143,7 +138,10 @@ const Sidebar = ({ isOpen, onClose }) => {
 					{menuItems.map((item, index) => {
 						if (item.divider) {
 							return (
-								<li key={`divider-${index}`} className="menu-title mt-4">
+								<li
+									key={`divider-${index}`}
+									className="menu-title mt-4"
+								>
 									{item.label}
 								</li>
 							);
