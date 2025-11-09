@@ -1,6 +1,7 @@
 import { Palette } from "lucide-react";
 
-const ThemeChanger = () => {
+const ThemeChanger = ({ position = "sidebar" }) => {
+	// position can be "sidebar" or "navbar"
 	const themes = [
 		{ name: "light", label: "Light" },
 		{ name: "dark", label: "Dark" },
@@ -38,8 +39,14 @@ const ThemeChanger = () => {
 		localStorage.setItem("theme", theme);
 	};
 
+	// Different positioning based on where the component is used
+	const positionClasses =
+		position === "sidebar"
+			? "absolute bottom-full left-0 mb-2" // Sidebar: open upward to the right
+			: "absolute top-full right-0 mt-2"; // Navbar: open downward to the left
+
 	return (
-		<div className="dropdown dropdown-top dropdown-end">
+		<div className="dropdown">
 			<div
 				tabIndex={0}
 				role="button"
@@ -50,7 +57,7 @@ const ThemeChanger = () => {
 
 			<div
 				tabIndex={0}
-				className="dropdown-content z-[1] shadow bg-base-100 rounded-box w-64 max-h-96 overflow-y-auto p-2 mb-2"
+				className={`dropdown-content z-50 shadow-lg bg-base-100 rounded-box w-64 max-h-96 overflow-y-auto p-2 ${positionClasses}`}
 			>
 				{/* title spans full width */}
 				<div className="menu-title text-xs text-base-content/70 mb-2 px-1">

@@ -187,7 +187,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					<ThemeChanger />
+					<ThemeChanger position="sidebar" />
 					<button
 						onClick={handleLogout}
 						className="btn btn-sm btn-ghost flex-1 gap-2"

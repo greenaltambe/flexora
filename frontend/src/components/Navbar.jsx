@@ -38,7 +38,10 @@ const Navbar = () => {
 							{isAuthenticated ? (
 								<>
 									<li>
-										<Link to="/dashboard" className="flex items-center gap-2">
+										<Link
+											to="/dashboard"
+											className="flex items-center gap-2"
+										>
 											<BarChart3 className="w-4 h-4" />
 											Dashboard
 										</Link>
@@ -50,7 +53,10 @@ const Navbar = () => {
 							) : (
 								<>
 									<li>
-										<Link to="/" className="flex items-center gap-2">
+										<Link
+											to="/"
+											className="flex items-center gap-2"
+										>
 											<Home className="w-4 h-4" />
 											Home
 										</Link>
@@ -65,7 +71,10 @@ const Navbar = () => {
 							)}
 						</ul>
 					</div>
-					<Link to={isAuthenticated ? "/dashboard" : "/"} className="btn btn-ghost text-xl flex items-center gap-2">
+					<Link
+						to={isAuthenticated ? "/dashboard" : "/"}
+						className="btn btn-ghost text-xl flex items-center gap-2"
+					>
 						<Dumbbell className="w-6 h-6 text-primary" />
 						Flexora
 					</Link>
@@ -75,16 +84,28 @@ const Navbar = () => {
 						{isAuthenticated ? (
 							<>
 								<li>
-									<Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="flex items-center gap-2">
+									<Link
+										to={
+											user?.role === "admin"
+												? "/admin"
+												: "/dashboard"
+										}
+										className="flex items-center gap-2"
+									>
 										<BarChart3 className="w-4 h-4" />
-										{user?.role === "admin" ? "Admin" : "Dashboard"}
+										{user?.role === "admin"
+											? "Admin"
+											: "Dashboard"}
 									</Link>
 								</li>
 							</>
 						) : (
 							<>
 								<li>
-									<Link to="/" className="flex items-center gap-2">
+									<Link
+										to="/"
+										className="flex items-center gap-2"
+									>
 										<Home className="w-4 h-4" />
 										Home
 									</Link>
@@ -96,7 +117,7 @@ const Navbar = () => {
 				{isAuthenticated ? (
 					<div className="navbar-end">
 						<div className="flex items-center gap-4">
-							<ThemeChanger />
+							<ThemeChanger position="navbar" />
 							<span className="text-sm text-base-content/70">
 								Welcome, {user?.firstName}
 							</span>
@@ -106,7 +127,7 @@ const Navbar = () => {
 				) : (
 					<div className="navbar-end">
 						<div className="flex items-center gap-2">
-							<ThemeChanger />
+							<ThemeChanger position="navbar" />
 							<Link to="/login" className="btn btn-ghost">
 								Login
 							</Link>
