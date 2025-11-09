@@ -162,10 +162,11 @@ const verifyEmail = async (req, res) => {
 // @access Private
 const logout = async (req, res) => {
 	try {
-		res.clearCookie("token");
-		res.status(200).json({
-			success: true,
-			message: "User logged out successfully",
+		const isProd = process.env.NODE_ENV === "production";
+		res.clearCookie("token", {
+			path: "/",
+			sameSite: isProd ? "none" : "lax",
+			secure: isProd,
 		});
 	} catch (error) {
 		res.status(500).json({
