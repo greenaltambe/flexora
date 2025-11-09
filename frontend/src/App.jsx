@@ -27,6 +27,12 @@ import ManagePlanTemplates from "./pages/ManagePlanTemplates";
 import CreateEditPlanTemplate from "./pages/CreateEditPlanTemplate";
 import ProfileSettings from "./pages/ProfileSettings";
 import MyPlans from "./pages/MyPlans";
+import TodayWorkout from "./pages/TodayWorkout";
+import AutoPlanGenerator from "./pages/AutoPlanGenerator";
+import AutoPlanDashboard from "./pages/AutoPlanDashboard";
+import LogWorkout from "./pages/LogWorkout";
+import WorkoutHistory from "./pages/WorkoutHistory";
+import StreakDashboard from "./pages/StreakDashboard";
 
 const App = () => {
 	const { checkAuth } = useAuthStore();
@@ -211,6 +217,59 @@ const App = () => {
 					element={
 						<Protect>
 							<ProfileSettings />
+						</Protect>
+					}
+				/>
+				{/* Today's Workout */}
+				<Route
+					path="/today-workout"
+					element={
+						<Protect>
+							<TodayWorkout />
+						</Protect>
+					}
+				/>
+				{/* Log Workout */}
+				<Route
+					path="/log-workout"
+					element={
+						<Protect>
+							<LogWorkout />
+						</Protect>
+					}
+				/>
+				{/* Workout History */}
+				<Route
+					path="/workout-history"
+					element={
+						<Protect>
+							<WorkoutHistory />
+						</Protect>
+					}
+				/>
+				{/* Streak Dashboard */}
+				<Route
+					path="/streak-dashboard"
+					element={
+						<Protect>
+							<StreakDashboard />
+						</Protect>
+					}
+				/>
+				{/* Auto Plan Routes */}
+				<Route
+					path="/auto-plan/generate"
+					element={
+						<Protect>
+							<AutoPlanGenerator />
+						</Protect>
+					}
+				/>
+				<Route
+					path="/auto-plan/dashboard"
+					element={
+						<Protect>
+							<AutoPlanDashboard />
 						</Protect>
 					}
 				/>

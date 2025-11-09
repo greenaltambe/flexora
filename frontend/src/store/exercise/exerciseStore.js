@@ -130,13 +130,16 @@ const exerciseStore = create(
 		getExerciseById: async (id) => {
 			set({ isLoading: true, error: null });
 			try {
-				const response = await fetch(`${apiUrl}/exercises/getById/${id}`, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					credentials: "include",
-				});
+				const response = await fetch(
+					`${apiUrl}/exercises/getById/${id}`,
+					{
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						credentials: "include",
+					}
+				);
 				const data = await response.json();
 				if (!response.ok) {
 					set({
@@ -199,14 +202,17 @@ const exerciseStore = create(
 		updateExercise: async (id, exerciseData) => {
 			set({ isLoading: true, error: null });
 			try {
-				const response = await fetch(`${apiUrl}/exercises/update/${id}`, {
-					method: "PUT",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					credentials: "include",
-					body: JSON.stringify(exerciseData),
-				});
+				const response = await fetch(
+					`${apiUrl}/exercises/update/${id}`,
+					{
+						method: "PUT",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						credentials: "include",
+						body: JSON.stringify(exerciseData),
+					}
+				);
 				const data = await response.json();
 				if (!response.ok) {
 					set({
@@ -234,13 +240,16 @@ const exerciseStore = create(
 		deleteExercise: async (id) => {
 			set({ isLoading: true, error: null });
 			try {
-				const response = await fetch(`${apiUrl}/exercises/delete/${id}`, {
-					method: "DELETE",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					credentials: "include",
-				});
+				const response = await fetch(
+					`${apiUrl}/exercises/delete/${id}`,
+					{
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						credentials: "include",
+					}
+				);
 				const data = await response.json();
 				if (!response.ok) {
 					set({
@@ -267,14 +276,17 @@ const exerciseStore = create(
 		bulkCreateExercises: async (csvContent) => {
 			set({ isLoading: true, error: null });
 			try {
-				const response = await fetch(`${apiUrl}/exercises/bulk-create`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					credentials: "include",
-					body: JSON.stringify({ csvContent }),
-				});
+				const response = await fetch(
+					`${apiUrl}/exercises/bulk-create`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						credentials: "include",
+						body: JSON.stringify({ csvContent }),
+					}
+				);
 				const data = await response.json();
 				if (!response.ok) {
 					set({

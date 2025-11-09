@@ -11,6 +11,7 @@ import {
 	Plus,
 	Upload,
 	FolderKanban,
+	Zap,
 } from "lucide-react";
 import ThemeChanger from "./ThemeChanger";
 
@@ -83,6 +84,11 @@ const Sidebar = ({ isOpen, onClose }) => {
 					icon: <LayoutDashboard className="w-5 h-5" />,
 					path: "/dashboard",
 				},
+				{
+					title: "Today's Workout",
+					icon: <Zap className="w-5 h-5" />,
+					path: "/today-workout",
+				},
 				{ divider: true, label: "Exercises" },
 				{
 					title: "Browse Exercises",
@@ -99,6 +105,11 @@ const Sidebar = ({ isOpen, onClose }) => {
 					title: "My Plans",
 					icon: <FolderKanban className="w-5 h-5" />,
 					path: "/my-plans",
+				},
+				{
+					title: "Generate Plan",
+					icon: <Zap className="w-5 h-5" />,
+					path: "/auto-plan/generate",
 				},
 				{ divider: true, label: "Profile" },
 				{
@@ -159,8 +170,8 @@ const Sidebar = ({ isOpen, onClose }) => {
 			<div className="p-4 border-t border-base-300">
 				<div className="flex items-center gap-3 mb-4">
 					<div className="avatar placeholder">
-						<div className="bg-primary text-primary-content rounded-full w-10">
-							<span className="text-sm">
+						<div className="bg-primary text-primary-content rounded-full w-10 h-10 flex items-center justify-center">
+							<span className="text-sm font-semibold">
 								{user?.firstName?.[0]}
 								{user?.lastName?.[0]}
 							</span>

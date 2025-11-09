@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/auth/authStore";
 import toast from "react-hot-toast";
-import Loader from "../components/Loader";
+import Loader from "./Loader";
 import { MailIcon } from "lucide-react";
 
 const EmailVerificationPage = () => {
@@ -191,9 +191,12 @@ const EmailVerificationPage = () => {
 						<div className="badge badge-accent badge-lg p-3 mb-4">
 							<MailIcon className="w-6 h-6" />
 						</div>
-						<h2 className="text-3xl font-bold">Verify Your Email</h2>
+						<h2 className="text-3xl font-bold">
+							Verify Your Email
+						</h2>
 						<p className="text-base-content/70 mt-2">
-							Enter the 6-digit verification code sent to your email.
+							Enter the 6-digit verification code sent to your
+							email.
 						</p>
 					</div>
 
@@ -241,7 +244,9 @@ const EmailVerificationPage = () => {
 					<div className="divider">Need help?</div>
 					<p className="text-center text-sm text-base-content/70">
 						Didn't receive the code? Check your spam folder or{" "}
-						<button className="link link-primary">resend code</button>
+						<button className="link link-primary">
+							resend code
+						</button>
 					</p>
 				</div>
 			</div>
