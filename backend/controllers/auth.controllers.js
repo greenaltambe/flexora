@@ -159,17 +159,29 @@ const verifyEmail = async (req, res) => {
 // Logout
 // @desc Logout user
 // @route POST /api/auth/logout
-// @access Private
+// @access Public (let users log out even if token is already missing)
 const logout = async (req, res) => {
 	try {
 		const isProd = process.env.NODE_ENV === "production";
+
+		// Clear the current cookie (matches how you set it now)
 		res.clearCookie("token", {
 			path: "/",
 			sameSite: isProd ? "none" : "lax",
 			secure: isProd,
+			// httpOnly not required here, but harmless if included
+		});
+
+		// Also try clearing common legacy variants (in case flags changed between builds)
+		res.clearCookie("token", { path: "/", sameSite: "lax", secure: false });
+		res.clearCookie("token", { path: "/" });
+
+		return res.status(200).json({
+			success: true,
+			message: "User logged out successfully",
 		});
 	} catch (error) {
-		res.status(500).json({
+		return res.status(500).json({
 			success: false,
 			message: error.message,
 		});
