@@ -11,6 +11,7 @@ import {
 	Play,
 	Timer,
 	Trophy,
+	Apple,
 } from "lucide-react";
 import { useAuthStore } from "../store/auth/authStore";
 import { useStreakStore } from "../store/streak/streakStore";
@@ -92,7 +93,7 @@ const Dashboard = () => {
 			todaySession.exercises &&
 			todaySession.exercises.length > 0
 		) {
-			navigate("/log-workout");
+			navigate("/workout-session");
 		} else {
 			navigate("/today-workout");
 		}
@@ -191,32 +192,87 @@ const Dashboard = () => {
 									<div className="flex justify-center py-12">
 										<span className="loading loading-spinner loading-lg"></span>
 									</div>
-								) : !todaySession ||
-								  !todaySession.exercises ||
+								) : !todaySession ? (
+									// State A: No Plan Selected
+									<div className="text-center py-12">
+										<span className="text-6xl mb-4 block">
+											📋
+										</span>
+										<h3 className="text-2xl font-bold mb-2">
+											No Plan Selected
+										</h3>
+										<p className="text-base-content/70 mb-6">
+											Choose a plan to get started with
+											your fitness journey
+										</p>
+										<div className="flex gap-4 justify-center flex-wrap">
+											<button
+												className="btn btn-primary gap-2"
+												onClick={() =>
+													navigate("/plans")
+												}
+											>
+												<span>📚</span>
+												Browse Plans
+											</button>
+											<button
+												className="btn btn-secondary gap-2"
+												onClick={() =>
+													navigate("/generate-plan")
+												}
+											>
+												<span>✨</span>
+												Generate Custom Plan
+											</button>
+										</div>
+									</div>
+								) : !todaySession.exercises ||
 								  todaySession.exercises.length === 0 ? (
-									<div className="text-center py-8">
-										<Dumbbell className="w-16 h-16 mx-auto text-base-content/30 mb-4" />
-										<h3 className="text-xl font-bold mb-2">
-											No Workout Today
+									// State B: Rest Day
+									<div className="text-center py-12">
+										<span className="text-6xl mb-4 block">
+											😴
+										</span>
+										<h3 className="text-2xl font-bold mb-2">
+											Rest & Recover
 										</h3>
 										<p className="text-base-content/70 mb-4">
-											You don't have a workout scheduled
-											for today
+											No workout scheduled today. Take
+											time to rest and let your body
+											recover!
 										</p>
-										<button
-											className="btn btn-primary"
-											onClick={() => navigate("/plans")}
-										>
-											Browse Plans
-										</button>
+										<div className="bg-base-200 rounded-lg p-4 max-w-md mx-auto mt-6">
+											<p className="text-sm text-base-content/70">
+												Rest days are crucial for muscle
+												recovery and growth. Stay
+												hydrated and get good sleep! 💪
+											</p>
+										</div>
 									</div>
 								) : (
 									<>
 										<div className="bg-linear-to-r from-primary/10 to-secondary/10 p-6 rounded-lg mb-4">
-											<h3 className="text-2xl font-bold mb-2">
-												{todaySession.name ||
-													"Today's Session"}
-											</h3>
+											<div className="flex justify-between items-start mb-2">
+												<h3 className="text-2xl font-bold">
+													{todaySession.name ||
+														"Today's Session"}
+												</h3>
+												{todaySession.planSource && (
+													<span
+														className={`badge ${
+															todaySession.planSource ===
+															"auto_generated"
+																? "badge-accent"
+																: "badge-info"
+														} gap-1`}
+													>
+														{todaySession.planSource ===
+														"auto_generated"
+															? "✨ Custom"
+															: "📚 Template"}
+													</span>
+												)}
+											</div>
 											<p className="text-base-content/70 mb-4">
 												{todaySession.description ||
 													"Complete your workout for today"}
@@ -240,6 +296,13 @@ const Dashboard = () => {
 														{todaySession.focusArea}
 													</span>
 												)}
+												<span className="badge badge-outline">
+													{
+														todaySession.exercises
+															.length
+													}{" "}
+													exercises
+												</span>
 											</div>
 										</div>
 										<div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -252,36 +315,78 @@ const Dashboard = () => {
 													return (
 														<div
 															key={index}
-															className="flex justify-between items-center p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
+															className="flex justify-between items-center p-4 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
 														>
 															<div className="flex-1">
-																<span className="font-medium block">
+																<span className="font-semibold block text-base mb-1">
+																	{index + 1}.{" "}
 																	{exerciseData.name ||
 																		"Exercise"}
 																</span>
-																{exerciseData.type ===
-																	"timed" && (
-																	<span className="text-xs text-base-content/60 flex items-center gap-1 mt-1">
-																		<Timer className="w-3 h-3" />
-																		Timed
-																		exercise
+																<div className="flex gap-2 flex-wrap">
+																	{exerciseData.primaryMuscle && (
+																		<span className="text-xs badge badge-sm badge-primary">
+																			{
+																				exerciseData.primaryMuscle
+																			}
+																		</span>
+																	)}
+																	{exerciseData.type && (
+																		<span
+																			className={`text-xs badge badge-sm ${
+																				exerciseData.type ===
+																				"cardio"
+																					? "badge-error"
+																					: exerciseData.type ===
+																					  "strength"
+																					? "badge-success"
+																					: exerciseData.type ===
+																					  "flexibility"
+																					? "badge-warning"
+																					: "badge-ghost"
+																			}`}
+																		>
+																			{
+																				exerciseData.type
+																			}
+																		</span>
+																	)}
+																	{exerciseData.equipment &&
+																		exerciseData.equipment !==
+																			"none" && (
+																			<span className="text-xs badge badge-sm badge-ghost">
+																				{
+																					exerciseData.equipment
+																				}
+																			</span>
+																		)}
+																</div>
+															</div>
+															<div className="text-right ml-4">
+																<span className="text-primary font-bold block">
+																	{exercise.sets &&
+																	exercise.reps
+																		? `${exercise.sets} × ${exercise.reps}`
+																		: exercise.duration
+																		? `${exercise.duration}s`
+																		: "See details"}
+																</span>
+																{exercise.load && (
+																	<span className="text-xs text-base-content/60 block mt-1">
+																		@{" "}
+																		{
+																			exercise.load
+																		}
+																		kg
 																	</span>
 																)}
 															</div>
-															<span className="text-primary font-bold">
-																{exercise.sets &&
-																exercise.reps
-																	? `${exercise.sets} x ${exercise.reps}`
-																	: exercise.duration
-																	? `${exercise.duration}s`
-																	: "See details"}
-															</span>
 														</div>
 													);
 												})}
 											{todaySession.exercises.length >
 												5 && (
-												<div className="text-center text-sm text-base-content/60 py-2">
+												<div className="text-center text-sm text-base-content/60 py-2 bg-base-200/50 rounded-lg">
 													+{" "}
 													{todaySession.exercises
 														.length - 5}{" "}
@@ -289,12 +394,12 @@ const Dashboard = () => {
 												</div>
 											)}
 										</div>
-										<div className="card-actions justify-end mt-4">
+										<div className="card-actions justify-end mt-6">
 											<button
-												className="btn btn-primary gap-2"
+												className="btn btn-primary btn-lg gap-2 shadow-lg"
 												onClick={handleStartWorkout}
 											>
-												<Play className="w-4 h-4" />
+												<Play className="w-5 h-5" />
 												Start Workout
 											</button>
 										</div>
@@ -316,6 +421,13 @@ const Dashboard = () => {
 									<button className="btn btn-outline w-full justify-start">
 										<Dumbbell className="w-4 h-4" />
 										Start Workout
+									</button>
+									<button
+										className="btn btn-outline w-full justify-start"
+										onClick={() => navigate("/diet")}
+									>
+										<Apple className="w-4 h-4" />
+										Diet & Nutrition
 									</button>
 									<button className="btn btn-outline w-full justify-start">
 										<Target className="w-4 h-4" />

@@ -12,6 +12,7 @@ import {
 	Upload,
 	FolderKanban,
 	Zap,
+	Apple,
 } from "lucide-react";
 import ThemeChanger from "./ThemeChanger";
 
@@ -79,16 +80,11 @@ const Sidebar = ({ isOpen, onClose }) => {
 					icon: <LayoutDashboard className="w-5 h-5" />,
 					path: "/dashboard",
 				},
+				{ divider: true, label: "Workout" },
 				{
 					title: "Today's Workout",
 					icon: <Zap className="w-5 h-5" />,
 					path: "/today-workout",
-				},
-				{ divider: true, label: "Exercises" },
-				{
-					title: "Browse Exercises",
-					icon: <ListChecks className="w-5 h-5" />,
-					path: "/exercises",
 				},
 				{ divider: true, label: "Plans" },
 				{
@@ -97,14 +93,20 @@ const Sidebar = ({ isOpen, onClose }) => {
 					path: "/plans",
 				},
 				{
+					title: "Generate Custom Plan",
+					icon: <Zap className="w-5 h-5" />,
+					path: "/generate-plan",
+				},
+				{
 					title: "My Plans",
 					icon: <FolderKanban className="w-5 h-5" />,
 					path: "/my-plans",
 				},
+				{ divider: true, label: "Nutrition" },
 				{
-					title: "Generate Plan",
-					icon: <Zap className="w-5 h-5" />,
-					path: "/auto-plan/generate",
+					title: "Diet & Nutrition",
+					icon: <Apple className="w-5 h-5" />,
+					path: "/diet",
 				},
 				{ divider: true, label: "Profile" },
 				{

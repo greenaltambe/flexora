@@ -33,6 +33,9 @@ import AutoPlanDashboard from "./pages/AutoPlanDashboard";
 import LogWorkout from "./pages/LogWorkout";
 import WorkoutHistory from "./pages/WorkoutHistory";
 import StreakDashboard from "./pages/StreakDashboard";
+import GeneratePlan from "./pages/GeneratePlan";
+import WorkoutSession from "./pages/WorkoutSession";
+import DietRecommendation from "./pages/DietRecommendation";
 
 const App = () => {
 	const { checkAuth } = useAuthStore();
@@ -179,10 +182,27 @@ const App = () => {
 					}
 				/>
 				<Route
+					path="/generate-plan"
+					element={
+						<Protect>
+							<GeneratePlan />
+						</Protect>
+					}
+				/>
+				<Route
 					path="/my-plans"
 					element={
 						<Protect>
 							<MyPlans />
+						</Protect>
+					}
+				/>
+				{/* Diet & Nutrition */}
+				<Route
+					path="/diet"
+					element={
+						<Protect>
+							<DietRecommendation />
 						</Protect>
 					}
 				/>
@@ -226,6 +246,15 @@ const App = () => {
 					element={
 						<Protect>
 							<TodayWorkout />
+						</Protect>
+					}
+				/>
+				{/* Workout Session */}
+				<Route
+					path="/workout-session"
+					element={
+						<Protect>
+							<WorkoutSession />
 						</Protect>
 					}
 				/>

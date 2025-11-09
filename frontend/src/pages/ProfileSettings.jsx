@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, User, Target, Lock, Save, Mail } from "lucide-react";
+import { ArrowLeft, User, Target, Lock, Save, Mail, Apple } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useProfileStore } from "../store/profile/profileStore";
 import { useAuthStore } from "../store/auth/authStore";
@@ -22,6 +22,10 @@ const ProfileSettings = () => {
 		fitnessGoals: "",
 		experienceLevel: "",
 		healthConditions: "",
+		activityLevel: "light",
+		mealsPerDay: 3,
+		preferences: [],
+		allergies: [],
 	});
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -42,6 +46,10 @@ const ProfileSettings = () => {
 				fitnessGoals: profile.fitnessGoals || "",
 				experienceLevel: profile.experienceLevel || "",
 				healthConditions: profile.healthConditions || "",
+				activityLevel: profile.activityLevel || "light",
+				mealsPerDay: profile.meals_per_day || 3,
+				preferences: profile.preferences || [],
+				allergies: profile.allergies || [],
 			});
 		}
 	}, [profile, user]);
@@ -74,6 +82,12 @@ const ProfileSettings = () => {
 				fitnessGoals: formData.fitnessGoals,
 				experienceLevel: formData.experienceLevel,
 				healthConditions: formData.healthConditions,
+				activityLevel: formData.activityLevel,
+				meals_per_day: formData.mealsPerDay
+					? parseInt(formData.mealsPerDay)
+					: undefined,
+				preferences: formData.preferences,
+				allergies: formData.allergies,
 			};
 
 			// Remove undefined values
@@ -136,6 +150,15 @@ const ProfileSettings = () => {
 					>
 						<Target className="w-4 h-4 mr-2" />
 						Fitness Goals
+					</button>
+					<button
+						className={`tab ${
+							activeTab === "nutrition" ? "tab-active" : ""
+						}`}
+						onClick={() => setActiveTab("nutrition")}
+					>
+						<Apple className="w-4 h-4 mr-2" />
+						Nutrition
 					</button>
 					<button
 						className={`tab ${
@@ -511,6 +534,231 @@ const ProfileSettings = () => {
 										</div>
 									</div>
 								)}
+							</div>
+						</div>
+					)}
+
+					{activeTab === "nutrition" && (
+						<div className="card bg-base-100 shadow-lg">
+							<div className="card-body">
+								<h2 className="card-title mb-2 flex items-center gap-2">
+									<span>🍎</span> Nutrition Preferences
+								</h2>
+								<p className="text-sm text-base-content/70 mb-6">
+									Set your dietary preferences for
+									personalized meal recommendations
+								</p>
+
+								<div className="space-y-6">
+									{/* Activity Level */}
+									<div className="form-control">
+										<label className="label">
+											<span className="label-text font-semibold">
+												Activity Level
+											</span>
+										</label>
+										<select
+											name="activityLevel"
+											value={
+												formData.activityLevel ||
+												"light"
+											}
+											onChange={handleInputChange}
+											className="select select-bordered w-full"
+										>
+											<option value="sedentary">
+												Sedentary (little or no
+												exercise)
+											</option>
+											<option value="light">
+												Light (exercise 1-3 days/week)
+											</option>
+											<option value="moderate">
+												Moderate (exercise 3-5
+												days/week)
+											</option>
+											<option value="active">
+												Active (exercise 6-7 days/week)
+											</option>
+											<option value="very_active">
+												Very Active (intense exercise
+												daily)
+											</option>
+										</select>
+										<label className="label">
+											<span className="label-text-alt text-base-content/70">
+												Helps calculate your daily
+												caloric needs
+											</span>
+										</label>
+									</div>
+
+									{/* Meals Per Day */}
+									<div className="form-control">
+										<label className="label">
+											<span className="label-text font-semibold">
+												Meals Per Day
+											</span>
+										</label>
+										<input
+											type="number"
+											name="mealsPerDay"
+											min="2"
+											max="6"
+											value={formData.mealsPerDay || 3}
+											onChange={handleInputChange}
+											className="input input-bordered w-full"
+										/>
+										<label className="label">
+											<span className="label-text-alt text-base-content/70">
+												Number of meals you prefer (2-6)
+											</span>
+										</label>
+									</div>
+
+									{/* Dietary Preferences */}
+									<div className="form-control">
+										<label className="label">
+											<span className="label-text font-semibold">
+												Dietary Preferences
+											</span>
+										</label>
+										<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+											{[
+												"vegetarian",
+												"vegan",
+												"pescatarian",
+												"keto",
+												"paleo",
+												"low_carb",
+												"high_protein",
+												"gluten_free",
+											].map((pref) => (
+												<label
+													key={pref}
+													className="label cursor-pointer justify-start gap-2 p-3 bg-base-200 rounded-lg hover:bg-base-300"
+												>
+													<input
+														type="checkbox"
+														className="checkbox checkbox-primary checkbox-sm"
+														checked={
+															formData.preferences?.includes(
+																pref
+															) || false
+														}
+														onChange={(e) => {
+															const checked =
+																e.target
+																	.checked;
+															setFormData(
+																(prev) => {
+																	const prefs =
+																		prev.preferences ||
+																		[];
+																	return {
+																		...prev,
+																		preferences:
+																			checked
+																				? [
+																						...prefs,
+																						pref,
+																				  ]
+																				: prefs.filter(
+																						(
+																							p
+																						) =>
+																							p !==
+																							pref
+																				  ),
+																	};
+																}
+															);
+														}}
+													/>
+													<span className="label-text capitalize text-sm">
+														{pref.replace("_", " ")}
+													</span>
+												</label>
+											))}
+										</div>
+									</div>
+
+									{/* Allergies */}
+									<div className="form-control">
+										<label className="label">
+											<span className="label-text font-semibold">
+												Food Allergies
+											</span>
+										</label>
+										<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+											{[
+												"dairy",
+												"eggs",
+												"fish",
+												"shellfish",
+												"tree_nuts",
+												"peanuts",
+												"wheat",
+												"soy",
+											].map((allergy) => (
+												<label
+													key={allergy}
+													className="label cursor-pointer justify-start gap-2 p-3 bg-base-200 rounded-lg hover:bg-base-300"
+												>
+													<input
+														type="checkbox"
+														className="checkbox checkbox-error checkbox-sm"
+														checked={
+															formData.allergies?.includes(
+																allergy
+															) || false
+														}
+														onChange={(e) => {
+															const checked =
+																e.target
+																	.checked;
+															setFormData(
+																(prev) => {
+																	const allergies =
+																		prev.allergies ||
+																		[];
+																	return {
+																		...prev,
+																		allergies:
+																			checked
+																				? [
+																						...allergies,
+																						allergy,
+																				  ]
+																				: allergies.filter(
+																						(
+																							a
+																						) =>
+																							a !==
+																							allergy
+																				  ),
+																	};
+																}
+															);
+														}}
+													/>
+													<span className="label-text capitalize text-sm">
+														{allergy.replace(
+															"_",
+															" "
+														)}
+													</span>
+												</label>
+											))}
+										</div>
+										<label className="label">
+											<span className="label-text-alt text-base-content/70">
+												These will be excluded from your
+												meal recommendations
+											</span>
+										</label>
+									</div>
+								</div>
 							</div>
 						</div>
 					)}
