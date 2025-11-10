@@ -21,6 +21,7 @@ const AutoPlanGenerator = () => {
 		experience_level: "beginner",
 		equipment: [],
 		days_per_week: 3,
+		preferred_days: [],
 		session_length_minutes: 45,
 		injuries: "",
 		focus_areas: [],
@@ -61,6 +62,10 @@ const AutoPlanGenerator = () => {
 			newErrors.focus_areas = "Please select at least one focus area";
 		}
 
+		if (formData.preferred_days.length > 0 && formData.preferred_days.length < formData.days_per_week) {
+			newErrors.preferred_days = `Please select at least ${formData.days_per_week} days or leave it empty`;
+		}
+
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -72,6 +77,10 @@ const AutoPlanGenerator = () => {
 			toast.error("Please fill in all required fields");
 			return;
 		}
+
+		console.log('=== FRONTEND SUBMITTING ===');
+		console.log('Form Data:', formData);
+		console.log('Goal:', formData.goal);
 
 		const result = await generateAutoPlan(formData);
 		if (result.success) {
@@ -384,7 +393,68 @@ const AutoPlanGenerator = () => {
 								</p>
 							</div>
 
-							<div className="form-control">
+							{/* Preferred Days Selection */}
+							<div className="form-control mt-6">
+								<label className="label">
+									<span className="label-text font-semibold">
+										Preferred Workout Days (Optional)
+									</span>
+								</label>
+								<p className="text-sm text-base-content/70 mb-3">
+									Select {formData.days_per_week} or more days when you prefer to workout
+								</p>
+								<div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+									{[
+										{ value: "monday", label: "Monday" },
+										{ value: "tuesday", label: "Tuesday" },
+										{ value: "wednesday", label: "Wednesday" },
+										{ value: "thursday", label: "Thursday" },
+										{ value: "friday", label: "Friday" },
+										{ value: "saturday", label: "Saturday" },
+										{ value: "sunday", label: "Sunday" },
+									].map((day) => (
+										<label
+											key={day.value}
+											className={`btn btn-sm ${
+												formData.preferred_days.includes(
+													day.value
+												)
+													? "btn-primary"
+													: "btn-outline"
+											}`}
+										>
+											<input
+												type="checkbox"
+												className="hidden"
+												checked={formData.preferred_days.includes(
+													day.value
+												)}
+												onChange={() =>
+													toggleArrayItem(
+														"preferred_days",
+														day.value
+													)
+												}
+											/>
+											{day.label}
+										</label>
+									))}
+								</div>
+								{formData.preferred_days.length > 0 && (
+									<p className="text-sm text-center mt-2 text-base-content/70">
+										{formData.preferred_days.length} days selected
+									</p>
+								)}
+								{errors.preferred_days && (
+									<label className="label">
+										<span className="label-text-alt text-error">
+											{errors.preferred_days}
+										</span>
+									</label>
+								)}
+							</div>
+
+							<div className="form-control mt-4">
 								<label className="label">
 									<span className="label-text font-semibold">
 										Session Length (minutes)

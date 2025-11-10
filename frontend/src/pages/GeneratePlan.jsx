@@ -23,6 +23,7 @@ const GeneratePlan = () => {
 		goals: [],
 		experience_level: "beginner",
 		days_per_week: 3,
+		preferred_days: [],
 		session_length_minutes: 45,
 		equipment: [],
 	});
@@ -35,6 +36,7 @@ const GeneratePlan = () => {
 				goals: user.profile.goals || [],
 				experience_level: user.profile.experience_level || "beginner",
 				days_per_week: user.profile.days_per_week || 3,
+				preferred_days: user.profile.preferred_days || [],
 				session_length_minutes:
 					user.profile.session_length_minutes || 45,
 				equipment: user.profile.equipment || [],
@@ -115,6 +117,15 @@ const GeneratePlan = () => {
 		});
 	};
 
+	const handlePreferredDayToggle = (day) => {
+		setFormData((prev) => {
+			const preferredDays = prev.preferred_days.includes(day)
+				? prev.preferred_days.filter((d) => d !== day)
+				: [...prev.preferred_days, day];
+			return { ...prev, preferred_days: preferredDays };
+		});
+	};
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -126,6 +137,11 @@ const GeneratePlan = () => {
 
 		if (formData.equipment.length === 0) {
 			toast.error("Please select available equipment");
+			return;
+		}
+
+		if (formData.preferred_days.length > 0 && formData.preferred_days.length < formData.days_per_week) {
+			toast.error(`Please select at least ${formData.days_per_week} preferred days or leave it empty`);
 			return;
 		}
 
@@ -271,6 +287,54 @@ const GeneratePlan = () => {
 									{formData.days_per_week} days per week
 								</span>
 							</div>
+						</div>
+
+						{/* Preferred Workout Days */}
+						<div>
+							<label className="label">
+								<span className="label-text text-lg font-semibold flex items-center gap-2">
+									<Calendar className="w-5 h-5" />
+									Preferred Workout Days (Optional)
+								</span>
+							</label>
+							<p className="text-sm text-base-content/70 mb-3">
+								Select {formData.days_per_week} or more days when you prefer to workout
+							</p>
+							<div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+								{[
+									{ value: "monday", label: "Monday", short: "Mon" },
+									{ value: "tuesday", label: "Tuesday", short: "Tue" },
+									{ value: "wednesday", label: "Wednesday", short: "Wed" },
+									{ value: "thursday", label: "Thursday", short: "Thu" },
+									{ value: "friday", label: "Friday", short: "Fri" },
+									{ value: "saturday", label: "Saturday", short: "Sat" },
+									{ value: "sunday", label: "Sunday", short: "Sun" },
+								].map((day) => (
+									<button
+										key={day.value}
+										type="button"
+										onClick={() => handlePreferredDayToggle(day.value)}
+										className={`btn btn-sm ${
+											formData.preferred_days.includes(day.value)
+												? "btn-primary"
+												: "btn-outline"
+										}`}
+									>
+										{formData.preferred_days.includes(day.value) && (
+											<Check className="w-3 h-3" />
+										)}
+										<span className="hidden sm:inline">{day.label}</span>
+										<span className="sm:hidden">{day.short}</span>
+									</button>
+								))}
+							</div>
+							{formData.preferred_days.length > 0 && (
+								<div className="text-center mt-3">
+									<span className="badge badge-secondary badge-lg">
+										{formData.preferred_days.length} days selected
+									</span>
+								</div>
+							)}
 						</div>
 
 						{/* Session Length */}

@@ -386,8 +386,10 @@ const bulkCreateExercises = async (req, res) => {
 			}
 
 			// avoid duplicate by name (case-insensitive)
+			// Escape special regex characters in the name
+			const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 			const exists = await Exercise.findOne({
-				name: { $regex: new RegExp(`^${name}$`, "i") },
+				name: { $regex: new RegExp(`^${escapedName}$`, "i") },
 			}).lean();
 			if (exists) {
 				skipped.push({ row: rowNum, name, reason: "duplicate name" });
@@ -404,7 +406,12 @@ const bulkCreateExercises = async (req, res) => {
 			const movement_patterns = parseArrayField(
 				row.movement_patterns || row.movementPatterns || ""
 			);
-			const equipment = parseArrayField(row.equipment || "");
+			// Handle both "None" and empty strings for equipment
+			let equipmentRaw = (row.equipment || "").trim();
+			if (equipmentRaw.toLowerCase() === "none") {
+				equipmentRaw = "";
+			}
+			const equipment = parseArrayField(equipmentRaw);
 			const tags = parseArrayField(row.tags || "");
 			const contraindications = parseArrayField(
 				row.contraindications || ""
@@ -413,8 +420,19 @@ const bulkCreateExercises = async (req, res) => {
 			const video_url =
 				(row.video_url || row.videoUrl || "").trim() || null;
 
-			const difficulty = parseInteger(row.difficulty, 3);
-			const modality = (row.modality || "reps").trim();
+			// Handle difficulty as string (beginner, intermediate, advanced)
+			let difficulty = (row.difficulty || "").trim().toLowerCase();
+			if (!["beginner", "intermediate", "advanced"].includes(difficulty)) {
+				difficulty = "intermediate";
+			}
+			
+			// Handle modality field
+			let modality = (row.modality || "").trim().toLowerCase();
+			const validModalities = ["reps", "time", "distance", "strength", "cardio", "hiit", "plyo", "hybrid"];
+			if (!validModalities.includes(modality)) {
+				// Default based on type
+				modality = row.type === "cardio" ? "time" : "reps";
+			}
 
 			// prescription parsing: prefer explicit numeric fields. Accept either time_minutes or time_seconds.
 			const sets = parseInteger(row.sets, undefined);

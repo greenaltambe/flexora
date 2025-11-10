@@ -28,17 +28,38 @@ const ExerciseSchema = new Schema(
 			trim: true,
 		},
 		name: { type: String, required: true, trim: true },
+		description: { type: String, default: "" },
 		type: {
 			type: String,
 			enum: ["strength", "cardio", "mobility", "skill", "hybrid"],
 			default: "strength",
 		},
 		primary_muscles: { type: [String], default: [] },
+		secondary_muscles: { type: [String], default: [] },
+		movement_patterns: { type: [String], default: [] },
 		equipment: { type: [String], default: [] },
+		tags: { type: [String], default: [] },
+		difficulty: {
+			type: String,
+			enum: ["beginner", "intermediate", "advanced"],
+			default: "intermediate",
+		},
+		modality: {
+			type: String,
+			enum: ["reps", "time", "distance", "strength", "cardio", "hiit", "plyo", "hybrid"],
+			default: "reps",
+		},
 		default_prescription: { type: PrescriptionSchema, default: () => ({}) },
+		estimated_minutes: { type: Number, default: 5 },
+		contraindications: { type: [String], default: [] },
+		images: { type: [String], default: [] },
 		progression: { type: ProgressionSchema, default: () => ({}) },
 		alternatives: [{ type: Schema.Types.ObjectId, ref: "Exercise" }], // optional swaps
 		video_url: { type: String, default: null },
+		author: {
+			id: { type: Schema.Types.ObjectId, ref: "User" },
+			name: { type: String, default: "" },
+		},
 		published: { type: Boolean, default: false },
 	},
 	{ timestamps: true }

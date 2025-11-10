@@ -33,6 +33,11 @@ const DayExerciseSchema = new Schema(
 const DayTemplateSchema = new Schema(
 	{
 		name: { type: String, default: "" },
+		dayOfWeek: { 
+			type: String, 
+			enum: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+			default: null
+		},
 		exercises: { type: [DayExerciseSchema], default: [] },
 	},
 	{ _id: false }
@@ -49,6 +54,11 @@ const PlanTemplateSchema = new Schema(
 		},
 		weeks: { type: Number, default: 4 },
 		daysPerWeek: { type: Number, default: 3 },
+		preferredDays: { 
+			type: [String], 
+			enum: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+			default: [] 
+		},
 		dayTemplates: { type: [DayTemplateSchema], default: [] },
 		published: { type: Boolean, default: false },
 	},

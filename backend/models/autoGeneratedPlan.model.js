@@ -12,6 +12,11 @@ const GenerationParamsSchema = new Schema(
 		},
 		equipment: { type: [String], default: [] },
 		days_per_week: { type: Number, min: 2, max: 6, default: 3 },
+		preferred_days: { 
+			type: [String], 
+			enum: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+			default: [] 
+		},
 		session_length_minutes: { type: Number, default: 45 },
 		injuries: { type: [String], default: [] },
 		focus_areas: { type: [String], default: [] },
@@ -53,6 +58,11 @@ const WeeklyExerciseSchema = new Schema(
 const WeeklyStructureSchema = new Schema(
 	{
 		dayNumber: { type: Number, required: true, min: 1, max: 7 },
+		dayOfWeek: { 
+			type: String, 
+			enum: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+			default: null
+		},
 		name: { type: String, default: "" },
 		focus: { type: String, default: "" },
 		exercises: { type: [WeeklyExerciseSchema], default: [] },

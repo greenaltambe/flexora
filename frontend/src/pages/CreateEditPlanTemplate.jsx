@@ -34,6 +34,7 @@ const CreateEditPlanTemplate = () => {
 		level: "beginner",
 		weeks: 4,
 		daysPerWeek: 3,
+		preferredDays: [],
 		dayTemplates: [],
 		published: false,
 	});
@@ -64,6 +65,7 @@ const CreateEditPlanTemplate = () => {
 				level: result.data.level || "beginner",
 				weeks: result.data.weeks || 4,
 				daysPerWeek: result.data.daysPerWeek || 3,
+				preferredDays: result.data.preferredDays || [],
 				dayTemplates: result.data.dayTemplates || [],
 				published: result.data.published || false,
 			});
@@ -414,6 +416,57 @@ const CreateEditPlanTemplate = () => {
 										max="7"
 									/>
 								</div>
+							</div>
+
+							{/* Preferred Days Selection */}
+							<div className="form-control">
+								<label className="label">
+									<span className="label-text font-semibold">
+										Preferred Workout Days (Optional)
+									</span>
+								</label>
+								<p className="text-sm text-base-content/70 mb-3">
+									Select which days of the week this plan should be scheduled for
+								</p>
+								<div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+									{[
+										{ value: "monday", label: "Monday" },
+										{ value: "tuesday", label: "Tuesday" },
+										{ value: "wednesday", label: "Wednesday" },
+										{ value: "thursday", label: "Thursday" },
+										{ value: "friday", label: "Friday" },
+										{ value: "saturday", label: "Saturday" },
+										{ value: "sunday", label: "Sunday" },
+									].map((day) => (
+										<label
+											key={day.value}
+											className={`btn btn-sm ${
+												formData.preferredDays?.includes(day.value)
+													? "btn-primary"
+													: "btn-outline"
+											}`}
+										>
+											<input
+												type="checkbox"
+												className="hidden"
+												checked={formData.preferredDays?.includes(day.value)}
+												onChange={() => {
+													const currentDays = formData.preferredDays || [];
+													const newDays = currentDays.includes(day.value)
+														? currentDays.filter((d) => d !== day.value)
+														: [...currentDays, day.value];
+													setFormData({ ...formData, preferredDays: newDays });
+												}}
+											/>
+											{day.label}
+										</label>
+									))}
+								</div>
+								{formData.preferredDays?.length > 0 && (
+									<p className="text-sm text-center mt-2 text-base-content/70">
+										{formData.preferredDays.length} days selected
+									</p>
+								)}
 							</div>
 
 							{/* Published Toggle */}

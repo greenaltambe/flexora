@@ -1,0 +1,108 @@
+name,type,primary_muscles,secondary_muscles,equipment,description,sets_min,sets_max,reps_min,reps_max,rest_seconds,difficulty,modality,tags,estimated_minutes,published
+"Bodyweight Squat",strength,Quadriceps,"Glutes|Hamstrings|Core",,"Fundamental lower body exercise. Stand with feet shoulder-width apart, lower hips back and down, keep chest up.",3,4,10,20,60,beginner,reps,"fat_loss|strength|endurance|beginner_friendly",5,true
+"Push-up",strength,Chest,"Shoulders|Triceps|Core",,"Classic upper body exercise. Start in plank position, lower chest to ground, push back up.",3,4,8,20,60,beginner,reps,"fat_loss|strength|endurance|beginner_friendly",4,true
+"Plank Hold",strength,Core,"Shoulders|Back",,"Core stability exercise. Hold straight body position on forearms and toes.",3,4,20,60,60,beginner,time,"fat_loss|endurance|core|beginner_friendly",3,true
+"Walking Lunges",strength,Quadriceps,"Glutes|Hamstrings|Core",,"Dynamic lower body exercise. Step forward, lower back knee, alternate legs.",3,4,10,20,60,beginner,reps,"fat_loss|strength|endurance|beginner_friendly",6,true
+"Pike Push-up",strength,Shoulders,"Triceps|Upper_Chest",,"Shoulder-focused push-up variation. Start in downward dog position, lower head toward ground.",3,4,6,15,90,intermediate,reps,"strength|shoulder_focus",4,true
+"Burpees",strength,"Full Body","Cardiovascular",,"High-intensity full body exercise. Squat, jump back to plank, push-up, jump forward, jump up.",3,4,8,15,60,intermediate,reps,"fat_loss|hiit|cardio|endurance",5,true
+"Mountain Climbers",strength,Core,"Shoulders|Hip_Flexors|Cardiovascular",,"Dynamic core and cardio exercise. Plank position, alternate bringing knees to chest rapidly.",3,4,20,40,45,beginner,reps,"fat_loss|hiit|cardio|core",4,true
+"Jump Squats",strength,Quadriceps,"Glutes|Hamstrings|Calves",,"Plyometric lower body exercise. Perform squat, explode upward into a jump.",3,4,8,15,90,intermediate,reps,"fat_loss|power|hiit|cardio",4,true
+"Tricep Dips (Chair)",strength,Triceps,"Shoulders|Chest",,"Upper body pushing exercise. Use chair or bench, lower body by bending elbows, push back up.",3,4,8,15,60,beginner,reps,"strength|tricep_focus|beginner_friendly",4,true
+"Glute Bridge",strength,Glutes,"Hamstrings|Lower_Back",,"Hip extension exercise. Lie on back, lift hips up, squeeze glutes at top.",3,4,12,20,45,beginner,reps,"strength|glute_focus|beginner_friendly",3,true
+"Single-Leg Glute Bridge",strength,Glutes,"Hamstrings|Core",,"Advanced glute bridge. Perform with one leg extended.",3,4,8,15,60,intermediate,reps,"strength|glute_focus|balance",4,true
+"High Knees",cardio,Hip_Flexors,"Core|Cardiovascular",,"Cardio exercise. Run in place bringing knees high.",3,4,30,60,45,beginner,time,"fat_loss|cardio|hiit|warm_up",3,true
+"Jumping Jacks",cardio,"Full Body","Cardiovascular",,"Classic cardio exercise. Jump legs apart while raising arms overhead.",3,4,20,50,30,beginner,reps,"fat_loss|cardio|warm_up|beginner_friendly",3,true
+"Side Plank (Each Side)",strength,Obliques,"Core|Shoulders",,"Lateral core stability. Hold body straight on one forearm and side of feet.",3,4,20,45,45,intermediate,time,"core|oblique_focus|balance",4,true
+"Bicycle Crunches",strength,Abs,"Obliques",,"Rotational core exercise. Alternate bringing opposite elbow to knee.",3,4,15,25,45,beginner,reps,"core|abs_focus|beginner_friendly",3,true
+"Dead Bug",strength,Core,"Hip_Flexors",,"Core stability exercise. Lie on back, alternate extending opposite arm and leg.",3,4,10,15,45,beginner,reps,"core|stability|beginner_friendly",3,true
+"Bird Dog",strength,Lower_Back,"Glutes|Core",,"Back and core stability. On hands and knees, extend opposite arm and leg.",3,4,10,15,45,beginner,reps,"back|core|stability|beginner_friendly",4,true
+"Inchworm Walk-out",strength,Core,"Shoulders|Hamstrings",,"Dynamic warm-up and core exercise. Walk hands out to plank, walk back to feet.",3,3,6,12,45,beginner,reps,"warm_up|flexibility|core",4,true
+"Squat Jumps",strength,Quadriceps,"Glutes|Calves|Cardiovascular",,"Explosive lower body exercise. Squat then jump maximally.",3,4,8,15,90,intermediate,reps,"power|fat_loss|hiit",4,true
+"Diamond Push-ups",strength,Triceps,"Chest|Shoulders",,"Tricep-focused push-up. Hands form diamond shape under chest.",3,4,6,15,75,intermediate,reps,"strength|tricep_focus",4,true
+"Wide-Grip Push-ups",strength,Chest,"Shoulders|Triceps",,"Chest-focused push-up. Hands placed wider than shoulder-width.",3,4,8,20,60,beginner,reps,"strength|chest_focus",4,true
+"Decline Push-ups",strength,Upper_Chest,"Shoulders|Triceps",,"Push-up with feet elevated. Increases difficulty and targets upper chest.",3,4,6,15,75,intermediate,reps,"strength|chest_focus",4,true
+"Bulgarian Split Squat (Bodyweight)",strength,Quadriceps,"Glutes|Hamstrings",,"Single-leg squat with rear foot elevated on chair/bench.",3,4,8,15,75,intermediate,reps,"strength|balance|leg_focus",6,true
+"Cossack Squats",strength,Inner_Thigh,"Quadriceps|Glutes|Flexibility",,"Lateral squat shifting weight side to side. Improves mobility.",3,4,6,12,60,intermediate,reps,"strength|mobility|flexibility",5,true
+"Wall Sit",strength,Quadriceps,"Glutes",,"Static hold against wall in squat position.",3,4,30,60,60,beginner,time,"endurance|leg_focus|beginner_friendly",3,true
+"Superman Hold",strength,Lower_Back,"Glutes|Hamstrings",,"Lie face down, lift arms and legs off ground simultaneously.",3,4,15,30,45,beginner,time,"back|posture|beginner_friendly",3,true
+"Hollow Body Hold",strength,Abs,"Hip_Flexors",,"Lie on back, lift shoulders and legs off ground, hold.",3,4,15,30,45,intermediate,time,"core|gymnastics",3,true
+"Flutter Kicks",strength,Lower_Abs,"Hip_Flexors",,"Lie on back, small rapid kicks with straight legs.",3,4,20,40,45,beginner,reps,"core|abs_focus",3,true
+"Russian Twists (Bodyweight)",strength,Obliques,"Abs",,"Seated, lean back slightly, rotate torso side to side.",3,4,20,40,45,beginner,reps,"core|oblique_focus",3,true
+"Bear Crawl",strength,Core,"Shoulders|Quadriceps|Cardiovascular",,"Crawl on hands and feet (knees off ground) forward and backward.",3,4,20,40,60,intermediate,time,"full_body|cardio|core",5,true
+"Crab Walk",strength,Triceps,"Shoulders|Glutes|Core",,"Walk backwards on hands and feet (belly up).",3,3,20,40,60,beginner,time,"full_body|shoulder_focus",4,true
+"Skater Hops",strength,Glutes,"Quadriceps|Lateral_Stability|Cardiovascular",,"Lateral bound from one leg to another.",3,4,10,20,60,intermediate,reps,"fat_loss|power|cardio|hiit",4,true
+"Broad Jumps",strength,Quadriceps,"Glutes|Hamstrings|Calves",,"Jump forward maximally from standing position.",3,4,5,10,90,intermediate,reps,"power|explosive",4,true
+"Tuck Jumps",strength,Quadriceps,"Core|Cardiovascular",,"Jump bringing knees to chest.",3,4,6,12,90,advanced,reps,"power|hiit|explosive",3,true
+"Dumbbell Goblet Squat",strength,Quadriceps,"Glutes|Core",Dumbbell,"Hold one dumbbell at chest, perform squat.",3,5,8,15,75,beginner,reps,"strength|leg_focus",5,true
+"Dumbbell Romanian Deadlift",strength,Hamstrings,"Lower_Back|Glutes",Dumbbell,"Hip hinge pattern with dumbbells, focus on hamstrings.",3,4,8,12,90,intermediate,reps,"strength|hamstring_focus|posterior_chain",5,true
+"Dumbbell Bench Press",strength,Chest,"Shoulders|Triceps",Dumbbells|Bench,"Lie on bench, press dumbbells up from chest.",3,5,6,12,90,beginner,reps,"strength|muscle_gain|chest_focus",6,true
+"Dumbbell Row (Single-Arm)",strength,Back,"Biceps|Core",Dumbbell|Bench,"Row dumbbell to hip with one hand while bracing on bench.",3,4,8,15,75,beginner,reps,"strength|back_focus|muscle_gain",5,true
+"Dumbbell Shoulder Press",strength,Shoulders,"Triceps|Upper_Chest",Dumbbells,"Press dumbbells overhead from shoulder height.",3,5,6,12,90,beginner,reps,"strength|shoulder_focus",5,true
+"Dumbbell Bicep Curl",strength,Biceps,,Dumbbells,"Curl dumbbells from sides up to shoulders.",3,4,10,15,60,beginner,reps,"muscle_gain|arm_focus",4,true
+"Dumbbell Hammer Curl",strength,Biceps,"Brachialis|Forearms",Dumbbells,"Curl dumbbells with neutral grip (palms facing each other).",3,4,10,15,60,beginner,reps,"muscle_gain|arm_focus",4,true
+"Dumbbell Overhead Tricep Extension",strength,Triceps,,Dumbbell,"Hold one dumbbell overhead with both hands, lower behind head.",3,4,10,15,60,beginner,reps,"muscle_gain|arm_focus",4,true
+"Dumbbell Lateral Raise",strength,Shoulders,,Dumbbells,"Raise dumbbells out to sides to shoulder height.",3,4,10,15,60,beginner,reps,"muscle_gain|shoulder_focus",4,true
+"Dumbbell Front Raise",strength,Front_Shoulders,,Dumbbells,"Raise dumbbells forward to shoulder height.",3,4,10,15,60,beginner,reps,"muscle_gain|shoulder_focus",4,true
+"Dumbbell Chest Fly",strength,Chest,,Dumbbells|Bench,"Lie on bench, arc dumbbells out to sides and back up.",3,4,10,15,60,intermediate,reps,"muscle_gain|chest_focus",5,true
+"Dumbbell Pullover",strength,Lats,"Chest|Triceps",Dumbbell|Bench,"Lie across bench, lower dumbbell behind head in arc.",3,4,10,15,75,intermediate,reps,"muscle_gain|back_focus",5,true
+"Dumbbell Lunges",strength,Quadriceps,"Glutes|Hamstrings",Dumbbells,"Perform lunges holding dumbbells at sides.",3,4,8,15,75,beginner,reps,"strength|leg_focus",6,true
+"Dumbbell Step-ups",strength,Quadriceps,"Glutes|Hamstrings",Dumbbells|Box,"Step up onto box/bench holding dumbbells.",3,4,10,15,75,beginner,reps,"strength|leg_focus",6,true
+"Dumbbell Shrugs",strength,Traps,,Dumbbells,"Shrug shoulders up holding dumbbells.",3,4,12,20,60,beginner,reps,"muscle_gain|trap_focus",3,true
+"Dumbbell Skull Crushers",strength,Triceps,,Dumbbells|Bench,"Lie on bench, lower dumbbells to forehead by bending elbows.",3,4,8,12,75,intermediate,reps,"muscle_gain|tricep_focus",4,true
+"Dumbbell Farmers Walk",strength,Forearms,"Traps|Core|Grip",Dumbbells,"Walk while holding heavy dumbbells at sides.",3,4,30,60,90,beginner,distance,"strength|grip|core|farmer",4,true
+"Barbell Back Squat",strength,Quadriceps,"Glutes|Hamstrings|Core",Barbell,"Barbell on upper back, perform deep squat.",4,5,5,12,120,intermediate,reps,"strength|muscle_gain|leg_focus",8,true
+"Barbell Deadlift",strength,Hamstrings,"Back|Glutes|Traps|Forearms",Barbell,"Hip hinge to lift barbell from ground to standing.",4,5,3,10,120,intermediate,reps,"strength|muscle_gain|posterior_chain",8,true
+"Barbell Bench Press",strength,Chest,"Shoulders|Triceps",Barbell|Bench,"Lower barbell to chest, press back up.",4,5,5,12,120,intermediate,reps,"strength|muscle_gain|chest_focus",7,true
+"Barbell Overhead Press",strength,Shoulders,"Triceps|Upper_Chest",Barbell,"Press barbell overhead from shoulders.",4,5,5,10,120,intermediate,reps,"strength|shoulder_focus",6,true
+"Barbell Row (Bent-Over)",strength,Back,"Biceps|Lower_Back",Barbell,"Bend at hips, row barbell to lower chest.",3,5,6,12,90,intermediate,reps,"strength|muscle_gain|back_focus",6,true
+"Barbell Romanian Deadlift",strength,Hamstrings,"Lower_Back|Glutes",Barbell,"Hip hinge pattern, lower barbell along legs.",3,4,6,12,90,intermediate,reps,"strength|hamstring_focus",6,true
+"Barbell Hip Thrust",strength,Glutes,"Hamstrings",Barbell|Bench,"Upper back on bench, thrust hips up with barbell on lap.",3,5,6,15,90,intermediate,reps,"strength|glute_focus",6,true
+"Barbell Front Squat",strength,Quadriceps,"Core|Upper_Back",Barbell,"Barbell on front of shoulders, perform squat.",3,5,5,10,120,advanced,reps,"strength|leg_focus",7,true
+"Barbell Lunge",strength,Quadriceps,"Glutes|Hamstrings",Barbell,"Perform lunges with barbell on upper back.",3,4,8,12,90,intermediate,reps,"strength|leg_focus",7,true
+"Barbell Curl",strength,Biceps,,Barbell,"Curl barbell from thighs to shoulders.",3,4,8,12,75,beginner,reps,"muscle_gain|arm_focus",4,true
+"Barbell Skull Crusher",strength,Triceps,,Barbell|Bench,"Lie on bench, lower barbell to forehead.",3,4,8,12,75,intermediate,reps,"muscle_gain|tricep_focus",5,true
+"Pull-up",strength,Lats,"Biceps|Rear_Shoulders",Pull-up_Bar,"Hang from bar, pull chin over bar.",3,5,3,12,120,intermediate,reps,"strength|back_focus",5,true
+"Chin-up",strength,Biceps,"Lats|Back",Pull-up_Bar,"Pull-up with underhand grip.",3,5,3,12,120,intermediate,reps,"strength|bicep_focus|back_focus",5,true
+"Assisted Pull-up (Band)",strength,Lats,"Biceps|Back",Pull-up_Bar|Band,"Use resistance band for assistance.",3,4,5,12,90,beginner,reps,"strength|back_focus",5,true
+"Hanging Leg Raise",strength,Lower_Abs,"Hip_Flexors|Grip",Pull-up_Bar,"Hang from bar, raise legs to 90 degrees.",3,4,8,15,75,intermediate,reps,"core|abs_focus",4,true
+"Resistance Band Squat",strength,Quadriceps,"Glutes|Hamstrings",Band,"Stand on band, hold handles at shoulders, squat.",3,4,12,20,60,beginner,reps,"strength|endurance|leg_focus",5,true
+"Resistance Band Row",strength,Back,"Biceps",Band,"Anchor band, row handles to sides.",3,4,12,20,60,beginner,reps,"strength|back_focus",4,true
+"Resistance Band Chest Press",strength,Chest,"Shoulders|Triceps",Band,"Band behind back, press handles forward.",3,4,12,20,60,beginner,reps,"strength|chest_focus",4,true
+"Resistance Band Lateral Walk",strength,Hip_Abductors,"Glutes",Band,"Band around thighs, walk sideways.",3,4,10,20,45,beginner,reps,"glute_focus|activation",4,true
+"Resistance Band Face Pull",strength,Rear_Shoulders,"Upper_Back|Traps",Band,"Pull band to face, elbows high.",3,4,15,20,60,beginner,reps,"shoulder_focus|posture",4,true
+"Box Jump",strength,Quadriceps,"Glutes|Calves",Box,"Jump onto elevated box or platform.",3,5,5,12,120,intermediate,reps,"power|explosive|leg_focus",5,true
+"Step-up (Bodyweight)",strength,Quadriceps,"Glutes|Hamstrings",Box,"Step up onto box, alternate legs.",3,4,10,15,60,beginner,reps,"strength|leg_focus",5,true
+"Kettlebell Swing",strength,Glutes,"Hamstrings|Lower_Back|Shoulders",Kettlebell,"Hip hinge swing, drive kettlebell to shoulder height.",3,4,10,20,75,intermediate,reps,"power|fat_loss|cardio|posterior_chain",5,true
+"Kettlebell Goblet Squat",strength,Quadriceps,"Glutes|Core",Kettlebell,"Hold kettlebell at chest, squat.",3,4,8,15,75,beginner,reps,"strength|leg_focus",5,true
+"Kettlebell Turkish Get-up",strength,"Full Body","Shoulders|Core",Kettlebell,"Complex movement from lying to standing holding kettlebell overhead.",3,3,3,6,120,advanced,reps,"strength|stability|functional",8,true
+"TRX Row",strength,Back,"Biceps|Core",TRX,"Suspended row holding TRX straps.",3,4,8,15,75,intermediate,reps,"strength|back_focus",5,true
+"TRX Push-up",strength,Chest,"Shoulders|Triceps|Core",TRX,"Push-up with hands in TRX straps (unstable).",3,4,8,15,75,intermediate,reps,"strength|chest_focus|stability",5,true
+"TRX Pike",strength,Core,"Shoulders",TRX,"Feet in straps, pike hips up.",3,4,8,15,75,advanced,reps,"core|abs_focus",4,true
+"Cable Chest Fly",strength,Chest,,Cable,"Cable fly from high or mid position.",3,4,10,15,60,intermediate,reps,"muscle_gain|chest_focus",5,true
+"Cable Tricep Pushdown",strength,Triceps,,Cable,"Push cable attachment down, straighten elbows.",3,4,10,15,60,beginner,reps,"muscle_gain|tricep_focus",4,true
+"Cable Bicep Curl",strength,Biceps,,Cable,"Curl cable handle from thighs to shoulders.",3,4,10,15,60,beginner,reps,"muscle_gain|bicep_focus",4,true
+"Cable Lateral Raise",strength,Shoulders,,Cable,"Raise cable handle out to side.",3,4,12,15,60,intermediate,reps,"muscle_gain|shoulder_focus",4,true
+"Cable Face Pull",strength,Rear_Shoulders,"Upper_Back|Traps",Cable,"Pull cable to face, elbows high.",3,4,15,20,60,beginner,reps,"shoulder_focus|posture",4,true
+"Leg Press Machine",strength,Quadriceps,"Glutes|Hamstrings",Machine,"Press platform away with legs.",3,5,8,15,90,beginner,reps,"strength|muscle_gain|leg_focus",6,true
+"Leg Curl Machine",strength,Hamstrings,,Machine,"Curl legs up toward glutes against resistance.",3,4,10,15,75,beginner,reps,"muscle_gain|hamstring_focus",4,true
+"Leg Extension Machine",strength,Quadriceps,,Machine,"Extend legs against resistance.",3,4,10,15,75,beginner,reps,"muscle_gain|quad_focus",4,true
+"Lat Pulldown Machine",strength,Lats,"Biceps|Rear_Shoulders",Machine,"Pull bar down to chest.",3,4,8,12,75,beginner,reps,"strength|back_focus",5,true
+"Seated Row Machine",strength,Back,"Biceps|Rear_Shoulders",Machine,"Row handles to torso.",3,4,8,12,75,beginner,reps,"strength|back_focus",5,true
+"Chest Press Machine",strength,Chest,"Shoulders|Triceps",Machine,"Press handles away from chest.",3,4,8,12,75,beginner,reps,"strength|chest_focus",5,true
+"Pec Deck Machine",strength,Chest,,Machine,"Bring arms together in front of chest.",3,4,10,15,60,beginner,reps,"muscle_gain|chest_focus",4,true
+"Shoulder Press Machine",strength,Shoulders,"Triceps",Machine,"Press handles overhead.",3,4,8,12,75,beginner,reps,"strength|shoulder_focus",5,true
+"Running (Outdoor)",cardio,Cardiovascular,"Legs",Outdoor,"Steady-state or interval running.",1,1,20,60,0,beginner,distance,"fat_loss|endurance|cardio",30,true
+"Cycling (Outdoor)",cardio,Cardiovascular,"Quadriceps|Glutes",Bike,"Steady-state or interval cycling.",1,1,20,60,0,beginner,distance,"fat_loss|endurance|cardio",30,true
+"Rowing Machine",cardio,Cardiovascular,"Back|Legs",Rowing_Machine,"Full-body cardio on rowing machine.",3,4,15,30,60,beginner,time,"fat_loss|endurance|cardio|full_body",20,true
+"Assault Bike/Air Bike",cardio,Cardiovascular,"Full Body",Bike,"High-intensity bike with arm movement.",3,5,20,60,90,intermediate,time,"fat_loss|hiit|cardio",15,true
+"Jump Rope",cardio,Cardiovascular,"Calves|Coordination",,"Classic cardio exercise, single or double unders.",3,5,30,120,60,beginner,time,"fat_loss|cardio|coordination",10,true
+"Shadow Boxing",cardio,Cardiovascular,"Shoulders|Core",,"Throw punches in the air, great cardio and coordination.",3,5,60,180,60,beginner,time,"fat_loss|cardio|coordination",10,true
+"Stair Climbing",cardio,Cardiovascular,"Quadriceps|Glutes|Calves",,"Climb stairs for cardio and leg strength.",1,1,10,30,0,beginner,time,"fat_loss|cardio|leg_focus",15,true
+"Burpee Box Jump",strength,"Full Body","Cardiovascular",Box,"Burpee followed by box jump.",3,4,5,12,120,advanced,reps,"hiit|power|fat_loss",5,true
+"Reverse Crunch",strength,Lower_Abs,"Hip_Flexors",,"Lift hips off ground, bring knees to chest.",3,4,12,20,45,beginner,reps,"core|abs_focus",3,true
+"V-ups",strength,Abs,"Hip_Flexors",,"Lie flat, simultaneously lift legs and torso to form V.",3,4,10,15,60,intermediate,reps,"core|abs_focus",4,true
+"L-sit Hold",strength,Core,"Hip_Flexors|Triceps",,"Sit on ground or parallel bars, lift body with straight legs.",3,4,10,30,60,advanced,time,"core|gymnastics|strength",4,true
+"Handstand Hold (Wall)",strength,Shoulders,"Core|Balance",Wall,"Kick up to handstand against wall.",3,4,15,45,90,advanced,time,"shoulder_focus|balance|gymnastics",5,true
+"Pseudo Planche Push-up",strength,Shoulders,"Chest|Core",,"Push-up with hands positioned lower, lean forward.",3,4,5,12,90,advanced,reps,"strength|shoulder_focus|gymnastics",5,true
+"Archer Push-up",strength,Chest,"Shoulders|Triceps",,"Wide push-up, shift weight to one side.",3,4,6,12,75,advanced,reps,"strength|chest_focus",5,true
+"Pistol Squat (Assisted)",strength,Quadriceps,"Glutes|Balance",,"Single-leg squat, use support for balance.",3,4,5,10,90,advanced,reps,"strength|balance|leg_focus",6,true

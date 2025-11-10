@@ -19,6 +19,12 @@ const GOAL_PRIORITIES = {
 		sets: [4, 6],
 		focus: "compound",
 	},
+	muscle_gain: {  // Added alias for hypertrophy
+		primary: ["squat", "bench", "row", "press"],
+		repRange: [8, 12],
+		sets: [3, 4],
+		focus: "mixed",
+	},
 	hypertrophy: {
 		primary: ["squat", "bench", "row", "press"],
 		repRange: [8, 12],
@@ -26,9 +32,9 @@ const GOAL_PRIORITIES = {
 		focus: "mixed",
 	},
 	fat_loss: {
-		primary: ["squat", "deadlift", "lunge", "push-up"],
-		repRange: [12, 15],
-		sets: [3, 4],
+		primary: ["squat", "deadlift", "lunge", "push-up", "burpee"],
+		repRange: [12, 20],
+		sets: [3, 5],
 		focus: "circuit",
 	},
 	endurance: {
@@ -45,14 +51,14 @@ const GOAL_PRIORITIES = {
 	},
 };
 
-// Muscle group mappings
+// Muscle group mappings (both cases for compatibility)
 const MUSCLE_GROUPS = {
-	push: ["chest", "shoulders", "triceps"],
-	pull: ["back", "biceps"],
-	legs: ["quadriceps", "hamstrings", "glutes", "calves"],
-	upper: ["chest", "back", "shoulders", "biceps", "triceps"],
-	lower: ["quadriceps", "hamstrings", "glutes", "calves"],
-	core: ["abs", "obliques", "lower back"],
+	push: ["Chest", "chest", "Shoulders", "shoulders", "Triceps", "triceps"],
+	pull: ["Back", "back", "Biceps", "biceps"],
+	legs: ["Quadriceps", "quadriceps", "Hamstrings", "hamstrings", "Glutes", "glutes", "Calves", "calves"],
+	upper: ["Chest", "chest", "Back", "back", "Shoulders", "shoulders", "Biceps", "biceps", "Triceps", "triceps"],
+	lower: ["Quadriceps", "quadriceps", "Hamstrings", "hamstrings", "Glutes", "glutes", "Calves", "calves"],
+	core: ["Core", "core", "Abs", "abs", "Obliques", "obliques", "Lower Back", "lower back"],
 };
 
 function determineSplitType(daysPerWeek, goals) {
@@ -69,28 +75,32 @@ function determineSplitType(daysPerWeek, goals) {
 	return SPLIT_TYPES.FULL_BODY;
 }
 
-function getSplitStructure(splitType, daysPerWeek) {
+function getSplitStructure(splitType, daysPerWeek, preferredDays = []) {
+	let structure = [];
+	
 	switch (splitType) {
 		case SPLIT_TYPES.FULL_BODY:
-			return Array(daysPerWeek)
+			structure = Array(daysPerWeek)
 				.fill(null)
 				.map((_, i) => ({
 					dayNumber: i + 1,
 					name: `Full Body ${i + 1}`,
 					focus: "full_body",
 				}));
+			break;
 
 		case SPLIT_TYPES.UPPER_LOWER:
 			const ulPattern = ["upper", "lower", "upper", "lower"];
-			return ulPattern.slice(0, daysPerWeek).map((focus, i) => ({
+			structure = ulPattern.slice(0, daysPerWeek).map((focus, i) => ({
 				dayNumber: i + 1,
 				name: focus === "upper" ? "Upper Body" : "Lower Body",
 				focus,
 			}));
+			break;
 
 		case SPLIT_TYPES.PUSH_PULL_LEGS:
 			const pplPattern = ["push", "pull", "legs", "push", "pull", "legs"];
-			return pplPattern.slice(0, daysPerWeek).map((focus, i) => ({
+			structure = pplPattern.slice(0, daysPerWeek).map((focus, i) => ({
 				dayNumber: i + 1,
 				name:
 					focus === "push"
@@ -100,10 +110,21 @@ function getSplitStructure(splitType, daysPerWeek) {
 						: "Leg Day",
 				focus,
 			}));
+			break;
 
 		default:
-			return [{ dayNumber: 1, name: "Full Body", focus: "full_body" }];
+			structure = [{ dayNumber: 1, name: "Full Body", focus: "full_body" }];
 	}
+
+	// Assign preferred days if provided and valid
+	if (preferredDays && preferredDays.length >= daysPerWeek) {
+		structure = structure.map((day, index) => ({
+			...day,
+			dayOfWeek: preferredDays[index],
+		}));
+	}
+
+	return structure;
 }
 
 async function selectExercisesForFocus(
@@ -113,21 +134,44 @@ async function selectExercisesForFocus(
 	injuries,
 	sessionLength
 ) {
+	// Normalize equipment values to match database (capitalize first letter)
+	const normalizedEquipment = equipment.map(e => {
+		if (e.toLowerCase() === 'none') return 'None';
+		if (e.toLowerCase() === 'bodyweight') return 'Bodyweight';
+		// Capitalize first letter for other equipment
+		return e.charAt(0).toUpperCase() + e.slice(1).toLowerCase();
+	});
+
+	// Build query - if looking for bodyweight/none, also include empty equipment array
+	const includesBodyweight = normalizedEquipment.some(e => 
+		e === 'Bodyweight' || e === 'None'
+	);
+
 	const query = {
 		published: true,
-		equipment: { $in: [...equipment, "none", "bodyweight"] },
+		$or: [
+			{ equipment: { $in: [...normalizedEquipment, "None", "Bodyweight"] } },
+			...(includesBodyweight ? [{ equipment: { $size: 0 } }] : [])
+		]
 	};
+
+	console.log('Exercise query:', JSON.stringify(query, null, 2));
+	console.log('Focus:', focus);
+	console.log('Equipment:', equipment);
+	console.log('Normalized equipment:', normalizedEquipment);
 
 	// Determine target muscles based on focus
 	let targetMuscles = [];
 	if (focus === "full_body") {
 		targetMuscles = [
-			"chest",
-			"back",
-			"quadriceps",
-			"hamstrings",
-			"shoulders",
-			"core",
+			"Chest", "chest",
+			"Back", "back",
+			"Quadriceps", "quadriceps",
+			"Hamstrings", "hamstrings",
+			"Shoulders", "shoulders",
+			"Core", "core",
+			"Glutes", "glutes",
+			"Full Body", "full_body",
 		];
 	} else if (focus === "upper") {
 		targetMuscles = MUSCLE_GROUPS.upper;
@@ -141,9 +185,13 @@ async function selectExercisesForFocus(
 		targetMuscles = MUSCLE_GROUPS.legs;
 	}
 
-	// Filter by target muscles
+	// Filter by target muscles (case-insensitive using regex)
 	if (targetMuscles.length > 0) {
-		query.primary_muscles = { $in: targetMuscles };
+		// Use $in with case-insensitive matching
+		const muscleRegexes = targetMuscles.map(m => new RegExp(`^${m}$`, 'i'));
+		query.primary_muscles = { 
+			$in: targetMuscles // Try exact match first (both cases)
+		};
 	}
 
 	// Exclude exercises that affect injured areas
@@ -155,6 +203,8 @@ async function selectExercisesForFocus(
 	}
 
 	const allExercises = await Exercise.find(query).lean();
+
+	console.log('Total exercises found:', allExercises.length);
 
 	// Prioritize compound movements
 	const compounds = allExercises.filter((e) =>
@@ -187,6 +237,8 @@ async function selectExercisesForFocus(
 	for (let i = 0; i < remainingCount && i < isolations.length; i++) {
 		selected.push(isolations[i]);
 	}
+
+	console.log('Selected exercises:', selected.length, '/', exerciseCount);
 
 	return selected;
 }
@@ -234,7 +286,7 @@ function calculateVolume(experience, goal, exercise) {
 	return defaultPrescription;
 }
 
-async function generatePlanForUser(userId) {
+async function generatePlanForUser(userId, formData = null) {
 	// Load user profile
 	const user = await User.findById(userId).lean();
 	if (!user) {
@@ -242,15 +294,55 @@ async function generatePlanForUser(userId) {
 	}
 
 	const profile = user.profile || {};
-	const generationParams = {
-		goals: profile.goals || ["general_fitness"],
+	
+	// Use form data if provided, otherwise fall back to profile
+	const generationParams = formData ? {
+		goals: formData.goal && formData.goal !== '' && formData.goal !== 'null' && formData.goal !== null
+			? (Array.isArray(formData.goal) ? formData.goal : [formData.goal])
+			: ["general_fitness"],
+		experience_level: formData.experience_level || "beginner",
+		equipment: formData.equipment && formData.equipment.length > 0 
+			? formData.equipment 
+			: ["bodyweight", "none"],
+		days_per_week: formData.days_per_week || 3,
+		preferred_days: formData.preferred_days || [],
+		session_length_minutes: formData.session_length_minutes || 45,
+		injuries: Array.isArray(formData.injuries) 
+			? formData.injuries 
+			: (formData.injuries && formData.injuries.trim() !== '' ? formData.injuries.split(',').map(i => i.trim()) : []),
+		focus_areas: formData.focus_areas || [],
+	} : {
+		goals: profile.goals && profile.goals.length > 0 ? profile.goals : ["general_fitness"],
 		experience_level: profile.experience_level || "beginner",
-		equipment: profile.equipment || ["bodyweight"],
+		equipment: profile.equipment && profile.equipment.length > 0 ? profile.equipment : ["bodyweight", "none"],
 		days_per_week: profile.days_per_week || 3,
+		preferred_days: profile.preferred_days || [],
 		session_length_minutes: profile.session_length_minutes || 45,
 		injuries: profile.injuries || [],
 		focus_areas: profile.preferences || [],
 	};
+
+	console.log('=== GENERATION PARAMS ===');
+	console.log('Form Data received:', formData);
+	console.log('Form Data goal:', formData?.goal);
+	console.log('Generated Params:', generationParams);
+	console.log('Final goals array:', generationParams.goals);
+
+	// Update user profile with form data if provided
+	if (formData) {
+		await User.findByIdAndUpdate(userId, {
+			$set: {
+				'profile.goals': generationParams.goals,
+				'profile.experience_level': generationParams.experience_level,
+				'profile.equipment': generationParams.equipment,
+				'profile.days_per_week': generationParams.days_per_week,
+				'profile.preferred_days': generationParams.preferred_days,
+				'profile.session_length_minutes': generationParams.session_length_minutes,
+				'profile.injuries': generationParams.injuries,
+				'profile.preferences': generationParams.focus_areas,
+			}
+		});
+	}
 
 	// Determine split type
 	const splitType = determineSplitType(
@@ -259,7 +351,8 @@ async function generatePlanForUser(userId) {
 	);
 	const splitStructure = getSplitStructure(
 		splitType,
-		generationParams.days_per_week
+		generationParams.days_per_week,
+		generationParams.preferred_days
 	);
 
 	// Generate exercises for each day
@@ -274,6 +367,9 @@ async function generatePlanForUser(userId) {
 			generationParams.injuries,
 			generationParams.session_length_minutes
 		);
+
+		console.log(`Day ${dayTemplate.dayNumber} (${dayTemplate.focus}): Found ${exercises.length} exercises`);
+		console.log('Equipment filter:', generationParams.equipment);
 
 		const dayExercises = exercises.map((exercise) => {
 			const planned = calculateVolume(
@@ -296,11 +392,18 @@ async function generatePlanForUser(userId) {
 
 		weeklyStructure.push({
 			dayNumber: dayTemplate.dayNumber,
+			dayOfWeek: dayTemplate.dayOfWeek,
 			name: dayTemplate.name,
 			focus: dayTemplate.focus,
 			exercises: dayExercises,
 		});
 	}
+
+	// Deactivate any existing active plans
+	await AutoGeneratedPlan.updateMany(
+		{ userId, active: true },
+		{ $set: { active: false } }
+	);
 
 	// Create AutoGeneratedPlan
 	const plan = await AutoGeneratedPlan.create({

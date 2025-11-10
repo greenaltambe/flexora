@@ -25,6 +25,11 @@ const ProfileSchema = new Schema(
 		},
 		equipment: { type: [String], default: [] },
 		days_per_week: { type: Number, default: 3 },
+		preferred_days: { 
+			type: [String], 
+			enum: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+			default: [] 
+		},
 		session_length_minutes: { type: Number, default: 45 },
 		injuries: { type: [String], default: [] },
 		timezone: { type: String, default: "Asia/Kolkata" },
