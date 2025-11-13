@@ -164,7 +164,13 @@ const getTodaySession = async (req, res) => {
 		const userId = req.user.id;
 		const dateString = todayDateString();
 		const session = await generateDailySessionForUser(userId, dateString);
-		return res.json({ session });
+		
+		// Populate exercise details
+		const populatedSession = await DailySession.findById(session._id)
+			.populate('exercises.exerciseId', 'name description primary_muscles secondary_muscles equipment difficulty default_prescription')
+			.lean();
+		
+		return res.json({ session: populatedSession || session });
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ message: err.message });
@@ -177,7 +183,13 @@ const getSessionByDate = async (req, res) => {
 		const { date } = req.params; // expect YYYY-MM-DD
 		if (!date) return res.status(400).json({ message: "date required" });
 		const session = await generateDailySessionForUser(userId, date);
-		return res.json({ session });
+		
+		// Populate exercise details
+		const populatedSession = await DailySession.findById(session._id)
+			.populate('exercises.exerciseId', 'name description primary_muscles secondary_muscles equipment difficulty default_prescription')
+			.lean();
+		
+		return res.json({ session: populatedSession || session });
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ message: err.message });
